@@ -20,7 +20,7 @@ class Board(object):
 	# first, call the api on the piece level, check if move is valid on the piece level
 	# then, check the board situation and determine whehter move is valid
 	def is_valid_move(self, c_x, c_y, t_x, t_y):
-		piece = self.get_piece(c_x, c_y)
+		cur_piece = self.get_piece(c_x, c_y)
 
 		for cord in [c_x, c_y, t_x, t_y]:
 			if cord < 0 or cord > 7:
@@ -29,7 +29,16 @@ class Board(object):
 		if not piece.is_valid_move(c_x, c_y, t_x, t_y):
 			return False
 
-		# board situation check if move is good to do
+		# board situation check if move is good
+		target_piece = self.get_piece(t_x, t_y)
+
+		# cannot move into your own piece
+		if target_piece is not None and target_piece.colour = cur_piece.colour:
+			return False
+
+		cors_in_path = cur_piece.cors_in_path(c_x, c_y, t_x, t_y)
+
+
 
 	def remove_piece(self, x, y):
 		self._board[x][y] = None

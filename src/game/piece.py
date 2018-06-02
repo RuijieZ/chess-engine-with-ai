@@ -14,7 +14,7 @@ class Piece(object):
 	# since some pieces can block u in the board
 	# or a friendly piece is in the target position
 	def is_valid_move(self, c_x, c_y, t_x, t_y):
-		return (t_x, t_y) in self.all_valid_moves()
+		return (t_x, t_y) in self.all_valid_moves(c_x, c_y)
 
 	# Again, this is a piece level valid moves
 	# moves generate here may not be valid given the board situation
@@ -78,10 +78,10 @@ class Rook(Piece):
 			assert(self.is_valid_move(c_x, c_y, t_x, t_y))
 
 		if c_x == t_x:
-			return [(c_x, k) for k in range(min(c_y, t_y), max(c_y, t_y))]
+			return [(c_x, k) for k in range(min(c_y, t_y) + 1, max(c_y, t_y))]
 
 		else:
-			return [(k, c_y) for k in range(min(c_x, t_x), max(c_x, t_x))]
+			return [(k, c_y) for k in range(min(c_x, t_x) + 1, max(c_x, t_x))]
 
 
 
@@ -98,6 +98,14 @@ class Bishop(Piece):
 		c4 = [(c_x - k, c_y - k) for k in range(-7, 8)]
 		cors = c1 + c2 + c3 + c4
 		return self.filter_invalid_cors(cors, c_x, c_y)
+
+	def cors_in_path(self, c_x, c_y, t_x, t_y):
+		if DEBUG:
+			assert(self.is_valid_move(c_x, c_y, t_x, t_y))
+
+		x_lst = range(min(c_x, t_x) + 1, max(c_x, t_x))
+		y_lst = range(min(c_y, t_y) + 1, max(c_y, t_y))
+		return list(zip(x_lst, y_lst))
 
 
 class Queen(Piece):
@@ -117,6 +125,21 @@ class Queen(Piece):
 		return self.filter_invalid_cors(cors, c_x, c_y)
 
 
+	def cors_in_path(self, c_x, c_y, t_x, t_y):
+		if DEBUG:
+			assert(self.is_valid_move(c_x, c_y, t_x, t_y))
+
+		if c_x == t_x:
+			return [(c_x, k) for k in range(min(c_y, t_y) + 1, max(c_y, t_y))]
+
+		elif c_y == t_y:
+			return [(k, c_y) for k in range(min(c_x, t_x) + 1, max(c_x, t_x))]
+
+		x_lst = range(min(c_x, t_x) + 1, max(c_x, t_x))
+		y_lst = range(min(c_y, t_y) + 1, max(c_y, t_y))
+		return list(zip(x_lst, y_lst))
+
+
 class Pawn(Piece):
 	def __init__(self, board, colour):
 		super(Pawn, self).__init__(board, colour)
@@ -128,6 +151,17 @@ class Pawn(Piece):
 		c3 = [(c_x + k, c_y) for k in (-2, 2)]
 		cors = c1 + c2 + c3
 		return self.filter_invalid_cors(cors, c_x, c_y)
+
+
+	def cors_in_path(self, c_x, c_y, t_x, t_y):
+		if DEBUG:
+			assert(self.is_valid_move(c_x, c_y, t_x, t_y))
+
+		if c_x == t_x:
+			return [(c_x, k) for k in range(min(c_y, t_y) + 1, max(c_y, t_y))]
+
+		else:
+			return [(k, c_y) for k in range(min(c_x, t_x) + 1, max(c_x, t_x))]
 
 
 class King(Piece):
@@ -159,6 +193,12 @@ if __name__ == "__main__":
 	assert(sorted(b.all_valid_moves(1,2)) == [(0, 1), (0, 3), (2, 1), (2, 3), (3, 0), (3, 4), (4, 5), (5, 6), (6, 7)])
 	assert(sorted(k.all_valid_moves(1,2)) == [(0, 1), (0, 2), (0, 3), (1, 1), (1, 3), (2, 1), (2, 2), (2, 3)])
 	assert(sorted(p.all_valid_moves(1,2)) == [(0, 1), (0, 2), (0, 3), (2, 1), (2, 2), (2, 3), (3, 2)])
+
+	# cors in the path
+	assert(r.cors_in_path(1, 4, 1, 1) == [(1, 2), (1, 3)])
+	assert(b.cors_in_path(4, 6, 1, 3) == [(2, 4), (3, 5)])
+	assert(q.cors_in_path(4, 6, 4, 3) == [(4, 4), (4, 5)])
+	assert(p.cors_in_path(6, 6, 4, 6) == [(5,6)])
 
 
 

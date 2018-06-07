@@ -249,13 +249,39 @@ class Pawn(Piece):
 
 
 	def range(self, c_x, c_y):
-		# c1 = [(c_x - 1, c_y + k) for k in range(-1,2)]
-		# c2 = [(c_x + 1, c_y + k) for k in range(-1,2)]
-		# c3 = [(c_x + k, c_y) for k in (-2, 2)]
-		# cors = c1 + c2 + c3
+		cur_direction = self.board.w_direction if self.colour == WHITE else self.board.b_direction
+		cors = []
+		if cur_direction is UP:
+			cors = [(c_x - 1, c_y + k) for k in range(-1,2)]
+			if not self.has_moved:
+				cors.append((c_x - 2, c_y))
 
-		pass
+		else:
+			cors = [(c_x + 1, c_y + k) for k in range(-1,2)]
+			if not self.has_moved:
+				cors.append((c_x - 2, c_y))
+
 		return self.filter_out_of_bound_cors(cors, c_x, c_y)
+
+
+	def threaten_cors(self, c_x, c_y):
+		return [c for c in self.range(c_x, c_y) if c[1] != c_y]
+
+
+	def valid_moves(self, c_x, c_y):
+		t_cors = self.threaten_cors(c_x, c_y)
+		t_cors = self.remove_cors_occupied_by_friendly_piece(t_cors)
+		r_cors = self.range(c_x, c_y)
+		push_one = [c for c in r_cors if c[0] == c_x and (c[1] == c_y - 1 or c[1] == c_y + 1) and (self.board.get_piece(c[0], c[1]) is None)]
+		push_two = [c for c in r_cors if c[0] == c_x and (c[1] == c_y - 2 or c[1] == c_y + 2) and (self.board.get_piece(c[0], c[1]) is None)]
+
+		result = [c for c in t_cors if self.baord.get_piece(c[0], c[1]).colour != self.colour]
+		if len(push_one) == 0:	# the one push is blocked, so will two push be
+			return result
+		else:
+			return result + push_one + push_two
+
+
 
 
 class King(Piece):
@@ -272,9 +298,9 @@ class King(Piece):
 		return self.filter_out_of_bound_cors(cors, c_x, c_y)
 
 	def valid_moves(self, c_x, c_y):
-		opponent_colour = W if selfd.cur_turn == B else B  # determine the oppo colour
-		threaten_cors_by_opponent = self.board.get_all_threatened_cors(opponent_colour)  # get all cors are threatened by oppo
-		cors = self.remove_cors_occupied_by_friendly_piece(self.range(c_x, c_y))		# remove the cors that are ocupited by freindly piece
+		opponent_colour = W if self.board.cur_turn == B else B  							# determine the oppo colour
+		threaten_cors_by_opponent = self.board.get_all_threatened_cors(opponent_colour)  	# get all cors are threatened by oppo
+		cors = self.remove_cors_occupied_by_friendly_piece(self.range(c_x, c_y))			# remove the cors that are ocupited by freindly piece
 		return [c for c in cors if c not in threaten_cors_by_opponent]
 
 

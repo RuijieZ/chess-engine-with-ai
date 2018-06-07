@@ -91,13 +91,20 @@ var updateStatus = function() {
     pgnEl.html(chess.pgn());
 };
 
+// update the board position after the piece snap
+// for castling, en passant, pawn promotion
+var onSnapEnd = function() {
+  window.game.board.position(window.game.chess.fen());
+};
+
 var init = function() {
     var cfg = {
         draggable: true,
         dropOffBoard: 'snapback', // this is the default
         position: 'start',
         onDragStart: onDragStart,
-        onDrop: onDrop
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd
     };
     var board = ChessBoard('board', cfg);
     var chess = new Chess();

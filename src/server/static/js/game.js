@@ -11,8 +11,8 @@ class Game {
         this.board = board;
         this.chess = chess;
         this.players = {
-            WHITE: HUMAN,
-            BLACK: AI
+            'w': HUMAN,
+            'b': AI
         }
     }
 
@@ -24,6 +24,25 @@ class Game {
 /*
 Helper functions
 */
+function queryNextMove() {
+    var chess = window.game.chess;
+    var data = {
+        'fen': chess.fen(),
+        'w': window.game.players['w'],
+        'b': window.game.players['b']
+    };
+    $.post("/next_move", data, function(result){
+    	var serverMove = {						// reformat the move so that the frontend code can understand
+    		'from': result.substring(0,2),
+    		'to': result.substring(2,4)
+    	}
+		window.game.chess.move(serverMove);		// make the move
+  		console.log('the move returned from server is: ' + result);
+		window.game.board.position(window.game.chess.fen());
+  		updateStatus();
+    });
+}
+
 var onDragStart = function(source, piece, position, orientation) {
     chess = window.game.chess;
     if ((chess.turn() === BLACK && piece.search(/^b/) === -1) || (chess.turn() === WHITE && piece.search(/^w/) === -1) || chess.game_over()) {
@@ -45,12 +64,6 @@ var onDrop = function(source, target) {
   if (move === null) return 'snapback';
 
   updateStatus();
-};
-
-// update the board position after the piece snap
-// for castling, en passant, pawn promotion
-var onSnapEnd = function() {
-    board.position(window.game.chess.fen());
 };
 
 
@@ -94,7 +107,9 @@ var updateStatus = function() {
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
 var onSnapEnd = function() {
-  window.game.board.position(window.game.chess.fen());
+    window.game.board.position(window.game.chess.fen());
+    if ((chess.turn() === BLACK && window.game.players['b'] == AI) || (chess.turn() === WHITE && window.game.players['w'] == AI))
+        queryNextMove();
 };
 
 var init = function() {
@@ -106,8 +121,10 @@ var init = function() {
         onDrop: onDrop,
         onSnapEnd: onSnapEnd
     };
-    var board = ChessBoard('board', cfg);
-    var chess = new Chess();
-    window.game = new Game(board, chess);
+    if (window.game === undefined) {
+        var chess = new Chess();
+        var board = ChessBoard('board', cfg);
+        window.game = new Game(board, chess);
+    }
 };
 $(document).ready(init);

@@ -14,6 +14,7 @@ class Game {
             'w': HUMAN,
             'b': AI
         }
+        this.stepCount = 0;
     }
 
     newGame() {
@@ -31,7 +32,7 @@ function queryNextMove() {
         'w': window.game.players['w'],
         'b': window.game.players['b']
     };
-    $.post("/next_move", data, function(result){
+    $.post("/next_move/" + window.game.stepCount.toString(), data, function(result){
     	var serverMove = {						// reformat the move so that the frontend code can understand
     		'from': result.substring(0,2),
     		'to': result.substring(2,4)
@@ -75,6 +76,7 @@ var updateStatus = function() {
     var pgnEl = $('#pgn');
 
     var moveColor = 'White';
+    window.game.stepCount += 1;
     if (chess.turn() === 'b') {
         moveColor = 'Black';
     }

@@ -8,7 +8,7 @@ from ai.evaluation import WeightScore
 w = WeightScore()
 
 def create_new_board_with_move(board, move):
-	board_cpy = copy.deepcopy(board)		# make a copy of the orginal board
+	board_cpy = board.copy()		# make a copy of the orginal board
 	board_cpy.push(move)					# make that move
 	return board_cpy
 
@@ -16,28 +16,38 @@ def create_new_board_with_move(board, move):
 def min_f(board, c_depth, depth, query_side, top_level_move=None):
 	if board.is_game_over() or c_depth == 0:
 		return w.evaluation(board, query_side), top_level_move
-	elif c_depth == depth:	# first call
+	else:
 		boards = [(create_new_board_with_move(board, move), move) for move in board.legal_moves]
-		result = [max_f(b, c_depth-1, depth, query_side, m) for b, m in boards]
-	else:					# other lvel of recursions
-		boards = [(create_new_board_with_move(board, move)) for move in board.legal_moves]
-		result = [max_f(b, c_depth-1, depth, query_side, top_level_move) for b in boards]
+		cur_move_pair = (1001, None)
+		for b, m in boards:
+			if c_depth != depth:
+				m = top_level_move
 
-	return min(result, key=lambda x: x[0])
+			v = max_f(b, c_depth-1, depth, query_side, m)
+
+			if v[0] < cur_move_pair[0]:
+				cur_move_pair = v
+
+	return cur_move_pair
 
 # c_depth is the current depth
 # depth is the search tree depth
 def max_f(board, c_depth, depth, query_side, top_level_move=None):
 	if board.is_game_over() or c_depth == 0:
 		return w.evaluation(board, query_side), top_level_move
-	elif c_depth == depth:	# first call
+	else:
 		boards = [(create_new_board_with_move(board, move), move) for move in board.legal_moves]
-		result = [min_f(b, c_depth-1, depth, query_side, m) for b, m in boards]
-	else:					# other lvel of recursions
-		boards = [(create_new_board_with_move(board, move)) for move in board.legal_moves]
-		result = [min_f(b, c_depth-1, depth, query_side, top_level_move) for b in boards]
+		cur_move_pair = (-1001, None)
+		for b, m in boards:
+			if c_depth != depth:
+				m = top_level_move
 
-	return max(result, key=lambda x: x[0])
+			v = min_f(b, c_depth-1, depth, query_side, m)
+
+			if v[0] > cur_move_pair[0]:
+				cur_move_pair = v
+
+	return cur_move_pair
 
 
 if __name__ == '__main__':

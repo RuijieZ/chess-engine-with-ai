@@ -26,7 +26,7 @@ def next_move(count):
 		return str(opening_moves[count])
 	fen = request.form['fen']
 	board = Board(fen)
-	move = max_f(board, -1001, 1001, 4, 4, 'b')[1]
+	move = max_f(board, -1001, 1001, 4, 4, BLACK_TURN)[1]
 	return str(move)
 
 

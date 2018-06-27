@@ -28,11 +28,11 @@ def open_pgn_list():
 
 
 # find an opening moves
-def find_opening_moves(pgn_list, side='b'):
+def find_opening_moves(pgn_list, side=False):
 	moves = random.choice(pgn_list)
-	if side == 'b':
+	if side == False:
 		return moves[1], moves[3], moves[5]
-	elif side == 'w':
+	elif side == True:
 		return moves[0], moves[2], moves[4]
 
 

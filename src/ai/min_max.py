@@ -52,6 +52,6 @@ def max_f(board, c_depth, depth, query_side, top_level_move=None):
 
 if __name__ == '__main__':
 	board = Board('rnb1kbnr/ppp2ppp/8/3P4/4p3/5P2/PPPQ2PP/RNB1KB1R b KQkq - 0 6')
-	print(max_f(board, 5, 5, 'w'))
-	print(min_f(board, 2, 2, 'w'))
+	print(max_f(board, 5, 5, False))
+	print(min_f(board, 2, 2, False))
 

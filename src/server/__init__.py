@@ -3,7 +3,7 @@ from flask_cors import CORS
 from chess import Board
 
 from ai.evaluation import WeightScore
-from ai.alpha_beta import min_f, max_f
+from ai.alpha_beta import min_f, max_f, min_f_root, max_f_root
 from ai.opening import open_pgn_list, find_opening_moves
 
 WHITE_TURN = True
@@ -26,7 +26,7 @@ def next_move(count):
 		return str(opening_moves[count])
 	fen = request.form['fen']
 	board = Board(fen)
-	move = min_f(board, -1001, 1001, 4, 4, {})[1]		# black is the ai, so call min_f
+	move = min_f_root(board, -1001, 1001, 4, {})[1]		# black is the ai, so call min_f
 	return str(move)
 
 

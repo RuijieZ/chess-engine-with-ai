@@ -13,9 +13,9 @@ def create_new_board_with_move(board, move):
 	return board_cpy
 
 
-def min_f(board, c_depth, depth, query_side, top_level_move=None):
+def min_f(board, c_depth, depth, top_level_move=None):
 	if board.is_game_over() or c_depth == 0:
-		return w.evaluation(board, query_side), top_level_move
+		return w.evaluation(board), top_level_move
 	else:
 		boards = [(create_new_board_with_move(board, move), move) for move in board.legal_moves]
 		cur_move_pair = (1001, None)
@@ -23,7 +23,7 @@ def min_f(board, c_depth, depth, query_side, top_level_move=None):
 			if c_depth != depth:
 				m = top_level_move
 
-			v = max_f(b, c_depth-1, depth, query_side, m)
+			v = max_f(b, c_depth-1, depth, m)
 
 			if v[0] < cur_move_pair[0]:
 				cur_move_pair = v
@@ -32,9 +32,9 @@ def min_f(board, c_depth, depth, query_side, top_level_move=None):
 
 # c_depth is the current depth
 # depth is the search tree depth
-def max_f(board, c_depth, depth, query_side, top_level_move=None):
+def max_f(board, c_depth, depth, top_level_move=None):
 	if board.is_game_over() or c_depth == 0:
-		return w.evaluation(board, query_side), top_level_move
+		return w.evaluation(board), top_level_move
 	else:
 		boards = [(create_new_board_with_move(board, move), move) for move in board.legal_moves]
 		cur_move_pair = (-1001, None)
@@ -42,7 +42,7 @@ def max_f(board, c_depth, depth, query_side, top_level_move=None):
 			if c_depth != depth:
 				m = top_level_move
 
-			v = min_f(b, c_depth-1, depth, query_side, m)
+			v = min_f(b, c_depth-1, depth, m)
 
 			if v[0] > cur_move_pair[0]:
 				cur_move_pair = v
@@ -52,6 +52,6 @@ def max_f(board, c_depth, depth, query_side, top_level_move=None):
 
 if __name__ == '__main__':
 	board = Board('rnb1kbnr/ppp2ppp/8/3P4/4p3/5P2/PPPQ2PP/RNB1KB1R b KQkq - 0 6')
-	print(max_f(board, 5, 5, False))
-	print(min_f(board, 2, 2, False))
+	print(max_f(board, 5, 5))
+	print(min_f(board, 2, 2))
 

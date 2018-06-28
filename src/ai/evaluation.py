@@ -1,27 +1,34 @@
 import chess
 
-LOSS_SCORE = -1000
-WINNING_SCORE = 1000
+BLACK_WIN_SCORE = -1000
+WHITE_WIN_SCORE = 1000
 DRAW_SCORE = 0
 
 WHITE_TURN = True
 BLACK_TURN = False
 
+# help switch the position matrix
+# what it does it reverse the sign of the values
+# by default, white has positive value and blakc has negative value
+# then we control calling whether min_f of max_f for different sides
+def colour_switch(matrix):
+    return [x * -1.0 for x in matrix]
+
 
 pawn_eval_white = [
     0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
-    5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,
-    1.0,  1.0,  2.0,  3.0,  3.0,  2.0,  1.0,  1.0,
-    0.5,  0.5,  1.0,  2.5,  2.5,  1.0,  0.5,  0.5,
-    0.0,  0.0,  0.0,  2.0,  2.0,  0.0,  0.0,  0.0,
-    0.5, -0.5, -1.0,  0.0,  0.0, -1.0, -0.5,  0.5,
     0.5,  1.0, 1.0,  -2.0, -2.0,  1.0,  1.0,  0.5,
+    0.5, -0.5, -1.0,  0.0,  0.0, -1.0, -0.5,  0.5,
+    0.0,  0.0,  0.0,  2.0,  2.0,  0.0,  0.0,  0.0,
+    0.5,  0.5,  1.0,  2.5,  2.5,  1.0,  0.5,  0.5,
+    1.0,  1.0,  2.0,  3.0,  3.0,  2.0,  1.0,  1.0,
+    5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,
     0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0
 ]
 
-pawn_eval_black = pawn_eval_white
+pawn_eval_black = colour_switch(pawn_eval_white[::-1])
 
-knight_eval = [
+knight_eval_white = [
     -5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0,
     -4.0, -2.0,  0.0,  0.0,  0.0,  0.0, -2.0, -4.0,
     -3.0,  0.0,  1.0,  1.5,  1.5,  1.0,  0.0, -3.0,
@@ -32,33 +39,35 @@ knight_eval = [
     -5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0
 ]
 
+knight_eval_black = colour_switch(knight_eval_white[::-1])
+
 bishop_eval_white = [
     -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0,
-    -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0,
-    -1.0,  0.0,  0.5,  1.0,  1.0,  0.5,  0.0, -1.0,
-    -1.0,  0.5,  0.5,  1.0,  1.0,  0.5,  0.5, -1.0,
-    -1.0,  0.0,  1.0,  1.0,  1.0,  1.0,  0.0, -1.0,
-    -1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, -1.0,
     -1.0,  0.5,  0.0,  0.0,  0.0,  0.0,  0.5, -1.0,
+    -1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, -1.0,
+    -1.0,  0.0,  1.0,  1.0,  1.0,  1.0,  0.0, -1.0,
+    -1.0,  0.5,  0.5,  1.0,  1.0,  0.5,  0.5, -1.0,
+    -1.0,  0.0,  0.5,  1.0,  1.0,  0.5,  0.0, -1.0,
+    -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0,
     -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0
 ]
 
-bishop_eval_black = bishop_eval_white
+bishop_eval_black = colour_switch(bishop_eval_white[::-1])
 
 rook_eval_white = [
     0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
+   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
+   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
+   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
+   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
     0.5,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.5,
-   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
-   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
-   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
-   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
-   -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5,
     0.0,   0.0, 0.0,  0.5,  0.5,  0.0,  0.0,  0.0
 ]
 
-rook_eval_black = rook_eval_white
+rook_eval_black = colour_switch(rook_eval_white[::-1])
 
-eval_queen = [
+eval_queen_white = [
     -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0,
     -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0,
     -1.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0,
@@ -69,35 +78,34 @@ eval_queen = [
     -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0
 ]
 
+eval_queen_black = colour_switch(eval_queen_white)
+
 king_eval_white = [
-    -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0,
-    -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0,
-    -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0,
-    -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0,
-    -2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0,
-    -1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0,
+     2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0,
      2.0,  2.0,  0.0,  0.0,  0.0,  0.0,  2.0,  2.0,
-     2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0
+    -1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0,
+    -2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0,
+    -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0,
+    -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0,
+    -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0,
+    -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0
 ]
 
-king_eval_black = king_eval_white
+king_eval_black = colour_switch(king_eval_white[::-1])
 
-W_VALUES = {
-    'N': (30, knight_eval),
+VALUES = {
+    'N': (30, knight_eval_white),
     'B': (30, bishop_eval_white),
     'R': (50, rook_eval_white),
-    'Q': (90, eval_queen),
+    'Q': (90, eval_queen_white),
     'P': (10, pawn_eval_white),
     'K': (100, king_eval_white),
-}
-
-B_VALUES = {
-    'n': (30, knight_eval),
-    'b': (30, bishop_eval_black),
-    'r': (50, rook_eval_black),
-    'q': (90, eval_queen),
-    'p': (10, pawn_eval_black),
-    'k': (100, king_eval_black),
+    'n': (-30, knight_eval_black),
+    'b': (-30, bishop_eval_black),
+    'r': (-50, rook_eval_black),
+    'q': (-90, eval_queen_black),
+    'p': (-10, pawn_eval_black),
+    'k': (-100, king_eval_black),
 }
 
 print(king_eval_black)
@@ -122,26 +130,21 @@ class WeightScore(Evaluation):
         super(WeightScore, self).__init__()
 
 
-    def evaluation(self, board, query_side):
+    def evaluation(self, board):
         pieces = board.piece_map()
         if board.is_checkmate():
-            if query_side == board.turn:        # the query side has lost
-                return LOSS_SCORE
-            else:                                # the query side has won
-                return WINNING_SCORE
+            if board.turn == WHITE_TURN:         # the winner is Black
+                return BLACK_WIN_SCORE
+            else:                                # the winner is White
+                return WHITE_WIN_SCORE
 
         if board.can_claim_draw() or board.is_stalemate():
             return 0
 
-        b_value = 0
-        w_value = 0
+        value = 0
         for index, piece in pieces.items():
             symbol = piece.symbol()
-            if symbol in W_VALUES:
-                piece_value, pos_map = W_VALUES[symbol]
-                w_value = w_value + piece_value + pos_map[index]
-            elif symbol in B_VALUES:
-                piece_value, pos_map = B_VALUES[symbol]
-                b_value = b_value + piece_value + pos_map[index]
+            piece_value, pos_map = VALUES[symbol]
+            value = value + piece_value + pos_map[index]
 
-        return w_value - b_value if query_side == WHITE_TURN else b_value - w_value
+        return value

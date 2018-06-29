@@ -35,7 +35,7 @@ function queryNextMove() {
     $.post("/next_move/" + window.game.stepCount.toString(), data, function(result){
     	var serverMove = {						// reformat the move so that the frontend code can understand
     		'from': result.substring(0,2),
-    		'to': result.substring(2,4)
+    		'to': result.substring(2,result.length)
     	}
 		window.game.chess.move(serverMove);		// make the move
   		console.log('the move returned from server is: ' + result);

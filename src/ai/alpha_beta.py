@@ -1,16 +1,27 @@
 import chess
 from chess import Board
-import copy
 
 from ai.evaluation import WeightScore
 
 w = WeightScore()
 
-def min_f_root(board, alpha, beta, depth, table):
+def move_ordering(board, is_max):
+	moves = list(board.legal_moves)
+	for idx, move in enumerate(moves):
+		board.push(move)
+		value = w.evaluation(board)
+		board.pop()
+		moves[idx] = (value, move)
+	moves.sort(key=lambda x: x[0], reverse=is_max)
+	return moves
+
+def min_f_root(board, alpha, beta, depth):
 	cur_move_pair = (1001, None)
-	for move in board.legal_moves:
+	value_move_list = move_ordering(board, False)
+
+	for value, move in value_move_list:
 		board.push(move)	# make that move to make a new board
-		v = max_f(board, alpha, beta, depth-1, table)
+		v = max_f(board, value, alpha, beta, depth-1)
 		board.pop()
 		if v < cur_move_pair[0]:
 			cur_move_pair = (v, move)
@@ -18,13 +29,16 @@ def min_f_root(board, alpha, beta, depth, table):
 			beta = v
 		if alpha >= beta:		# the max player would not choose this path
 			break
+
 	return cur_move_pair
 
-def max_f_root(board, alpha, beta, depth, table):
+def max_f_root(board, alpha, beta, depth):
 	cur_move_pair = (-1001, None)
-	for move in board.legal_moves:
+	value_move_list = move_ordering(board, True)
+
+	for value, move in move_ordering(value_move_list):
 		board.push(move)	# make that move to make a new board
-		v = min_f(board, alpha, beta, depth-1, table)
+		v = min_f(board, value, alpha, beta, depth-1)
 		board.pop()
 		if v > cur_move_pair[0]:
 			cur_move_pair = (v, move)
@@ -32,60 +46,44 @@ def max_f_root(board, alpha, beta, depth, table):
 			alpha = v
 		if beta <= alpha:
 			break
+
 	return cur_move_pair
 
-def min_f(board, alpha, beta, depth, table):
-	# used stored search result to help speed up the search
-	fen = board.fen()
-	if fen in table:
-		return table[fen]
-
+def min_f(board, value, alpha, beta, depth):
 	if board.is_game_over() or depth == 0:
-		# store the result to help better the search next time
-		table[fen] = w.evaluation(board)
-		return table[fen]
+		return value
 	else:
 		best_value = 1001
-		for move in board.legal_moves:
+		value_move_list = move_ordering(board, False)
+
+		for value, move in value_move_list:
 			board.push(move)	# make that move to make a new board
-			v = max_f(board, alpha, beta, depth-1, table)
+			v = max_f(board, value, alpha, beta, depth-1)
 			board.pop() 		# unmake that move
 
-			if v < best_value:
-				best_value = v
-			if v < beta:
-				beta = v
+			best_value = min(best_value, v)
+			beta = min(beta, v)
 			if alpha >= beta:		# the max player would not choose this path
 				break
-
 	return best_value
 
-# c_depth is the current depth
-# depth is the search tree depth
-def max_f(board, alpha, beta, depth, table):
-	# used stored search result to help speed up the search
-	fen = board.fen()
-	if fen in table:
-		return table[fen]
 
+def max_f(board, value, alpha, beta, depth):
 	if board.is_game_over() or depth == 0:
-		# store the result to help better the search next time
-		table[fen] = w.evaluation(board)
-		return table[fen]
+		return value
 	else:
 		best_value = -1001
-		for move in board.legal_moves:
+		value_move_list = move_ordering(board, True)
+
+		for value, move in value_move_list:
 			board.push(move)	# make that move to create a new board
-			v = min_f(board, alpha, beta, depth-1, table)
+			v = min_f(board, value, alpha, beta, depth-1)
 			board.pop()			# unmake that move
 
-			if v > best_value:
-				best_value = v
-			if v > alpha:
-				alpha = v
+			best_value = max(best_value, v)
+			alpha = max(alpha, v)
 			if beta <= alpha:
 				break
-
 	return best_value
 
 

@@ -2,8 +2,8 @@ import chess.pgn as pgn
 import pickle
 import random
 
-pgn_file_path = '/Users/ruijiezhang/Desktop/projects/chess/src/openings/modern.pgn'
-pgn_pickle_path = '/Users/ruijiezhang/Desktop/projects/chess/src/openings/modern_opening.p'
+pgn_file_path = '/home/ubuntu/chess-engine-with-ai/src/openings/modern.pgn'
+pgn_pickle_path = '/home/ubuntu/chess-engine-with-ai/src/openings/modern_opening.p'
 
 
 def save_pgn_in_list():

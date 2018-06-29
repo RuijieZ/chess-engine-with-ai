@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify, current_app, send_from_directory
 from flask_cors import CORS
 from chess import Board
 
-from ai.evaluation import WeightScore
 from ai.alpha_beta import min_f, max_f, min_f_root, max_f_root
 from ai.opening import open_pgn_list, find_opening_moves
 

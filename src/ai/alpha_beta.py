@@ -1,15 +1,15 @@
 import chess
 from chess import Board
 
-from ai.evaluation import WeightScore
-
-w = WeightScore()
+from evaluation import evaluation
 
 def move_ordering(board, is_max):
 	moves = list(board.legal_moves)
 	for idx, move in enumerate(moves):
 		board.push(move)
-		value = w.evaluation(board)
+		board_fen = board.board_fen()
+		result = board.result()
+		value = evaluation(result, board_fen, len(board_fen))
 		board.pop()
 		moves[idx] = (value, move)
 	moves.sort(key=lambda x: x[0], reverse=is_max)

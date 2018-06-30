@@ -16,7 +16,7 @@ def move_ordering(board, is_max):
 	return moves
 
 def min_f_root(board, alpha, beta, depth):
-	cur_move_pair = (1001, None)
+	cur_move_pair = (10001, None)
 	value_move_list = move_ordering(board, False)
 
 	for value, move in value_move_list:
@@ -33,7 +33,7 @@ def min_f_root(board, alpha, beta, depth):
 	return cur_move_pair
 
 def max_f_root(board, alpha, beta, depth):
-	cur_move_pair = (-1001, None)
+	cur_move_pair = (-10001, None)
 	value_move_list = move_ordering(board, True)
 
 	for value, move in move_ordering(value_move_list):
@@ -53,7 +53,7 @@ def min_f(board, value, alpha, beta, depth):
 	if board.is_game_over() or depth == 0:
 		return value
 	else:
-		best_value = 1001
+		best_value = 10001
 		value_move_list = move_ordering(board, False)
 
 		for value, move in value_move_list:
@@ -72,7 +72,7 @@ def max_f(board, value, alpha, beta, depth):
 	if board.is_game_over() or depth == 0:
 		return value
 	else:
-		best_value = -1001
+		best_value = -10001
 		value_move_list = move_ordering(board, True)
 
 		for value, move in value_move_list:

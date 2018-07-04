@@ -1,2 +1,2 @@
 all:
-	gcc *.c -o main -O3
+	gcc *.c -o main -Ofast

@@ -238,4 +238,17 @@ extern void ReadInput(S_SEARCHINFO *info);
 
 extern void PerftTest(int depth, S_BOARD *pos);
 
+//evaluate.c
+extern int evaluation(S_BOARD* pos, S_MOVELIST* moves);
+
+// main.c
+#define BLACK_WIN_SCORE -10000
+#define WHITE_WIN_SCORE 10000
+#define DRAW_SCORE 0
+extern int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth);
+extern int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth);
+extern char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax);
+// PyObject* moveScoreList(PyObject *, PyObject *);
+
+
 #endif

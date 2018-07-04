@@ -241,6 +241,7 @@ int MakeMove(S_BOARD *pos, int move) {
 	
 }
 
+// should have called it unmake move
 void TakeMove(S_BOARD *pos) {
 	
 	ASSERT(CheckBoard(pos));

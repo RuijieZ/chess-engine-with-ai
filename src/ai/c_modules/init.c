@@ -13,8 +13,6 @@
 int Sq120ToSq64[BRD_SQ_NUM];
 int Sq64ToSq120[64];
 
-U64 SetMask[64];
-U64 ClearMask[64];
 
 U64 PieceKeys[13][120];
 U64 SideKey;
@@ -29,7 +27,6 @@ void InitFilesRanksBrd() {
 	int file = FILE_A;
 	int rank = RANK_1;
 	int sq = A1;
-	int sq64 = 0;
 	
 	for(index = 0; index < BRD_SQ_NUM; ++index) {
 		FilesBrd[index] = OFFBOARD;

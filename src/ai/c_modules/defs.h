@@ -51,7 +51,7 @@ typedef unsigned long long U64;
 #define MFLAGCAP 0x7C000
 #define MFLAGPROM 0xF00000
 
-#define NOMOVE 0
+#define NOMOVE -100000
 
 enum { EMPTY, wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK  };
 enum { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NONE };
@@ -198,14 +198,14 @@ extern int PieceBishopQueen[13];
 extern int PieceSlides[13];
 
 /* functions */
-extern void AllInit();
-extern void InitSq120To64();
+extern void AllInit(void);
+extern void InitSq120To64(void);
 extern void PrintBitBoard(U64 bb);
 extern int PopBit(U64 *bb);
 extern int CountBits(U64 b);
-extern void InitBitMasks();
+extern void InitBitMasks(void);
 extern U64 GeneratePosKey(const S_BOARD *pos);
-extern void ResetBoard();
+extern void ResetBoard(S_BOARD *pos);
 extern int ParseFen(char *fen, S_BOARD *pos);
 extern void PrintBoard(const S_BOARD *pos);
 extern int CheckBoard(const S_BOARD *pos);
@@ -215,7 +215,7 @@ extern int SqAttacked(const int sq, const int side, const S_BOARD *pos);
 extern void GenerateAllMoves(const S_BOARD *pos, S_MOVELIST *list);
 extern void GenerateAllCaps(const S_BOARD *pos, S_MOVELIST *list);
 extern int MoveExists(S_BOARD *pos, const int move);
-extern void InitMvvLva();
+extern void InitMvvLva(void);
 extern int MakeMove(S_BOARD *pos, int move);
 extern void TakeMove(S_BOARD *pos);
 
@@ -233,7 +233,7 @@ extern void PrintMoveList(const S_MOVELIST *list);
 extern int ParseMove(char *ptrChar, S_BOARD *pos);
 
 // misc.c
-extern int GetTimeMs();
+extern int GetTimeMs(void);
 extern void ReadInput(S_SEARCHINFO *info);
 
 extern void PerftTest(int depth, S_BOARD *pos);
@@ -247,7 +247,7 @@ extern int evaluation(S_BOARD* pos, S_MOVELIST* moves);
 #define DRAW_SCORE 0
 extern int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth);
 extern int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth);
-extern char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax);
+extern char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_MOVELIST* moves);
 // PyObject* moveScoreList(PyObject *, PyObject *);
 
 

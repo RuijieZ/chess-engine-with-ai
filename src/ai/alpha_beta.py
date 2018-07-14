@@ -8,9 +8,16 @@ moves_pickle = '/Users/ruijiezhang/Desktop/projects/chess/src/ai/moves_pickle'
 previous_result_dict = {}		# key: board_fen+min/max+depth, value: score
 pv_table_dict = {}				# key: board_fen+min/max, value: move
 move_cutoff_table = {}			# key: board_fen+min/max. value: move
+# move_ordering_cache
 
 def move_ordering(board, is_max):
-	moves = list(board.legal_moves)
+	capture_moves = list(board.generate_legal_captures())
+	all_moves = list(board.legal_moves)
+	rest_moves = list(set(all_moves) - set(capture_moves))
+	moves = capture_moves + rest_moves		# make capture moves in the front
+	idx = 0
+	length = len(moves)
+
 	if is_max:
 		key = board.board_fen() + '_max'
 	else:
@@ -21,8 +28,7 @@ def move_ordering(board, is_max):
 	except:
 		pv_move = None
 
-	idx = 0
-	length = len(moves)
+
 	if pv_move:
 		for i, move in enumerate(moves):
 			if move == pv_move:

@@ -4,13 +4,13 @@
 #include "evaluation.h"
 
 
-int BLACK_WIN_SCORE = -10000;
-int WHITE_WIN_SCORE = 10000;
-int DRAW_SCORE = 0;
-char WHITE_WINNING_SYMBOL[] = "1-0";
-char BLACK_WINNING_SYMBOL[] = "0-1";
-char GAME_UNDERTERMINED[] = "*";
-char GAME_TIED[] = "1/2-1/2";
+// int BLACK_WIN_SCORE = -10000;
+// int WHITE_WIN_SCORE = 10000;
+// int DRAW_SCORE = 0;
+// char WHITE_WINNING_SYMBOL[] = "1-0";
+// char BLACK_WINNING_SYMBOL[] = "0-1";
+// char GAME_UNDERTERMINED[] = "*";
+// char GAME_TIED[] = "1/2-1/2";
 
 int pawn_eval_white[64] = {
     0,  0,  0,  0,  0,  0,  0,  0,
@@ -146,23 +146,23 @@ int king_eval_black[64] = {
 
 
 PyObject * evaluation(PyObject *self, PyObject *args) {
-	char *game_result, *board_fen;
+	char *board_fen;
 	int len;
 
-	if(!PyArg_ParseTuple(args, "ssi", &game_result, &board_fen, &len))
+	if(!PyArg_ParseTuple(args, "si", &board_fen, &len))
 		return NULL;
 
-	if (strcmp(game_result, WHITE_WINNING_SYMBOL) == 0)
-		return Py_BuildValue("i", WHITE_WIN_SCORE);
+	// if (strcmp(game_result, WHITE_WINNING_SYMBOL) == 0)
+	// 	return Py_BuildValue("i", WHITE_WIN_SCORE);
 
-	if (strcmp(game_result, BLACK_WINNING_SYMBOL) == 0)
-		return Py_BuildValue("i", BLACK_WIN_SCORE);
+	// if (strcmp(game_result, BLACK_WINNING_SYMBOL) == 0)
+	// 	return Py_BuildValue("i", BLACK_WIN_SCORE);
 
-	if (strcmp(game_result, GAME_TIED) == 0)
-		return Py_BuildValue("i", 0);
+	// if (strcmp(game_result, GAME_TIED) == 0)
+	// 	return Py_BuildValue("i", 0);
 
-	if (strcmp(game_result, GAME_UNDERTERMINED) != 0)		// All above check failed, means this has to true, other wise something wrong
-		return NULL;
+	// if (strcmp(game_result, GAME_UNDERTERMINED) != 0)		// All above check failed, means this has to true, other wise something wrong
+	// 	return NULL;
 
 
 	// parse the board_fen

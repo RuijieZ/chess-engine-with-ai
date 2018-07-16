@@ -4,6 +4,32 @@
 #include "uthash.h"		// dictionary implementation
 
 
+
+struct board_result {
+    U64 id;            			/* we'll use this field as the key */
+    int depth;					/* depth of the last search */
+    int s_score;
+    UT_hash_handle hh; 			/* makes this structure hashable */
+};
+
+struct board_result *d= NULL;	// default value
+
+void add_score(struct board_result *s) {
+    HASH_ADD_INT(d, id, s);
+}
+
+struct board_result *find_score(int user_id) {
+    struct board_result *s;
+
+    HASH_FIND_INT( d, &user_id, s );
+    return s;
+}
+
+int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth);
+int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth);
+// char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_MOVELIST* moves);
+
+
 static void PickNextMove(int moveNum, S_MOVELIST *list) {
 	S_MOVE temp;
 	int index = 0;
@@ -26,67 +52,67 @@ static void PickNextMove(int moveNum, S_MOVELIST *list) {
 	list->moves[bestNum] = temp;
 }
 
-char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_MOVELIST* moves) {
-	int legalMovesCount = 0;
-	int move;
-	int bestScore = isMax ? BLACK_WIN_SCORE-1 : WHITE_WIN_SCORE+1;	// make sure that this will be updated
-	int bestMove = 0;
-	int curScore;
+// char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_MOVELIST* moves) {
+// 	int legalMovesCount = 0;
+// 	int move;
+// 	int bestScore = isMax ? BLACK_WIN_SCORE-1 : WHITE_WIN_SCORE+1;	// make sure that this will be updated
+// 	int bestMove = 0;
+// 	int curScore;
 
-	// base case
-	if (depth == 0)
-		return NULL;
+// 	// base case
+// 	if (depth == 0)
+// 		return NULL;
 
-	for (int i = 0; i < moves->count; ++i) {
-		PickNextMove(i, moves);
-		move = moves->moves[i].move;
-		if (!MakeMove(pos, move)) {
-			// moves->moves[i].score = NOMOVE;
-			continue;
-		}
+// 	for (int i = 0; i < moves->count; ++i) {
+// 		PickNextMove(i, moves);
+// 		move = moves->moves[i].move;
+// 		if (!MakeMove(pos, move)) {
+// 			// moves->moves[i].score = NOMOVE;
+// 			continue;
+// 		}
 
-		if (isMax == TRUE) {	// calling max function
-			curScore = AlphaBetaMin(pos, alpha, beta, depth-1);
-			TakeMove(pos);
-			if (curScore > bestScore) {
-				bestScore = curScore;
-				bestMove = move;
-			}
+// 		if (isMax == TRUE) {	// calling max function
+// 			curScore = AlphaBetaMin(pos, alpha, beta, depth-1);
+// 			TakeMove(pos);
+// 			if (curScore > bestScore) {
+// 				bestScore = curScore;
+// 				bestMove = move;
+// 			}
 
-			if(bestScore > alpha) {
-				alpha = bestScore;
-			}
+// 			if(bestScore > alpha) {
+// 				alpha = bestScore;
+// 			}
 
-			if (alpha >= beta) {
-				break;
-			}
-		} else {				// calling min function
-			curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
-			TakeMove(pos);
-			if (curScore < bestScore) {
-				bestScore = curScore;
-				bestMove = move;
-			}
+// 			if (alpha >= beta) {
+// 				break;
+// 			}
+// 		} else {				// calling min function
+// 			curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
+// 			TakeMove(pos);
+// 			if (curScore < bestScore) {
+// 				bestScore = curScore;
+// 				bestMove = move;
+// 			}
 
-			if(bestScore < beta) {
-				beta = bestScore;
-			}
+// 			if(bestScore < beta) {
+// 				beta = bestScore;
+// 			}
 
-			if (alpha >= beta) {
-				break;
-			}
-		}
-		// moves->moves[i].score = bestScore;
-		legalMovesCount += 1;
+// 			if (alpha >= beta) {
+// 				break;
+// 			}
+// 		}
+// 		// moves->moves[i].score = bestScore;
+// 		legalMovesCount += 1;
 
-	}
+// 	}
 
-	if (legalMovesCount == 0) {
-		return NULL;	// no moves to make
-	} else {
-		return PrMove(bestMove);
-	}
-}
+// 	if (legalMovesCount == 0) {
+// 		return NULL;	// no moves to make
+// 	} else {
+// 		return PrMove(bestMove);
+// 	}
+// }
 
 int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 	S_MOVELIST moves[1];
@@ -97,6 +123,8 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 	int curScore;
 	GenerateAllMoves(pos, moves);
 
+
+
 	// base case
 	if (depth == 0)
 		return evaluation(pos, moves);
@@ -105,7 +133,7 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 		// move = moves->moves[i].move;
 		PickNextMove(i, moves);
 		move = moves->moves[i].move;
-		
+
 		if (!MakeMove(pos, move)) {
 			continue;
 		}
@@ -198,24 +226,24 @@ int compareMoveMin(const void * a, const void * b) {
   return ((S_MOVE*)b)->score  - ((S_MOVE*)a)->score;
 }
 
-char* IterativeDeepning(S_BOARD *pos, int alpha, int beta, int depth, int isMax) {
-	S_MOVELIST moves[1];
-	GenerateAllMoves(pos, moves);
-	char *bestMove;
-	if (isMax) {
-		for (int d = 1; d <= depth; ++d) {
-			bestMove = AlphaBetaRoot(pos, alpha, beta, d, isMax, moves);
-			qsort(moves->moves, moves->count, sizeof(S_MOVE), compareMoveMax);
-		}
-	} else {
-		for (int d = 1; d <= depth; ++d) {
-			bestMove = AlphaBetaRoot(pos, alpha, beta, d, isMax, moves);
-			qsort(moves->moves, moves->count, sizeof(S_MOVE), compareMoveMin);
-		}
-	}
+// char* IterativeDeepning(S_BOARD *pos, int alpha, int beta, int depth, int isMax) {
+// 	S_MOVELIST moves[1];
+// 	GenerateAllMoves(pos, moves);
+// 	char *bestMove;
+// 	if (isMax) {
+// 		for (int d = 1; d <= depth; ++d) {
+// 			bestMove = AlphaBetaRoot(pos, alpha, beta, d, isMax, moves);
+// 			qsort(moves->moves, moves->count, sizeof(S_MOVE), compareMoveMax);
+// 		}
+// 	} else {
+// 		for (int d = 1; d <= depth; ++d) {
+// 			bestMove = AlphaBetaRoot(pos, alpha, beta, d, isMax, moves);
+// 			qsort(moves->moves, moves->count, sizeof(S_MOVE), compareMoveMin);
+// 		}
+// 	}
 
-	return bestMove;
-}
+// 	return bestMove;
+// }
 
 
 
@@ -286,11 +314,8 @@ int main(int argc, char const *argv[])
 
 	S_BOARD board[1];
 	const char* fen = argv[1];
-	// ParseFen(START_FEN, board);
 	ParseFen(fen, board);
-	S_MOVELIST moves[1];
-	GenerateAllMoves(board, moves);
-	printf("%s", AlphaBetaRoot(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 8, FALSE, moves));
+	printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 8));
 	// printf("%s", IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE));
 
 	// ASSERT(CheckBoard(board));

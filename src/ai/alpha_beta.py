@@ -14,12 +14,7 @@ pv_table_dict = {}				# key: board_fen+min/max, value: move
 move_cutoff_table = {}			# key: board_fen+min/max. value: move
 move_ordering_cache = {}		# key: board_fen+min/max, value: move
 
-def move_ordering(board, is_max):
-	if is_max:
-		key = board.board_fen() + '_max'
-	else:
-		key = board.board_fen() + '_min'
-
+def move_ordering(board, is_max, key):
 	# try to get basic moves
 	try:
 		moves = move_ordering_cache[key]
@@ -74,7 +69,7 @@ def min_f(board, alpha, beta, depth):
 	else:
 		best_value = 10001
 		best_move = None
-		moves = move_ordering(board, False)
+		moves = move_ordering(board, False, pos_id)
 
 		for move in moves:
 			board.push(move)	# make that move to make a new board
@@ -118,7 +113,7 @@ def max_f(board, alpha, beta, depth):
 	else:
 		best_value = -10001
 		best_move = None
-		moves = move_ordering(board, True)
+		moves = move_ordering(board, True, pos_id)
 
 		for move in moves:
 			board.push(move)	# make that move to create a new board

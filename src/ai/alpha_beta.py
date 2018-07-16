@@ -1,7 +1,8 @@
 import chess
 from chess import Board
 
-from evaluation import evaluation
+# from evaluation import evaluation
+from evaluation_p import evaluation
 
 moves_pickle = '/Users/ruijiezhang/Desktop/projects/chess/src/ai/moves_pickle'
 
@@ -14,7 +15,7 @@ pv_table_dict = {}				# key: board_fen+min/max, value: move
 move_cutoff_table = {}			# key: board_fen+min/max. value: move
 move_ordering_cache = {}		# key: board_fen+min/max, value: move
 
-def move_ordering(board, is_max, key):
+def move_ordering(board, is_max, key, s_move):
 	# try to get basic moves
 	try:
 		moves = move_ordering_cache[key]
@@ -25,8 +26,14 @@ def move_ordering(board, is_max, key):
 		moves = capture_moves + rest_moves			# make capture moves in the front
 		move_ordering_cache[key] = moves
 
-	idx = 0
-	length = len(moves)
+	# idx = 0
+	# length = len(moves)
+
+	if s_move:
+		for i, move in enumerate(moves):
+			if move == s_move:
+				moves[i], moves[0] = moves[0], moves[i]
+				break
 
 
 	# try:
@@ -49,27 +56,29 @@ def move_ordering(board, is_max, key):
 
 def min_f(board, alpha, beta, depth):
 	pos_id = board.board_fen()+'_min'
+	s_move = None
 	try:
-		score, s_depth = previous_result_dict[pos_id]
+		score, s_depth, s_move = previous_result_dict[pos_id]
 		if s_depth >= depth:
 			return score
 	except KeyError:
 		pass
 
 	if board.is_checkmate():
-		previous_result_dict[pos_id] = (WHITE_WIN_SCORE, depth)
+		previous_result_dict[pos_id] = (WHITE_WIN_SCORE, depth, None)
 		return WHITE_WIN_SCORE
 
 	if board.is_stalemate():
-		previous_result_dict[pos_id] = (DRAW_SCORE, depth)
+		previous_result_dict[pos_id] = (DRAW_SCORE, depth, None)
 		return DRAW_SCORE
 
 	if depth == 0:
-		return evaluation(board.board_fen(), len(board.board_fen()))
+		# return evaluation(board.board_fen(), len(board.board_fen()))
+		return evaluation(board)
 	else:
 		best_value = 10001
 		best_move = None
-		moves = move_ordering(board, False, pos_id)
+		moves = move_ordering(board, False, pos_id, s_move)
 
 		for move in moves:
 			board.push(move)	# make that move to make a new board
@@ -86,34 +95,36 @@ def min_f(board, alpha, beta, depth):
 				break
 
 
-	previous_result_dict[pos_id] = (best_value, depth)
+	previous_result_dict[pos_id] = (best_value, depth, best_move)
 	# last_best_move_table[board.board_fen() + '_min'] = best_move
 	return best_value
 
 
 def max_f(board, alpha, beta, depth):
 	pos_id = board.board_fen()+'_max'
+	s_move = None
 	try:
-		score, s_depth = previous_result_dict[pos_id]
+		score, s_depth, s_move = previous_result_dict[pos_id]
 		if s_depth >= depth:
 			return score
 	except KeyError:
 		pass
 
 	if board.is_checkmate():
-		previous_result_dict[pos_id] = (BLACK_WIN_SCORE, depth)
+		previous_result_dict[pos_id] = (BLACK_WIN_SCORE, depth, None)
 		return BLACK_WIN_SCORE
 
 	if board.is_stalemate():
-		previous_result_dict[pos_id] = (DRAW_SCORE, depth)
+		previous_result_dict[pos_id] = (DRAW_SCORE, depth, None)
 		return DRAW_SCORE
 
 	if depth == 0:
-		return evaluation(board.board_fen(), len(board.board_fen()))
+		# return evaluation(board.board_fen(), len(board.board_fen()))
+		return evaluation(board)
 	else:
 		best_value = -10001
 		best_move = None
-		moves = move_ordering(board, True, pos_id)
+		moves = move_ordering(board, True, pos_id, s_move)
 
 		for move in moves:
 			board.push(move)	# make that move to create a new board
@@ -127,7 +138,7 @@ def max_f(board, alpha, beta, depth):
 			if beta <= alpha:
 				break
 
-	previous_result_dict[pos_id] = (best_value, depth)
+	previous_result_dict[pos_id] = (best_value, depth, best_move)
 	# last_best_move_table[board.board_fen() + '_max'] = best_move
 	return best_value
 
@@ -151,7 +162,7 @@ if __name__ == '__main__':
 	# print(min_f(board, -10001, 10001, 4))
 	# print(pv_table_dict[board.board_fen()+'_min'])
 
-	for i in range(6):
+	for i in range(7):
 		min_f(board, -10001, 10001, i)
 	# print(pv_table_dict[board.board_fen()+'_min'])
 

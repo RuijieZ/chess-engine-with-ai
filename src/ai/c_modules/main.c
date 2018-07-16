@@ -26,27 +26,41 @@ char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_M
 			if (curScore > bestScore) {
 				bestScore = curScore;
 				bestMove = move;
-				if(bestScore > alpha)
+				if(bestScore > alpha) {
 					alpha = bestScore;
+					// break;
+				}
+
+			}
+			if (alpha >= beta) {
+				TakeMove(pos);
+				break;
 			}
 		} else {				// calling min function
 			curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
 			if (curScore < bestScore) {
 				bestScore = curScore;
 				bestMove = move;
-				if(bestScore < beta)
+				if(bestScore < beta) {
 					beta = bestScore;
+					// break;
+				}
+			}
+			if (alpha >= beta) {
+				TakeMove(pos);
+				break;
 			}
 		}
 		moves->moves[i].score = bestScore;
-		TakeMove(pos);
 		legalMovesCount += 1;
 
 	}
 
 	if (legalMovesCount == 0) {
+		TakeMove(pos);
 		return NULL;	// no moves to make
 	} else {
+		TakeMove(pos);
 		return PrMove(bestMove);
 	}
 }
@@ -248,11 +262,12 @@ int main(int argc, char const *argv[])
 
 	S_BOARD board[1];
 	const char* fen = argv[1];
-	ParseFen(START_FEN, board);
-	// S_MOVELIST moves[1];
-	// GenerateAllMoves(board, moves);
-	// printf("%s", AlphaBetaRoot(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, TRUE, moves));
-	printf("%s", IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE));
+	// ParseFen(START_FEN, board);
+	ParseFen(fen, board);
+	S_MOVELIST moves[1];
+	GenerateAllMoves(board, moves);
+	printf("%s", AlphaBetaRoot(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE, moves));
+	// printf("%s", IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE));
 
 	// ASSERT(CheckBoard(board));
 

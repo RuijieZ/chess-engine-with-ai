@@ -1,6 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>     /* qsort */
 #include "defs.h"
+#include "uthash.h"		// dictionary implementation
+
+
+static void PickNextMove(int moveNum, S_MOVELIST *list) {
+	S_MOVE temp;
+	int index = 0;
+	int bestScore = 0;
+	int bestNum = moveNum;
+
+	for (index = moveNum; index < list->count; ++index) {
+		if (list->moves[index].score > bestScore) {
+			bestScore = list->moves[index].score;
+			bestNum = index;
+		}
+	}
+
+	ASSERT(moveNum>=0 && moveNum<list->count);
+	ASSERT(bestNum>=0 && bestNum<list->count);
+	ASSERT(bestNum>=moveNum);
+
+	temp = list->moves[moveNum];
+	list->moves[moveNum] = list->moves[bestNum];
+	list->moves[bestNum] = temp;
+}
 
 char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_MOVELIST* moves) {
 	int legalMovesCount = 0;
@@ -14,53 +38,52 @@ char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_M
 		return NULL;
 
 	for (int i = 0; i < moves->count; ++i) {
+		PickNextMove(i, moves);
 		move = moves->moves[i].move;
-
 		if (!MakeMove(pos, move)) {
-			moves->moves[i].score = NOMOVE;
+			// moves->moves[i].score = NOMOVE;
 			continue;
 		}
 
 		if (isMax == TRUE) {	// calling max function
 			curScore = AlphaBetaMin(pos, alpha, beta, depth-1);
+			TakeMove(pos);
 			if (curScore > bestScore) {
 				bestScore = curScore;
 				bestMove = move;
-				if(bestScore > alpha) {
-					alpha = bestScore;
-					// break;
-				}
-
 			}
+
+			if(bestScore > alpha) {
+				alpha = bestScore;
+			}
+
 			if (alpha >= beta) {
-				TakeMove(pos);
 				break;
 			}
 		} else {				// calling min function
 			curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
+			TakeMove(pos);
 			if (curScore < bestScore) {
 				bestScore = curScore;
 				bestMove = move;
-				if(bestScore < beta) {
-					beta = bestScore;
-					// break;
-				}
 			}
+
+			if(bestScore < beta) {
+				beta = bestScore;
+			}
+
 			if (alpha >= beta) {
-				TakeMove(pos);
 				break;
 			}
 		}
-		moves->moves[i].score = bestScore;
+		// moves->moves[i].score = bestScore;
 		legalMovesCount += 1;
 
 	}
 
 	if (legalMovesCount == 0) {
-		TakeMove(pos);
 		return NULL;	// no moves to make
 	} else {
-		TakeMove(pos);
 		return PrMove(bestMove);
 	}
 }
@@ -79,27 +102,28 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 		return evaluation(pos, moves);
 
 	for (int i = 0; i < moves->count; ++i) {
+		// move = moves->moves[i].move;
+		PickNextMove(i, moves);
 		move = moves->moves[i].move;
-
+		
 		if (!MakeMove(pos, move)) {
 			continue;
 		}
 
 		// calling min function
+		legalMovesCount += 1;
 		curScore = AlphaBetaMin(pos, alpha, beta, depth-1);
+		TakeMove(pos);
 		if (curScore > bestScore) {
 			bestScore = curScore;
 			bestMove = move;
 			if(bestScore > alpha)
 				alpha = bestScore;
-			if (alpha > beta)	 { // beta is lower than alpha, meaning that min player will choose another path for sure
-				TakeMove(pos);
+			if (alpha >= beta)	 { // beta is lower than alpha, meaning that min player will choose another path for sure
 				break;
 			}
 		}
 
-		TakeMove(pos);
-		legalMovesCount += 1;
 	}
 
 	if (legalMovesCount == 0) {
@@ -129,28 +153,28 @@ int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
 		return evaluation(pos, moves);
 
 	for (int i = 0; i < moves->count; ++i) {
+		// move = moves->moves[i].move;
+		PickNextMove(i, moves);
 		move = moves->moves[i].move;
-
 		if (!MakeMove(pos, move)) {
 			continue;
 		}
 
 		// calling min function
+		legalMovesCount += 1;
 		curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
+		TakeMove(pos);
 		if (curScore < bestScore) {
 			bestScore = curScore;
 			bestMove = move;
 			if(bestScore < beta)
 				beta = bestScore;
-			if (alpha > beta){// beta is lower than alpha, meaning that max player will choose another path for sure
-				TakeMove(pos);
+			if (alpha >= beta){// beta is lower than alpha, meaning that max player will choose another path for sure
 				break;
 			}
 
 		}
 
-		TakeMove(pos);
-		legalMovesCount += 1;
 	}
 
 	if (legalMovesCount == 0) {
@@ -266,7 +290,7 @@ int main(int argc, char const *argv[])
 	ParseFen(fen, board);
 	S_MOVELIST moves[1];
 	GenerateAllMoves(board, moves);
-	printf("%s", AlphaBetaRoot(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE, moves));
+	printf("%s", AlphaBetaRoot(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 8, FALSE, moves));
 	// printf("%s", IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE));
 
 	// ASSERT(CheckBoard(board));

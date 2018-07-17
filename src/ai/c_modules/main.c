@@ -432,7 +432,7 @@ int main(int argc, char const *argv[])
 	const char* fen = argv[1];
 	ParseFen(fen, board);
 	InitPvTable(board->PvTable);
-	for (int i=1; i <= 10; i++) {
+	for (int i=1; i <= 12; i++) {
 		printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
 	}
 	// printf("%s", IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE));

@@ -21,13 +21,18 @@ def index():
 def next_move(count):
 	count = int(count) // 2
 	fen = request.form['fen']
-	if count <= 4:
+	if count <= 9:
 		move = opening_book_next_move(fen, 'performance.bin')
 		if move is not None:
 			return move
 
 	# use the c version one
-	result = s.run(['./ai/c_modules/main', fen], stdout=s.PIPE)
+	b = Board(fen)
+	if b.turn:
+		side = '0'	# white
+	else:
+		side = '1'
+	result = s.run(['./ai/c_modules/main', fen ,side], stdout=s.PIPE)
 	move = result.stdout.decode('utf-8').split("\n")[-2]
 
 	# board = Board(fen)

@@ -29,8 +29,6 @@ function queryNextMove() {
     var chess = window.game.chess;
     var data = {
         'fen': chess.fen(),
-        'w': window.game.players['w'],
-        'b': window.game.players['b']
     };
 
     $.ajax({
@@ -38,9 +36,6 @@ function queryNextMove() {
         url:  '/next_move/'+window.game.stepCount.toString(),
         data: data,
         success: function(result) {
-        /*
-             Do whatever you need to do here when successful.
-        */
             var serverMove = {                      // reformat the move so that the frontend code can understand
                 'from': result.substring(0,2),
                 'to': result.substring(2,result.length)
@@ -52,32 +47,44 @@ function queryNextMove() {
         },
         statusCode: {
           502: function(jqXHR) {
+            console.log('Bad gateway, check if the server is down');
             var retryAfter = jqXHR.getResponseHeader('Retry-After');
             retryAfter = parseInt(retryAfter, 10);
             if (!retryAfter) retryAfter = 3;
             setTimeout(data, retryAfter * 1000);
           }
-        }
+        },
+        async: false
     });
-  //   $.post("/next_move/" + window.game.stepCount.toString(), data, function(result){
-  //   	var serverMove = {						// reformat the move so that the frontend code can understand
-  //   		'from': result.substring(0,2),
-  //   		'to': result.substring(2,result.length)
-  //   	}
-		// window.game.chess.move(serverMove);		// make the move
-  // 		console.log('the move returned from server is: ' + result);
-		// window.game.board.position(window.game.chess.fen());
-  // 		updateStatus();
-  //   });
 }
 
 var onDragStart = function(source, piece, position, orientation) {
-    chess = window.game.chess;
-    if ((chess.turn() === BLACK && piece.search(/^b/) === -1) || (chess.turn() === WHITE && piece.search(/^w/) === -1) || chess.game_over()) {
+    var chess = window.game.chess;
+    if ((chess.turn() === BLACK && piece.search(/^b/) === -1) ||
+        (chess.turn() === WHITE && piece.search(/^w/) === -1) ||
+        chess.game_over())
+    {
         return false;
     }
     return true;
 };
+
+function AISelfPaly() {
+    this.game.players = {
+        'w': AI,
+        'b': AI
+    }
+
+    var possibleMoves = this.game.chess.moves();
+    if (this.game.chess.game_over() === true ||
+        this.game.chess.in_draw() === true ||
+        possibleMoves.length === 0) return;
+    else {
+        queryNextMove();
+        window.setTimeout(AISelfPaly, 2000);
+    }
+
+}
 
 
 var onDrop = function(source, target) {
@@ -104,7 +111,7 @@ var updateStatus = function() {
 
     var moveColor = 'White';
     window.game.stepCount += 1;
-    if (chess.turn() === 'b') {
+    if (chess.turn() === BLACK) {
         moveColor = 'Black';
     }
 
@@ -150,10 +157,13 @@ var init = function() {
         onDrop: onDrop,
         onSnapEnd: onSnapEnd
     };
-    if (window.game === undefined) {
-        var chess = new Chess();
-        var board = ChessBoard('board', cfg);
-        window.game = new Game(board, chess);
-    }
+    var chess = new Chess();
+    var board = ChessBoard('board', cfg);
+    window.game = new Game(board, chess);
+
+    $("#selfPlay").click(function() {
+        AISelfPaly();
+    });
+
 };
 $(document).ready(init);

@@ -203,7 +203,7 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 	if (legalMovesCount == 0) {
 		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 		if (InCheck == TRUE) {	// checkmate
-			bestScore = pos->side == WHITE ? WHITE_WIN_SCORE : BLACK_WIN_SCORE;
+			bestScore = pos->side == WHITE ? BLACK_WIN_SCORE : WHITE_WIN_SCORE;
 		} else {				// stalemate, draw
 			bestScore = DRAW_SCORE;
 		}
@@ -301,7 +301,7 @@ int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
 	if (legalMovesCount == 0) {
 		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 		if (InCheck == TRUE) {	// checkmate
-			bestScore = pos->side == WHITE ? WHITE_WIN_SCORE : BLACK_WIN_SCORE;
+			bestScore = pos->side == WHITE ? BLACK_WIN_SCORE: WHITE_WIN_SCORE;
 		} else {				// stalemate, draw
 			bestScore = DRAW_SCORE;
 		}

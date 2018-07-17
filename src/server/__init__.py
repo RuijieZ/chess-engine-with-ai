@@ -3,15 +3,13 @@ from flask_cors import CORS
 from chess import Board
 import subprocess as s
 
-# from ai.alpha_beta import min_f, max_f, min_f_root, max_f_root
-from ai.opening import open_pgn_list, find_opening_moves
+# from ai.alpha_beta import min_f, max_f, min_f_root, max_f_root	# using the c version for performance
+from ai.opening import opening_book_next_move
 
 WHITE_TURN = True
 BLACK_TURN = False
 
-pgn_list = open_pgn_list()
-opening_moves = find_opening_moves(pgn_list)
-print(opening_moves)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -22,15 +20,18 @@ def index():
 @app.route('/next_move/<count>', methods=['POST'])
 def next_move(count):
 	count = int(count) // 2
-	if count <= 2:
-		return str(opening_moves[count])
 	fen = request.form['fen']
-	# board = Board(fen)
-	# move = min_f_root(board, -10001, 10001, 4)[1]		# black is the ai, so call min_f
+	if count <= 4:
+		move = opening_book_next_move(fen, 'performance.bin')
+		if move is not None:
+			return move
 
 	# use the c version one
 	result = s.run(['./ai/c_modules/main', fen], stdout=s.PIPE)
 	move = result.stdout.decode('utf-8').split("\n")[-2]
+
+	# board = Board(fen)
+	# move = min_f_root(board, -10001, 10001, 4)[1]		# black is the ai, so call min_f
 	return move
 
 

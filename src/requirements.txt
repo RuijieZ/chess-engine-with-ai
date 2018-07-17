@@ -7,7 +7,5 @@ itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
 python-chess==0.23.6
-schedule==0.5.0
 six==1.11.0
-uWSGI==2.0.17
 Werkzeug==0.14.1

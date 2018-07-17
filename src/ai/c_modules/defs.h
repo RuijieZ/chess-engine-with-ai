@@ -261,7 +261,7 @@ extern void ReadInput(S_SEARCHINFO *info);
 extern void PerftTest(int depth, S_BOARD *pos);
 
 //evaluate.c
-extern int evaluation(S_BOARD* pos, S_MOVELIST* moves);
+extern int evaluation(const S_BOARD* pos);
 
 // main.c
 #define BLACK_WIN_SCORE -10000
@@ -276,5 +276,8 @@ extern void StorePvMove(const S_BOARD *pos, const int move);
 extern int ProbePvTable(const S_BOARD *pos);
 extern int GetPvLine(const int depth, S_BOARD *pos);
 extern void ClearPvTable(S_PVTABLE *table);
+
+extern int Mirror64[64];
+#define MIRROR64(sq) (Mirror64[(sq)])
 
 #endif

@@ -37,7 +37,7 @@ function queryNextMove() {
         type: 'POST',
         url:  '/next_move/'+window.game.stepCount.toString(),
         data: data,
-        success: function() {
+        success: function(result) {
         /*
              Do whatever you need to do here when successful.
         */

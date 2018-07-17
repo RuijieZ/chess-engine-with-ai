@@ -17,7 +17,8 @@ sources = [
 	"misc.c",
 	"movegen.c",
 	"perft.c",
-	"validate.c"
+	"validate.c",
+	"pvtable.c"
 ]
 setup(
 	name = "chess_in_c",

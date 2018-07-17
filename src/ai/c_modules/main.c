@@ -3,7 +3,7 @@
 #include "defs.h"
 #include "uthash.h"		// dictionary implementation
 
-
+int BRANCH_REDUCE_FACTOR = 6;
 
 struct board_result {
     U64 id;            			/* we'll use this field as the key */
@@ -21,8 +21,19 @@ void add_score(struct board_result *s) {
 struct board_result *find_score(int user_id) {
     struct board_result *s;
 
-    HASH_FIND_INT( d, &user_id, s );
+    HASH_FIND_INT( d, &user_id, s);
     return s;
+}
+
+static int IsRepetition(const S_BOARD *pos) {
+	int index = 0;
+	for(index = pos->hisPly - pos->fiftyMove; index < pos->hisPly-1; ++index) {	
+		ASSERT(index >= 0 && index < MAXGAMEMOVES);
+		if(pos->posKey == pos->history[index].posKey) {
+			return TRUE;
+		}
+	}	
+	return FALSE;
 }
 
 int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth);
@@ -116,6 +127,23 @@ static void PickNextMove(int moveNum, S_MOVELIST *list) {
 
 int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 	S_MOVELIST moves[1];
+
+
+	if(IsRepetition(pos)) {
+		return 0;
+	}
+
+	// base case
+	if (depth <= 0)
+		return evaluation(pos, moves);
+
+	// struct board_result *br= find_score(pos->posKey);	// default value
+	// if (br != NULL) {
+	// 	if (br->depth >= depth) {
+	// 		return br->s_score;
+	// 	}
+	// }
+
 	int legalMovesCount = 0;
 	int move;
 	int bestScore = BLACK_WIN_SCORE - 1;		// make sure that this will be updated
@@ -123,12 +151,21 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 	int curScore;
 	GenerateAllMoves(pos, moves);
 
+	// use pv move to help
+	int PvMove = ProbePvTable(pos);
+	if( PvMove != NOMOVE) {
+		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
+			if( moves->moves[MoveNum].move == PvMove) {
+				moves->moves[MoveNum].score = 2000000;
+				//printf("Pv move found \n");
+				break;
+			}
+		}
+	}
 
 
-	// base case
-	if (depth == 0)
-		return evaluation(pos, moves);
 
+	int OldAlpha = alpha;
 	for (int i = 0; i < moves->count; ++i) {
 		// move = moves->moves[i].move;
 		PickNextMove(i, moves);
@@ -138,18 +175,27 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 			continue;
 		}
 
+
 		// calling min function
+		if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR){
+			curScore = AlphaBetaMin(pos, alpha, beta, depth-1);	// only search the first two moves to full depth
+		}
+		else {
+			curScore = AlphaBetaMin(pos, alpha, beta, depth-4);
+		}
 		legalMovesCount += 1;
-		curScore = AlphaBetaMin(pos, alpha, beta, depth-1);
+
 		TakeMove(pos);
 		if (curScore > bestScore) {
 			bestScore = curScore;
 			bestMove = move;
-			if(bestScore > alpha)
-				alpha = bestScore;
-			if (alpha >= beta)	 { // beta is lower than alpha, meaning that min player will choose another path for sure
-				break;
-			}
+
+		}
+		if(bestScore > alpha)
+			alpha = bestScore;
+		if (alpha >= beta)	 { // beta is lower than alpha, meaning that min player will choose another path for sure
+			bestScore = beta;
+			break;
 		}
 
 	}
@@ -157,18 +203,50 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 	if (legalMovesCount == 0) {
 		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 		if (InCheck == TRUE) {	// checkmate
-			return pos->side == WHITE ? WHITE_WIN_SCORE : BLACK_WIN_SCORE;
+			bestScore = pos->side == WHITE ? WHITE_WIN_SCORE : BLACK_WIN_SCORE;
 		} else {				// stalemate, draw
-			return DRAW_SCORE;
+			bestScore = DRAW_SCORE;
 		}
-	} else {
-		return bestScore;
 	}
+
+	// // store the result we computed
+	// // free(br);	// get rid of the old one, if it is NULL, no action occurs
+	// if (br == NULL) {
+	// 	br = malloc(sizeof(struct board_result));
+	// 	br->s_score = bestScore;
+	// 	br->id = pos->posKey;
+	// 	br->depth = depth;
+	// } else {
+	// 	br->s_score =bestScore;
+	// 	br->depth = depth;
+	// }
+	// add_score(br);
+	if(alpha != OldAlpha) {
+		StorePvMove(pos, bestMove);
+	}
+
+	return bestScore;
+
 }
 
 
 int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
+
 	S_MOVELIST moves[1];
+
+	if(IsRepetition(pos)) {
+		return 0;
+	}
+	// base case
+	if (depth <= 0)
+		return evaluation(pos, moves);
+	// struct board_result *br= find_score(pos->posKey);	// default value
+	// if (br != NULL) {
+	// 	if (br->depth >= depth) {
+	// 		return br->s_score;
+	// 	}
+	// }
+
 	int legalMovesCount = 0;
 	int move;
 	int bestScore = WHITE_WIN_SCORE + 1;		// make sure that this will be updated
@@ -176,10 +254,20 @@ int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
 	int curScore;
 	GenerateAllMoves(pos, moves);
 
-	// base case
-	if (depth == 0)
-		return evaluation(pos, moves);
+	int PvMove = ProbePvTable(pos);
+	if( PvMove != NOMOVE) {
+		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
+			if( moves->moves[MoveNum].move == PvMove) {
+				moves->moves[MoveNum].score = 2000000;
+				//printf("Pv move found \n");
+				break;
+			}
+		}
+	}
 
+
+
+	int OldBeta = beta;
 	for (int i = 0; i < moves->count; ++i) {
 		// move = moves->moves[i].move;
 		PickNextMove(i, moves);
@@ -189,18 +277,23 @@ int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
 		}
 
 		// calling min function
+		if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR) {
+			curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
+		}
+		else {
+			curScore = AlphaBetaMax(pos, alpha, beta, depth-4);
+		}
 		legalMovesCount += 1;
-		curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
 		TakeMove(pos);
 		if (curScore < bestScore) {
 			bestScore = curScore;
 			bestMove = move;
-			if(bestScore < beta)
-				beta = bestScore;
-			if (alpha >= beta){// beta is lower than alpha, meaning that max player will choose another path for sure
-				break;
-			}
-
+		}
+		if(bestScore < beta)
+			beta = bestScore;
+		if (alpha >= beta){// beta is lower than alpha, meaning that max player will choose another path for sure
+			bestScore = alpha;
+			break;
 		}
 
 	}
@@ -208,13 +301,29 @@ int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
 	if (legalMovesCount == 0) {
 		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 		if (InCheck == TRUE) {	// checkmate
-			return pos->side == WHITE ? WHITE_WIN_SCORE : BLACK_WIN_SCORE;
+			bestScore = pos->side == WHITE ? WHITE_WIN_SCORE : BLACK_WIN_SCORE;
 		} else {				// stalemate, draw
-			return DRAW_SCORE;
+			bestScore = DRAW_SCORE;
 		}
-	} else {
-		return bestScore;
 	}
+
+	// free(br);	// get rid of the old one, if it is NULL, no action occurs
+	// if (br == NULL) {
+	// 	br = malloc(sizeof(struct board_result));
+	// 	br->s_score = bestScore;
+	// 	br->id = pos->posKey;
+	// 	br->depth = depth;
+	// } else {
+	// 	br->s_score =bestScore;
+	// 	br->depth = depth;
+	// }
+	// add_score(br);
+
+	if(beta != OldBeta) {
+		StorePvMove(pos, bestMove);
+	}
+
+	return bestScore;
 }
 
 
@@ -247,21 +356,28 @@ int compareMoveMin(const void * a, const void * b) {
 
 
 
-// #define python_wrapper
+#define python_wrapper
 
 #ifdef python_wrapper
 #include <Python.h>
 
 PyObject * next_move(PyObject *self, PyObject *args) {
 	char *game_fen, *next_move;
+	int depth;
 
-	if(!PyArg_ParseTuple(args, "s", &game_fen))
+	if(!PyArg_ParseTuple(args, "si", &game_fen, &depth))
 		return NULL;
 
 	AllInit();
 	S_BOARD board[1];
+	InitPvTable(board->PvTable);
 	ParseFen(game_fen, board);
-	next_move = IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE);
+
+	// next_move = IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE);
+	for (int i=1; i <= depth; i++) {
+		printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
+	}
+	next_move = PrMove(ProbePvTable(board));
 	return Py_BuildValue("s", next_move);
 
 }
@@ -315,8 +431,12 @@ int main(int argc, char const *argv[])
 	S_BOARD board[1];
 	const char* fen = argv[1];
 	ParseFen(fen, board);
-	printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 8));
+	InitPvTable(board->PvTable);
+	for (int i=1; i <= 10; i++) {
+		printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
+	}
 	// printf("%s", IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE));
+	printf("%s\n", PrMove(ProbePvTable(board)));
 
 	// ASSERT(CheckBoard(board));
 

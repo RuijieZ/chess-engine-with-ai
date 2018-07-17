@@ -51,7 +51,15 @@ typedef unsigned long long U64;
 #define MFLAGCAP 0x7C000
 #define MFLAGPROM 0xF00000
 
-#define NOMOVE -100000
+#define NOMOVE 0
+
+extern U64 BlackPassedMask[64];
+extern U64 WhitePassedMask[64];
+extern U64 IsolatedMask[64];
+extern U64 SetMask[64];
+extern U64 ClearMask[64];
+extern U64 FileBBMask[8];
+extern U64 RankBBMask[8];
 
 enum { EMPTY, wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK  };
 enum { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NONE };
@@ -92,6 +100,17 @@ typedef struct {
 	S_MOVE moves[MAXPOSITIONMOVES];
 	int count;
 } S_MOVELIST;
+
+
+typedef struct {
+	U64 posKey;
+	int move;
+} S_PVENTRY;
+
+typedef struct {
+	S_PVENTRY *pTable;
+	int numEntries;
+} S_PVTABLE;
 
 typedef struct {
 
@@ -148,6 +167,9 @@ typedef struct {
 
 	int searchHistory[13][BRD_SQ_NUM];
 	int searchKillers[2][MAXDEPTH];
+
+	S_PVTABLE PvTable[1];
+	int PvArray[MAXDEPTH];
 
 
 
@@ -248,5 +270,11 @@ extern int evaluation(S_BOARD* pos, S_MOVELIST* moves);
 
 // PyObject* moveScoreList(PyObject *, PyObject *);
 
+// pvtable.c
+extern void InitPvTable(S_PVTABLE *table);
+extern void StorePvMove(const S_BOARD *pos, const int move);
+extern int ProbePvTable(const S_BOARD *pos);
+extern int GetPvLine(const int depth, S_BOARD *pos);
+extern void ClearPvTable(S_PVTABLE *table);
 
 #endif

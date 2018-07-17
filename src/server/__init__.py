@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify, current_app, send_from_directory
 from flask_cors import CORS
 from chess import Board
+import subprocess as s
 
-from ai.alpha_beta import min_f, max_f, min_f_root, max_f_root
+# from ai.alpha_beta import min_f, max_f, min_f_root, max_f_root
 from ai.opening import open_pgn_list, find_opening_moves
 
 WHITE_TURN = True
@@ -24,9 +25,13 @@ def next_move(count):
 	if count <= 2:
 		return str(opening_moves[count])
 	fen = request.form['fen']
-	board = Board(fen)
-	move = min_f_root(board, -10001, 10001, 4)[1]		# black is the ai, so call min_f
-	return str(move)
+	# board = Board(fen)
+	# move = min_f_root(board, -10001, 10001, 4)[1]		# black is the ai, so call min_f
+
+	# use the c version one
+	result = s.run(['./ai/c_modules/main', fen], stdout=s.PIPE)
+	move = result.stdout.decode('utf-8').split("\n")[-2]
+	return move
 
 
 @app.route('/<path:path>', methods=['GET'])

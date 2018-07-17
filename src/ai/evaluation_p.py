@@ -110,18 +110,18 @@ VALUES = {
     'k': (-1000, king_eval_black),
 }
 
-print('KING')
-print(king_eval_black)
-print('KNIGHT')
-print(knight_eval_black)
-print('BISHOP')
-print(bishop_eval_black)
-print('ROOK')
-print(rook_eval_black)
-print('QUEEN')
-print(eval_queen_black)
-print('PAWN')
-print(pawn_eval_black)
+# print('KING')
+# print(king_eval_black)
+# print('KNIGHT')
+# print(knight_eval_black)
+# print('BISHOP')
+# print(bishop_eval_black)
+# print('ROOK')
+# print(rook_eval_black)
+# print('QUEEN')
+# print(eval_queen_black)
+# print('PAWN')
+# print(pawn_eval_black)
 
 
 class Evaluation(object):
@@ -137,27 +137,27 @@ class Evaluation(object):
         pass
 
 
-class WeightScore(Evaluation):
-    """docstring for WeightScore"""
-    def __init__(self):
-        super(WeightScore, self).__init__()
+# class WeightScore(Evaluation):
+#     """docstring for WeightScore"""
+#     def __init__(self):
+#         super(WeightScore, self).__init__()
 
 
-    def evaluation(self, board):
-        pieces = board.piece_map()
-        if board.is_checkmate():
-            if board.result() == WHITE_WINNING_SYMBOL:      # the winner is WHITE
-                return WHITE_WIN_SCORE
-            else:                                			# the winner is Black
-                return BLACK_WIN_SCORE
+def evaluation(board):
+    pieces = board.piece_map()
+    # if board.is_checkmate():
+    #     if board.result() == WHITE_WINNING_SYMBOL:      # the winner is WHITE
+    #         return WHITE_WIN_SCORE
+    #     else:                                			# the winner is Black
+    #         return BLACK_WIN_SCORE
 
-        if board.can_claim_draw() or board.is_stalemate():
-            return 0
+    # if board.can_claim_draw() or board.is_stalemate():
+    #     return 0
 
-        value = 0
-        for index, piece in pieces.items():
-            symbol = piece.symbol()
-            piece_value, pos_map = VALUES[symbol]
-            value = value + piece_value + pos_map[index]
+    value = 0
+    for index, piece in pieces.items():
+        symbol = piece.symbol()
+        piece_value, pos_map = VALUES[symbol]
+        value = value + piece_value + pos_map[index]
 
-        return value
+    return value

@@ -34,7 +34,7 @@ print(e.evaluation(b.result(), b.board_fen(), len(b.board_fen())))
 # test for speed
 import time
 
-loop_count = 1000000
+loop_count = 10000
 t0 = time.time()
 for i in range(loop_count):
 	w.evaluation(b)
@@ -49,6 +49,17 @@ for i in range(loop_count):
 	e.evaluation(x, y, z)
 t1 = time.time()
 print('c code time: {}'.format(t1-t0))
+
+t0 = time.time()
+x = list(b.legal_moves)[0]
+for i in range(loop_count):
+	for j in range(30):
+		b.push(x)
+		b.pop()
+t1 = time.time()
+print('chess board legal_moves code time: {}'.format(t1-t0))
+
+
 
 
 

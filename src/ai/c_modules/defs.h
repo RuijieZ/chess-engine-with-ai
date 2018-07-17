@@ -261,6 +261,7 @@ extern void ReadInput(S_SEARCHINFO *info);
 extern void PerftTest(int depth, S_BOARD *pos);
 
 //evaluate.c
+#define ENDGAME_MAT (1 * PieceVal[wR] + 2 * PieceVal[wN] + 2 * PieceVal[wP] + PieceVal[wK])
 extern int evaluation(const S_BOARD* pos);
 
 // main.c

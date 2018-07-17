@@ -3,7 +3,9 @@
 #include "defs.h"
 #include "uthash.h"		// dictionary implementation
 
-int BRANCH_REDUCE_FACTOR = 6;
+int BRANCH_REDUCE_FACTOR = 3;
+int REDUCE_DEPTH = 4;
+int SEARCH_DEPTH = 10;
 
 struct board_result {
     U64 id;            			/* we'll use this field as the key */
@@ -180,7 +182,7 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 			curScore = AlphaBetaMin(pos, alpha, beta, depth-1);	// only search the first two moves to full depth
 		}
 		else {
-			curScore = AlphaBetaMin(pos, alpha, beta, depth-4);
+			curScore = AlphaBetaMin(pos, alpha, beta, depth-REDUCE_DEPTH);
 		}
 		legalMovesCount += 1;
 
@@ -202,7 +204,7 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 	if (legalMovesCount == 0) {
 		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 		if (InCheck == TRUE) {	// checkmate
-			bestScore = pos->side == WHITE ? BLACK_WIN_SCORE : WHITE_WIN_SCORE;
+			bestScore = BLACK_WIN_SCORE;
 		} else {				// stalemate, draw
 			bestScore = DRAW_SCORE;
 		}
@@ -281,7 +283,7 @@ int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
 			curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
 		}
 		else {
-			curScore = AlphaBetaMax(pos, alpha, beta, depth-4);
+			curScore = AlphaBetaMax(pos, alpha, beta, depth-REDUCE_DEPTH);
 		}
 		legalMovesCount += 1;
 		TakeMove(pos);
@@ -301,7 +303,7 @@ int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
 	if (legalMovesCount == 0) {
 		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 		if (InCheck == TRUE) {	// checkmate
-			bestScore = pos->side == WHITE ? BLACK_WIN_SCORE: WHITE_WIN_SCORE;
+			bestScore = WHITE_WIN_SCORE;
 		} else {				// stalemate, draw
 			bestScore = DRAW_SCORE;
 		}
@@ -430,10 +432,31 @@ int main(int argc, char const *argv[])
 
 	S_BOARD board[1];
 	const char* fen = argv[1];
+	const int side = atoi(argv[2]); // white == 0, black == 1
 	ParseFen(fen, board);
 	InitPvTable(board->PvTable);
-	for (int i=1; i <= 12; i++) {
-		printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
+
+	// set some search parameters
+	if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
+		printf("End Game\n");
+		BRANCH_REDUCE_FACTOR = 2;
+		REDUCE_DEPTH = 4;
+		SEARCH_DEPTH = 12;
+	} else {
+		printf("NOT End Game\n");			// NOT ENDING
+		BRANCH_REDUCE_FACTOR = 4;
+		REDUCE_DEPTH = 4;
+		SEARCH_DEPTH = 10;
+	}
+
+
+
+	// check the game status to determine what parameter we should set
+	for (int i=1; i <=SEARCH_DEPTH; i++) {
+		if (side == BLACK)
+			printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
+		else
+			printf("%d\n", AlphaBetaMax(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
 	}
 	// printf("%s", IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE));
 	printf("%s\n", PrMove(ProbePvTable(board)));

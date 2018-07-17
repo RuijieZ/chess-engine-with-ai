@@ -102,7 +102,6 @@ int MaterialDraw(const S_BOARD *pos) {
   return FALSE;
 }
 
-#define ENDGAME_MAT (1 * PieceVal[wR] + 2 * PieceVal[wN] + 2 * PieceVal[wP] + PieceVal[wK])
 
 int evaluation(const S_BOARD *pos) {
 

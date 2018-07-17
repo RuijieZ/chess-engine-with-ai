@@ -1,0 +1,11 @@
+click==6.7
+evaluation==1.0
+Flask==1.0.2
+Flask-Cors==3.0.4
+gunicorn==19.8.1
+itsdangerous==0.24
+Jinja2==2.10
+MarkupSafe==1.0
+python-chess==0.23.6
+six==1.11.0
+Werkzeug==0.14.1

@@ -25,7 +25,7 @@ class Game {
 /*
 Helper functions
 */
-function queryNextMove() {
+function queryNextMove(async) {
     var chess = window.game.chess;
     var data = {
         'fen': chess.fen(),
@@ -54,7 +54,7 @@ function queryNextMove() {
             setTimeout(data, retryAfter * 1000);
           }
         },
-        async: false
+        async: async
     });
 }
 
@@ -80,7 +80,7 @@ function AISelfPaly() {
         this.game.chess.in_draw() === true ||
         possibleMoves.length === 0) return;
     else {
-        queryNextMove();
+        queryNextMove(false);
         window.setTimeout(AISelfPaly, 2000);
     }
 
@@ -145,7 +145,7 @@ var updateStatus = function() {
 var onSnapEnd = function() {
     window.game.board.position(window.game.chess.fen());
     if ((chess.turn() === BLACK && window.game.players['b'] == AI) || (chess.turn() === WHITE && window.game.players['w'] == AI))
-        queryNextMove();
+        queryNextMove(true);
 };
 
 var init = function() {

@@ -439,7 +439,7 @@ int main(int argc, char const *argv[])
 	// set some search parameters
 	if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
 		printf("End Game\n");
-		BRANCH_REDUCE_FACTOR = 2;
+		BRANCH_REDUCE_FACTOR = 4;
 		REDUCE_DEPTH = 4;
 		SEARCH_DEPTH = 12;
 	} else {

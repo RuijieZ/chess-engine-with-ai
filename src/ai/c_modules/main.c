@@ -126,7 +126,6 @@ static void PickNextMove(int moveNum, S_MOVELIST *list) {
 // }
 
 int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
-	S_MOVELIST moves[1];
 
 
 	if(IsRepetition(pos)) {
@@ -135,7 +134,7 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 
 	// base case
 	if (depth <= 0)
-		return evaluation(pos, moves);
+		return evaluation(pos);
 
 	// struct board_result *br= find_score(pos->posKey);	// default value
 	// if (br != NULL) {
@@ -143,7 +142,7 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 	// 		return br->s_score;
 	// 	}
 	// }
-
+	S_MOVELIST moves[1];
 	int legalMovesCount = 0;
 	int move;
 	int bestScore = BLACK_WIN_SCORE - 1;		// make sure that this will be updated
@@ -232,20 +231,21 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 
 int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
 
-	S_MOVELIST moves[1];
 
 	if(IsRepetition(pos)) {
 		return 0;
 	}
 	// base case
 	if (depth <= 0)
-		return evaluation(pos, moves);
+		return evaluation(pos);
 	// struct board_result *br= find_score(pos->posKey);	// default value
 	// if (br != NULL) {
 	// 	if (br->depth >= depth) {
 	// 		return br->s_score;
 	// 	}
 	// }
+
+	S_MOVELIST moves[1];
 
 	int legalMovesCount = 0;
 	int move;

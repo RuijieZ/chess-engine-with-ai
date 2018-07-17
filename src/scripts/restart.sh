@@ -14,5 +14,5 @@ do
 	source venv/bin/activate
 	cd src/
 	nohup gunicorn wsgi &
-	sleep 600
+	sleep 6000
 done

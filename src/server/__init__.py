@@ -15,7 +15,7 @@ CORS(app)
 
 @app.route('/')
 def index():
-    return current_app.send_static_file('index.html')
+	return current_app.send_static_file('index.html')
 
 @app.route('/next_move/<count>', methods=['POST'])
 def next_move(count):
@@ -35,8 +35,11 @@ def next_move(count):
 	return move
 
 
+
 @app.route('/<path:path>', methods=['GET'])
 def serve_file(path):
 	return send_from_directory('static', path)
 
 
+if __name__ == "__main__":
+    application.run(host='127.0.0.0', port='8080')

@@ -1,0 +1,741 @@
+
+
+Usage:
+ kill [options] <pid> [...]
+
+Options:
+ <pid> [...]            send signal to every <pid> listed
+ -<signal>, -s, --signal <signal>
+                        specify the <signal> to be sent
+ -l, --list=[<signal>]  list all signal names, or convert one to a name
+ -L, --table            list all signal names in a nice table
+
+ -h, --help     display this help and exit
+ -V, --version  output version information and exit
+
+For more details see kill(1).
+[2018-06-30 05:16:25 +0000] [22127] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 05:16:25 +0000] [22127] [INFO] Listening at: http://127.0.0.1:8000 (22127)
+[2018-06-30 05:16:25 +0000] [22127] [INFO] Using worker: sync
+[2018-06-30 05:16:25 +0000] [22130] [INFO] Booting worker with pid: 22130
+[2018-06-30 05:17:08 +0000] [22127] [INFO] Handling signal: int
+[2018-06-30 05:17:08 +0000] [22130] [INFO] Worker exiting (pid: 22130)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 05:17:09 +0000] [22127] [INFO] Shutting down: Master
+
+
+Usage:
+ kill [options] <pid> [...]
+
+Options:
+ <pid> [...]            send signal to every <pid> listed
+ -<signal>, -s, --signal <signal>
+                        specify the <signal> to be sent
+ -l, --list=[<signal>]  list all signal names, or convert one to a name
+ -L, --table            list all signal names in a nice table
+
+ -h, --help     display this help and exit
+ -V, --version  output version information and exit
+
+For more details see kill(1).
+[2018-06-30 05:17:15 +0000] [22142] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 05:17:15 +0000] [22142] [INFO] Listening at: http://127.0.0.1:8000 (22142)
+[2018-06-30 05:17:15 +0000] [22142] [INFO] Using worker: sync
+[2018-06-30 05:17:15 +0000] [22145] [INFO] Booting worker with pid: 22145
+[2018-06-30 05:21:11 +0000] [22145] [INFO] Worker exiting (pid: 22145)
+[2018-06-30 05:21:11 +0000] [22142] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 05:21:11 +0000] [22142] [INFO] Shutting down: Master
+
+
+Usage:
+ kill [options] <pid> [...]
+
+Options:
+ <pid> [...]            send signal to every <pid> listed
+ -<signal>, -s, --signal <signal>
+                        specify the <signal> to be sent
+ -l, --list=[<signal>]  list all signal names, or convert one to a name
+ -L, --table            list all signal names in a nice table
+
+ -h, --help     display this help and exit
+ -V, --version  output version information and exit
+
+For more details see kill(1).
+[2018-06-30 05:22:30 +0000] [22213] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 05:22:30 +0000] [22213] [INFO] Listening at: http://127.0.0.1:8000 (22213)
+[2018-06-30 05:22:30 +0000] [22213] [INFO] Using worker: sync
+[2018-06-30 05:22:30 +0000] [22217] [INFO] Booting worker with pid: 22217
+22213 22217
+[2018-06-30 05:32:30 +0000] [22213] [INFO] Handling signal: term
+[2018-06-30 05:32:30 +0000] [22217] [INFO] Worker exiting (pid: 22217)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 05:32:30 +0000] [22689] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 05:32:30 +0000] [22689] [INFO] Listening at: http://127.0.0.1:8000 (22689)
+[2018-06-30 05:32:30 +0000] [22689] [INFO] Using worker: sync
+[2018-06-30 05:32:30 +0000] [22693] [INFO] Booting worker with pid: 22693
+[2018-06-30 05:32:31 +0000] [22213] [INFO] Shutting down: Master
+22689 22693
+[2018-06-30 05:42:30 +0000] [22693] [INFO] Worker exiting (pid: 22693)
+[2018-06-30 05:42:30 +0000] [22689] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 05:42:30 +0000] [22897] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 05:42:30 +0000] [22897] [INFO] Listening at: http://127.0.0.1:8000 (22897)
+[2018-06-30 05:42:30 +0000] [22897] [INFO] Using worker: sync
+[2018-06-30 05:42:30 +0000] [22901] [INFO] Booting worker with pid: 22901
+[2018-06-30 05:42:31 +0000] [22689] [INFO] Shutting down: Master
+22897 22901
+[2018-06-30 05:52:30 +0000] [22901] [INFO] Worker exiting (pid: 22901)
+[2018-06-30 05:52:30 +0000] [22897] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 05:52:30 +0000] [22911] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 05:52:30 +0000] [22911] [INFO] Listening at: http://127.0.0.1:8000 (22911)
+[2018-06-30 05:52:30 +0000] [22911] [INFO] Using worker: sync
+[2018-06-30 05:52:30 +0000] [22915] [INFO] Booting worker with pid: 22915
+[2018-06-30 05:52:31 +0000] [22897] [INFO] Shutting down: Master
+22911 22915
+[2018-06-30 06:02:30 +0000] [22911] [INFO] Handling signal: term
+[2018-06-30 06:02:30 +0000] [22915] [INFO] Worker exiting (pid: 22915)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 06:02:30 +0000] [22936] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 06:02:30 +0000] [22936] [INFO] Listening at: http://127.0.0.1:8000 (22936)
+[2018-06-30 06:02:30 +0000] [22936] [INFO] Using worker: sync
+[2018-06-30 06:02:30 +0000] [22940] [INFO] Booting worker with pid: 22940
+[2018-06-30 06:02:31 +0000] [22911] [INFO] Shutting down: Master
+22936 22940
+[2018-06-30 06:12:30 +0000] [22940] [INFO] Worker exiting (pid: 22940)
+[2018-06-30 06:12:30 +0000] [22936] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 06:12:31 +0000] [22950] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 06:12:31 +0000] [22950] [INFO] Listening at: http://127.0.0.1:8000 (22950)
+[2018-06-30 06:12:31 +0000] [22950] [INFO] Using worker: sync
+[2018-06-30 06:12:31 +0000] [22954] [INFO] Booting worker with pid: 22954
+[2018-06-30 06:12:31 +0000] [22936] [INFO] Shutting down: Master
+22950 22954
+[2018-06-30 06:22:30 +0000] [22954] [INFO] Worker exiting (pid: 22954)
+[2018-06-30 06:22:30 +0000] [22950] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 06:22:31 +0000] [22964] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 06:22:31 +0000] [22964] [INFO] Listening at: http://127.0.0.1:8000 (22964)
+[2018-06-30 06:22:31 +0000] [22964] [INFO] Using worker: sync
+[2018-06-30 06:22:31 +0000] [22968] [INFO] Booting worker with pid: 22968
+[2018-06-30 06:22:31 +0000] [22950] [INFO] Shutting down: Master
+22964 22968
+[2018-06-30 06:32:30 +0000] [22964] [INFO] Handling signal: term
+[2018-06-30 06:32:30 +0000] [22968] [INFO] Worker exiting (pid: 22968)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 06:32:31 +0000] [23077] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 06:32:31 +0000] [23077] [INFO] Listening at: http://127.0.0.1:8000 (23077)
+[2018-06-30 06:32:31 +0000] [23077] [INFO] Using worker: sync
+[2018-06-30 06:32:31 +0000] [23081] [INFO] Booting worker with pid: 23081
+[2018-06-30 06:32:31 +0000] [22964] [INFO] Shutting down: Master
+23077 23081
+[2018-06-30 06:42:30 +0000] [23081] [INFO] Worker exiting (pid: 23081)
+[2018-06-30 06:42:30 +0000] [23077] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 06:42:31 +0000] [23089] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 06:42:31 +0000] [23089] [INFO] Listening at: http://127.0.0.1:8000 (23089)
+[2018-06-30 06:42:31 +0000] [23089] [INFO] Using worker: sync
+[2018-06-30 06:42:31 +0000] [23093] [INFO] Booting worker with pid: 23093
+[2018-06-30 06:42:31 +0000] [23077] [INFO] Shutting down: Master
+23089 23093
+[2018-06-30 06:52:30 +0000] [23089] [INFO] Handling signal: term
+[2018-06-30 06:52:30 +0000] [23093] [INFO] Worker exiting (pid: 23093)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 06:52:31 +0000] [23112] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 06:52:31 +0000] [23112] [INFO] Listening at: http://127.0.0.1:8000 (23112)
+[2018-06-30 06:52:31 +0000] [23112] [INFO] Using worker: sync
+[2018-06-30 06:52:31 +0000] [23116] [INFO] Booting worker with pid: 23116
+[2018-06-30 06:52:31 +0000] [23089] [INFO] Shutting down: Master
+23112 23116
+[2018-06-30 07:02:30 +0000] [23116] [INFO] Worker exiting (pid: 23116)
+[2018-06-30 07:02:30 +0000] [23112] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 07:02:31 +0000] [1598] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 07:02:31 +0000] [1598] [INFO] Listening at: http://127.0.0.1:8000 (1598)
+[2018-06-30 07:02:31 +0000] [1598] [INFO] Using worker: sync
+[2018-06-30 07:02:31 +0000] [1602] [INFO] Booting worker with pid: 1602
+[2018-06-30 07:02:31 +0000] [23112] [INFO] Shutting down: Master
+1598 1602
+[2018-06-30 07:12:30 +0000] [1598] [INFO] Handling signal: term
+[2018-06-30 07:12:30 +0000] [1602] [INFO] Worker exiting (pid: 1602)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 07:12:31 +0000] [1611] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 07:12:31 +0000] [1611] [INFO] Listening at: http://127.0.0.1:8000 (1611)
+[2018-06-30 07:12:31 +0000] [1611] [INFO] Using worker: sync
+[2018-06-30 07:12:31 +0000] [1615] [INFO] Booting worker with pid: 1615
+[2018-06-30 07:12:31 +0000] [1598] [INFO] Shutting down: Master
+1611 1615
+[2018-06-30 07:22:30 +0000] [1611] [INFO] Handling signal: term
+[2018-06-30 07:22:30 +0000] [1615] [INFO] Worker exiting (pid: 1615)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 07:22:31 +0000] [1637] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 07:22:31 +0000] [1637] [INFO] Listening at: http://127.0.0.1:8000 (1637)
+[2018-06-30 07:22:31 +0000] [1637] [INFO] Using worker: sync
+[2018-06-30 07:22:31 +0000] [1641] [INFO] Booting worker with pid: 1641
+[2018-06-30 07:22:31 +0000] [1611] [INFO] Shutting down: Master
+1637 1641
+[2018-06-30 07:32:30 +0000] [1641] [INFO] Worker exiting (pid: 1641)
+[2018-06-30 07:32:30 +0000] [1637] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 07:32:31 +0000] [1648] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 07:32:31 +0000] [1648] [INFO] Listening at: http://127.0.0.1:8000 (1648)
+[2018-06-30 07:32:31 +0000] [1648] [INFO] Using worker: sync
+[2018-06-30 07:32:31 +0000] [1652] [INFO] Booting worker with pid: 1652
+[2018-06-30 07:32:31 +0000] [1637] [INFO] Shutting down: Master
+1648 1652
+[2018-06-30 07:42:31 +0000] [1648] [INFO] Handling signal: term
+[2018-06-30 07:42:31 +0000] [1652] [INFO] Worker exiting (pid: 1652)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 07:42:31 +0000] [1677] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 07:42:31 +0000] [1677] [INFO] Listening at: http://127.0.0.1:8000 (1677)
+[2018-06-30 07:42:31 +0000] [1677] [INFO] Using worker: sync
+[2018-06-30 07:42:31 +0000] [1681] [INFO] Booting worker with pid: 1681
+[2018-06-30 07:42:31 +0000] [1648] [INFO] Shutting down: Master
+1677 1681
+[2018-06-30 07:52:31 +0000] [1681] [INFO] Worker exiting (pid: 1681)
+[2018-06-30 07:52:31 +0000] [1677] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 07:52:31 +0000] [1688] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 07:52:31 +0000] [1688] [INFO] Listening at: http://127.0.0.1:8000 (1688)
+[2018-06-30 07:52:31 +0000] [1688] [INFO] Using worker: sync
+[2018-06-30 07:52:31 +0000] [1692] [INFO] Booting worker with pid: 1692
+[2018-06-30 07:52:31 +0000] [1677] [INFO] Shutting down: Master
+1688 1692
+[2018-06-30 08:02:31 +0000] [1688] [INFO] Handling signal: term
+[2018-06-30 08:02:31 +0000] [1692] [INFO] Worker exiting (pid: 1692)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 08:02:31 +0000] [1699] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 08:02:31 +0000] [1699] [INFO] Listening at: http://127.0.0.1:8000 (1699)
+[2018-06-30 08:02:31 +0000] [1699] [INFO] Using worker: sync
+[2018-06-30 08:02:31 +0000] [1703] [INFO] Booting worker with pid: 1703
+[2018-06-30 08:02:31 +0000] [1688] [INFO] Shutting down: Master
+1699 1703
+[2018-06-30 08:12:31 +0000] [1699] [INFO] Handling signal: term
+[2018-06-30 08:12:31 +0000] [1703] [INFO] Worker exiting (pid: 1703)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 08:12:31 +0000] [1728] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 08:12:31 +0000] [1728] [INFO] Listening at: http://127.0.0.1:8000 (1728)
+[2018-06-30 08:12:31 +0000] [1728] [INFO] Using worker: sync
+[2018-06-30 08:12:31 +0000] [1732] [INFO] Booting worker with pid: 1732
+[2018-06-30 08:12:31 +0000] [1699] [INFO] Shutting down: Master
+1728 1732
+[2018-06-30 08:22:31 +0000] [1728] [INFO] Handling signal: term
+[2018-06-30 08:22:31 +0000] [1732] [INFO] Worker exiting (pid: 1732)
+(Move.from_uci('d7d6'), Move.from_uci('g7g6'), Move.from_uci('f8g7'))
+[2018-06-30 08:22:31 +0000] [1742] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 08:22:31 +0000] [1742] [INFO] Listening at: http://127.0.0.1:8000 (1742)
+[2018-06-30 08:22:31 +0000] [1742] [INFO] Using worker: sync
+[2018-06-30 08:22:31 +0000] [1746] [INFO] Booting worker with pid: 1746
+[2018-06-30 08:22:31 +0000] [1728] [INFO] Shutting down: Master
+1742 1746
+[2018-06-30 08:32:31 +0000] [1742] [INFO] Handling signal: term
+[2018-06-30 08:32:31 +0000] [1746] [INFO] Worker exiting (pid: 1746)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 08:32:31 +0000] [1765] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 08:32:31 +0000] [1765] [INFO] Listening at: http://127.0.0.1:8000 (1765)
+[2018-06-30 08:32:31 +0000] [1765] [INFO] Using worker: sync
+[2018-06-30 08:32:31 +0000] [1769] [INFO] Booting worker with pid: 1769
+[2018-06-30 08:32:31 +0000] [1742] [INFO] Shutting down: Master
+1765 1769
+[2018-06-30 08:42:31 +0000] [1769] [INFO] Worker exiting (pid: 1769)
+[2018-06-30 08:42:31 +0000] [1765] [INFO] Handling signal: term
+(Move.from_uci('d7d6'), Move.from_uci('g7g6'), Move.from_uci('f8g7'))
+[2018-06-30 08:42:31 +0000] [1765] [INFO] Shutting down: Master
+[2018-06-30 08:42:31 +0000] [1776] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 08:42:31 +0000] [1776] [INFO] Listening at: http://127.0.0.1:8000 (1776)
+[2018-06-30 08:42:31 +0000] [1776] [INFO] Using worker: sync
+[2018-06-30 08:42:31 +0000] [1780] [INFO] Booting worker with pid: 1780
+1776 1780
+[2018-06-30 08:52:31 +0000] [1776] [INFO] Handling signal: term
+[2018-06-30 08:52:31 +0000] [1780] [INFO] Worker exiting (pid: 1780)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 08:52:31 +0000] [1790] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 08:52:31 +0000] [1790] [INFO] Listening at: http://127.0.0.1:8000 (1790)
+[2018-06-30 08:52:31 +0000] [1790] [INFO] Using worker: sync
+[2018-06-30 08:52:31 +0000] [1794] [INFO] Booting worker with pid: 1794
+[2018-06-30 08:52:31 +0000] [1776] [INFO] Shutting down: Master
+1790 1794
+[2018-06-30 09:02:31 +0000] [1790] [INFO] Handling signal: term
+[2018-06-30 09:02:31 +0000] [1794] [INFO] Worker exiting (pid: 1794)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 09:02:31 +0000] [1813] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 09:02:31 +0000] [1813] [INFO] Listening at: http://127.0.0.1:8000 (1813)
+[2018-06-30 09:02:31 +0000] [1813] [INFO] Using worker: sync
+[2018-06-30 09:02:31 +0000] [1817] [INFO] Booting worker with pid: 1817
+[2018-06-30 09:02:31 +0000] [1790] [INFO] Shutting down: Master
+1813 1817
+[2018-06-30 09:12:31 +0000] [1813] [INFO] Handling signal: term
+[2018-06-30 09:12:31 +0000] [1817] [INFO] Worker exiting (pid: 1817)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 09:12:31 +0000] [1824] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 09:12:31 +0000] [1824] [INFO] Listening at: http://127.0.0.1:8000 (1824)
+[2018-06-30 09:12:31 +0000] [1824] [INFO] Using worker: sync
+[2018-06-30 09:12:31 +0000] [1828] [INFO] Booting worker with pid: 1828
+[2018-06-30 09:12:31 +0000] [1813] [INFO] Shutting down: Master
+1824 1828
+[2018-06-30 09:22:31 +0000] [1824] [INFO] Handling signal: term
+[2018-06-30 09:22:31 +0000] [1828] [INFO] Worker exiting (pid: 1828)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 09:22:31 +0000] [1839] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 09:22:31 +0000] [1839] [INFO] Listening at: http://127.0.0.1:8000 (1839)
+[2018-06-30 09:22:31 +0000] [1839] [INFO] Using worker: sync
+[2018-06-30 09:22:31 +0000] [1843] [INFO] Booting worker with pid: 1843
+[2018-06-30 09:22:31 +0000] [1824] [INFO] Shutting down: Master
+1839 1843
+[2018-06-30 09:32:31 +0000] [1839] [INFO] Handling signal: term
+[2018-06-30 09:32:31 +0000] [1843] [INFO] Worker exiting (pid: 1843)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 09:32:31 +0000] [1862] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 09:32:31 +0000] [1862] [INFO] Listening at: http://127.0.0.1:8000 (1862)
+[2018-06-30 09:32:31 +0000] [1862] [INFO] Using worker: sync
+[2018-06-30 09:32:31 +0000] [1866] [INFO] Booting worker with pid: 1866
+[2018-06-30 09:32:31 +0000] [1839] [INFO] Shutting down: Master
+1862 1866
+[2018-06-30 09:42:31 +0000] [1862] [INFO] Handling signal: term
+[2018-06-30 09:42:31 +0000] [1866] [INFO] Worker exiting (pid: 1866)
+(Move.from_uci('g7g6'), Move.from_uci('d7d6'), Move.from_uci('f8g7'))
+[2018-06-30 09:42:31 +0000] [1874] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 09:42:31 +0000] [1874] [INFO] Listening at: http://127.0.0.1:8000 (1874)
+[2018-06-30 09:42:31 +0000] [1874] [INFO] Using worker: sync
+[2018-06-30 09:42:31 +0000] [1878] [INFO] Booting worker with pid: 1878
+[2018-06-30 09:42:31 +0000] [1862] [INFO] Shutting down: Master
+1874 1878
+[2018-06-30 09:52:31 +0000] [1874] [INFO] Handling signal: term
+[2018-06-30 09:52:31 +0000] [1878] [INFO] Worker exiting (pid: 1878)
+(Move.from_uci('g7g6'), Move.from_uci('d7d6'), Move.from_uci('f8g7'))
+[2018-06-30 09:52:31 +0000] [1898] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 09:52:31 +0000] [1898] [INFO] Listening at: http://127.0.0.1:8000 (1898)
+[2018-06-30 09:52:31 +0000] [1898] [INFO] Using worker: sync
+[2018-06-30 09:52:31 +0000] [1902] [INFO] Booting worker with pid: 1902
+[2018-06-30 09:52:31 +0000] [1874] [INFO] Shutting down: Master
+1898 1902
+[2018-06-30 10:02:31 +0000] [1898] [INFO] Handling signal: term
+[2018-06-30 10:02:31 +0000] [1902] [INFO] Worker exiting (pid: 1902)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 10:02:31 +0000] [1909] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 10:02:31 +0000] [1909] [INFO] Listening at: http://127.0.0.1:8000 (1909)
+[2018-06-30 10:02:31 +0000] [1909] [INFO] Using worker: sync
+[2018-06-30 10:02:31 +0000] [1913] [INFO] Booting worker with pid: 1913
+[2018-06-30 10:02:31 +0000] [1898] [INFO] Shutting down: Master
+1909 1913
+[2018-06-30 10:12:31 +0000] [1913] [INFO] Worker exiting (pid: 1913)
+[2018-06-30 10:12:31 +0000] [1909] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 10:12:31 +0000] [1920] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 10:12:31 +0000] [1920] [INFO] Listening at: http://127.0.0.1:8000 (1920)
+[2018-06-30 10:12:31 +0000] [1920] [INFO] Using worker: sync
+[2018-06-30 10:12:31 +0000] [1924] [INFO] Booting worker with pid: 1924
+[2018-06-30 10:12:31 +0000] [1909] [INFO] Shutting down: Master
+1920 1924
+[2018-06-30 10:22:31 +0000] [1920] [INFO] Handling signal: term
+[2018-06-30 10:22:31 +0000] [1924] [INFO] Worker exiting (pid: 1924)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 10:22:31 +0000] [1920] [INFO] Shutting down: Master
+[2018-06-30 10:22:31 +0000] [1947] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 10:22:31 +0000] [1947] [INFO] Listening at: http://127.0.0.1:8000 (1947)
+[2018-06-30 10:22:31 +0000] [1947] [INFO] Using worker: sync
+[2018-06-30 10:22:31 +0000] [1951] [INFO] Booting worker with pid: 1951
+1947 1951
+[2018-06-30 10:32:31 +0000] [1947] [INFO] Handling signal: term
+[2018-06-30 10:32:31 +0000] [1951] [INFO] Worker exiting (pid: 1951)
+(Move.from_uci('d7d6'), Move.from_uci('g7g6'), Move.from_uci('f8g7'))
+[2018-06-30 10:32:31 +0000] [1958] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 10:32:31 +0000] [1958] [INFO] Listening at: http://127.0.0.1:8000 (1958)
+[2018-06-30 10:32:31 +0000] [1958] [INFO] Using worker: sync
+[2018-06-30 10:32:31 +0000] [1962] [INFO] Booting worker with pid: 1962
+[2018-06-30 10:32:31 +0000] [1947] [INFO] Shutting down: Master
+1958 1962
+[2018-06-30 10:42:31 +0000] [1958] [INFO] Handling signal: term
+[2018-06-30 10:42:31 +0000] [1962] [INFO] Worker exiting (pid: 1962)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 10:42:31 +0000] [1981] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 10:42:31 +0000] [1981] [INFO] Listening at: http://127.0.0.1:8000 (1981)
+[2018-06-30 10:42:31 +0000] [1981] [INFO] Using worker: sync
+[2018-06-30 10:42:31 +0000] [1985] [INFO] Booting worker with pid: 1985
+[2018-06-30 10:42:31 +0000] [1958] [INFO] Shutting down: Master
+1981 1985
+[2018-06-30 10:52:31 +0000] [1981] [INFO] Handling signal: term
+[2018-06-30 10:52:31 +0000] [1985] [INFO] Worker exiting (pid: 1985)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 10:52:31 +0000] [1994] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 10:52:31 +0000] [1994] [INFO] Listening at: http://127.0.0.1:8000 (1994)
+[2018-06-30 10:52:31 +0000] [1994] [INFO] Using worker: sync
+[2018-06-30 10:52:31 +0000] [1998] [INFO] Booting worker with pid: 1998
+[2018-06-30 10:52:31 +0000] [1981] [INFO] Shutting down: Master
+1994 1998
+[2018-06-30 11:02:31 +0000] [1994] [INFO] Handling signal: term
+[2018-06-30 11:02:31 +0000] [1998] [INFO] Worker exiting (pid: 1998)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 11:02:31 +0000] [2005] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 11:02:31 +0000] [2005] [INFO] Listening at: http://127.0.0.1:8000 (2005)
+[2018-06-30 11:02:31 +0000] [2005] [INFO] Using worker: sync
+[2018-06-30 11:02:31 +0000] [2009] [INFO] Booting worker with pid: 2009
+[2018-06-30 11:02:31 +0000] [1994] [INFO] Shutting down: Master
+2005 2009
+[2018-06-30 11:12:31 +0000] [2005] [INFO] Handling signal: term
+[2018-06-30 11:12:31 +0000] [2009] [INFO] Worker exiting (pid: 2009)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 11:12:31 +0000] [2029] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 11:12:31 +0000] [2029] [INFO] Listening at: http://127.0.0.1:8000 (2029)
+[2018-06-30 11:12:31 +0000] [2029] [INFO] Using worker: sync
+[2018-06-30 11:12:31 +0000] [2033] [INFO] Booting worker with pid: 2033
+[2018-06-30 11:12:31 +0000] [2005] [INFO] Shutting down: Master
+2029 2033
+[2018-06-30 11:22:31 +0000] [2029] [INFO] Handling signal: term
+[2018-06-30 11:22:31 +0000] [2033] [INFO] Worker exiting (pid: 2033)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 11:22:31 +0000] [2045] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 11:22:31 +0000] [2045] [INFO] Listening at: http://127.0.0.1:8000 (2045)
+[2018-06-30 11:22:31 +0000] [2045] [INFO] Using worker: sync
+[2018-06-30 11:22:31 +0000] [2049] [INFO] Booting worker with pid: 2049
+[2018-06-30 11:22:31 +0000] [2029] [INFO] Shutting down: Master
+2045 2049
+[2018-06-30 11:32:31 +0000] [2045] [INFO] Handling signal: term
+[2018-06-30 11:32:31 +0000] [2049] [INFO] Worker exiting (pid: 2049)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 11:32:31 +0000] [2068] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 11:32:31 +0000] [2068] [INFO] Listening at: http://127.0.0.1:8000 (2068)
+[2018-06-30 11:32:31 +0000] [2068] [INFO] Using worker: sync
+[2018-06-30 11:32:31 +0000] [2072] [INFO] Booting worker with pid: 2072
+[2018-06-30 11:32:31 +0000] [2045] [INFO] Shutting down: Master
+2068 2072
+[2018-06-30 11:42:31 +0000] [2068] [INFO] Handling signal: term
+[2018-06-30 11:42:31 +0000] [2072] [INFO] Worker exiting (pid: 2072)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 11:42:31 +0000] [2079] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 11:42:31 +0000] [2079] [INFO] Listening at: http://127.0.0.1:8000 (2079)
+[2018-06-30 11:42:31 +0000] [2079] [INFO] Using worker: sync
+[2018-06-30 11:42:31 +0000] [2083] [INFO] Booting worker with pid: 2083
+[2018-06-30 11:42:31 +0000] [2068] [INFO] Shutting down: Master
+2079 2083
+[2018-06-30 11:52:31 +0000] [2079] [INFO] Handling signal: term
+[2018-06-30 11:52:31 +0000] [2083] [INFO] Worker exiting (pid: 2083)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 11:52:31 +0000] [2079] [INFO] Shutting down: Master
+[2018-06-30 11:52:31 +0000] [2091] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 11:52:31 +0000] [2091] [INFO] Listening at: http://127.0.0.1:8000 (2091)
+[2018-06-30 11:52:31 +0000] [2091] [INFO] Using worker: sync
+[2018-06-30 11:52:31 +0000] [2095] [INFO] Booting worker with pid: 2095
+2091 2095
+[2018-06-30 12:02:31 +0000] [2091] [INFO] Handling signal: term
+[2018-06-30 12:02:31 +0000] [2095] [INFO] Worker exiting (pid: 2095)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 12:02:31 +0000] [2115] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 12:02:31 +0000] [2115] [INFO] Listening at: http://127.0.0.1:8000 (2115)
+[2018-06-30 12:02:31 +0000] [2115] [INFO] Using worker: sync
+[2018-06-30 12:02:31 +0000] [2119] [INFO] Booting worker with pid: 2119
+[2018-06-30 12:02:31 +0000] [2091] [INFO] Shutting down: Master
+2115 2119
+[2018-06-30 12:12:31 +0000] [2115] [INFO] Handling signal: term
+[2018-06-30 12:12:31 +0000] [2119] [INFO] Worker exiting (pid: 2119)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 12:12:31 +0000] [2126] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 12:12:31 +0000] [2126] [INFO] Listening at: http://127.0.0.1:8000 (2126)
+[2018-06-30 12:12:31 +0000] [2126] [INFO] Using worker: sync
+[2018-06-30 12:12:31 +0000] [2130] [INFO] Booting worker with pid: 2130
+[2018-06-30 12:12:31 +0000] [2115] [INFO] Shutting down: Master
+2126 2130
+[2018-06-30 12:22:31 +0000] [2126] [INFO] Handling signal: term
+[2018-06-30 12:22:31 +0000] [2130] [INFO] Worker exiting (pid: 2130)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 12:22:31 +0000] [2140] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 12:22:31 +0000] [2140] [INFO] Listening at: http://127.0.0.1:8000 (2140)
+[2018-06-30 12:22:31 +0000] [2140] [INFO] Using worker: sync
+[2018-06-30 12:22:31 +0000] [2144] [INFO] Booting worker with pid: 2144
+[2018-06-30 12:22:32 +0000] [2126] [INFO] Shutting down: Master
+2140 2144
+[2018-06-30 12:32:31 +0000] [2140] [INFO] Handling signal: term
+[2018-06-30 12:32:31 +0000] [2144] [INFO] Worker exiting (pid: 2144)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 12:32:31 +0000] [2163] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 12:32:31 +0000] [2163] [INFO] Listening at: http://127.0.0.1:8000 (2163)
+[2018-06-30 12:32:31 +0000] [2163] [INFO] Using worker: sync
+[2018-06-30 12:32:31 +0000] [2167] [INFO] Booting worker with pid: 2167
+[2018-06-30 12:32:32 +0000] [2140] [INFO] Shutting down: Master
+2163 2167
+[2018-06-30 12:42:31 +0000] [2163] [INFO] Handling signal: term
+[2018-06-30 12:42:31 +0000] [2167] [INFO] Worker exiting (pid: 2167)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 12:42:31 +0000] [2174] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 12:42:31 +0000] [2174] [INFO] Listening at: http://127.0.0.1:8000 (2174)
+[2018-06-30 12:42:31 +0000] [2174] [INFO] Using worker: sync
+[2018-06-30 12:42:31 +0000] [2178] [INFO] Booting worker with pid: 2178
+[2018-06-30 12:42:31 +0000] [2163] [INFO] Shutting down: Master
+2174 2178
+[2018-06-30 12:52:31 +0000] [2178] [INFO] Worker exiting (pid: 2178)
+[2018-06-30 12:52:31 +0000] [2174] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('d7d6'), Move.from_uci('f8g7'))
+[2018-06-30 12:52:31 +0000] [2198] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 12:52:31 +0000] [2198] [INFO] Listening at: http://127.0.0.1:8000 (2198)
+[2018-06-30 12:52:31 +0000] [2198] [INFO] Using worker: sync
+[2018-06-30 12:52:31 +0000] [2202] [INFO] Booting worker with pid: 2202
+[2018-06-30 12:52:32 +0000] [2174] [INFO] Shutting down: Master
+2198 2202
+[2018-06-30 13:02:31 +0000] [2202] [INFO] Worker exiting (pid: 2202)
+[2018-06-30 13:02:31 +0000] [2198] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 13:02:31 +0000] [2210] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 13:02:31 +0000] [2210] [INFO] Listening at: http://127.0.0.1:8000 (2210)
+[2018-06-30 13:02:31 +0000] [2210] [INFO] Using worker: sync
+[2018-06-30 13:02:31 +0000] [2214] [INFO] Booting worker with pid: 2214
+[2018-06-30 13:02:32 +0000] [2198] [INFO] Shutting down: Master
+2210 2214
+[2018-06-30 13:12:31 +0000] [2210] [INFO] Handling signal: term
+[2018-06-30 13:12:31 +0000] [2214] [INFO] Worker exiting (pid: 2214)
+(Move.from_uci('d7d6'), Move.from_uci('g7g6'), Move.from_uci('f8g7'))
+[2018-06-30 13:12:31 +0000] [2221] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 13:12:31 +0000] [2221] [INFO] Listening at: http://127.0.0.1:8000 (2221)
+[2018-06-30 13:12:31 +0000] [2221] [INFO] Using worker: sync
+[2018-06-30 13:12:31 +0000] [2225] [INFO] Booting worker with pid: 2225
+[2018-06-30 13:12:32 +0000] [2210] [INFO] Shutting down: Master
+2221 2225
+[2018-06-30 13:22:31 +0000] [2221] [INFO] Handling signal: term
+[2018-06-30 13:22:31 +0000] [2225] [INFO] Worker exiting (pid: 2225)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 13:22:31 +0000] [2249] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 13:22:31 +0000] [2249] [INFO] Listening at: http://127.0.0.1:8000 (2249)
+[2018-06-30 13:22:31 +0000] [2249] [INFO] Using worker: sync
+[2018-06-30 13:22:31 +0000] [2253] [INFO] Booting worker with pid: 2253
+[2018-06-30 13:22:32 +0000] [2221] [INFO] Shutting down: Master
+2249 2253
+[2018-06-30 13:32:31 +0000] [2249] [INFO] Handling signal: term
+[2018-06-30 13:32:31 +0000] [2253] [INFO] Worker exiting (pid: 2253)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 13:32:31 +0000] [2263] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 13:32:31 +0000] [2263] [INFO] Listening at: http://127.0.0.1:8000 (2263)
+[2018-06-30 13:32:31 +0000] [2263] [INFO] Using worker: sync
+[2018-06-30 13:32:31 +0000] [2267] [INFO] Booting worker with pid: 2267
+[2018-06-30 13:32:32 +0000] [2249] [INFO] Shutting down: Master
+2263 2267
+[2018-06-30 13:42:31 +0000] [2267] [INFO] Worker exiting (pid: 2267)
+[2018-06-30 13:42:31 +0000] [2263] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('d7d6'), Move.from_uci('f8g7'))
+[2018-06-30 13:42:31 +0000] [2286] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 13:42:31 +0000] [2286] [INFO] Listening at: http://127.0.0.1:8000 (2286)
+[2018-06-30 13:42:31 +0000] [2286] [INFO] Using worker: sync
+[2018-06-30 13:42:31 +0000] [2290] [INFO] Booting worker with pid: 2290
+[2018-06-30 13:42:32 +0000] [2263] [INFO] Shutting down: Master
+2286 2290
+[2018-06-30 13:52:31 +0000] [2286] [INFO] Handling signal: term
+[2018-06-30 13:52:31 +0000] [2290] [INFO] Worker exiting (pid: 2290)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 13:52:31 +0000] [2297] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 13:52:31 +0000] [2297] [INFO] Listening at: http://127.0.0.1:8000 (2297)
+[2018-06-30 13:52:31 +0000] [2297] [INFO] Using worker: sync
+[2018-06-30 13:52:31 +0000] [2301] [INFO] Booting worker with pid: 2301
+[2018-06-30 13:52:32 +0000] [2286] [INFO] Shutting down: Master
+[2018-06-30 13:58:34 +0000] [2297] [CRITICAL] WORKER TIMEOUT (pid:2301)
+[2018-06-30 13:58:34 +0000] [2301] [INFO] Worker exiting (pid: 2301)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 13:58:34 +0000] [2303] [INFO] Booting worker with pid: 2303
+2297 2303
+[2018-06-30 14:02:31 +0000] [2297] [INFO] Handling signal: term
+[2018-06-30 14:02:31 +0000] [2310] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 14:02:31 +0000] [2310] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2018-06-30 14:02:31 +0000] [2310] [ERROR] Retrying in 1 second.
+[2018-06-30 14:02:32 +0000] [2310] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2018-06-30 14:02:32 +0000] [2310] [ERROR] Retrying in 1 second.
+[2018-06-30 14:02:33 +0000] [2310] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2018-06-30 14:02:33 +0000] [2310] [ERROR] Retrying in 1 second.
+[2018-06-30 14:02:34 +0000] [2310] [ERROR] Connection in use: ('127.0.0.1', 8000)
+[2018-06-30 14:02:34 +0000] [2310] [ERROR] Retrying in 1 second.
+[2018-06-30 14:02:35 +0000] [2303] [INFO] Worker exiting (pid: 2303)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 14:02:35 +0000] [2297] [INFO] Shutting down: Master
+[2018-06-30 14:02:35 +0000] [2310] [INFO] Listening at: http://127.0.0.1:8000 (2310)
+[2018-06-30 14:02:35 +0000] [2310] [INFO] Using worker: sync
+[2018-06-30 14:02:35 +0000] [2314] [INFO] Booting worker with pid: 2314
+2310 2314
+[2018-06-30 14:12:31 +0000] [2310] [INFO] Handling signal: term
+[2018-06-30 14:12:31 +0000] [2314] [INFO] Worker exiting (pid: 2314)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 14:12:31 +0000] [2335] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 14:12:31 +0000] [2335] [INFO] Listening at: http://127.0.0.1:8000 (2335)
+[2018-06-30 14:12:31 +0000] [2335] [INFO] Using worker: sync
+[2018-06-30 14:12:31 +0000] [2339] [INFO] Booting worker with pid: 2339
+[2018-06-30 14:12:32 +0000] [2310] [INFO] Shutting down: Master
+2335 2339
+[2018-06-30 14:22:31 +0000] [2335] [INFO] Handling signal: term
+[2018-06-30 14:22:31 +0000] [2339] [INFO] Worker exiting (pid: 2339)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 14:22:31 +0000] [2349] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 14:22:31 +0000] [2349] [INFO] Listening at: http://127.0.0.1:8000 (2349)
+[2018-06-30 14:22:31 +0000] [2349] [INFO] Using worker: sync
+[2018-06-30 14:22:31 +0000] [2353] [INFO] Booting worker with pid: 2353
+[2018-06-30 14:22:32 +0000] [2335] [INFO] Shutting down: Master
+2349 2353
+[2018-06-30 14:32:31 +0000] [2353] [INFO] Worker exiting (pid: 2353)
+[2018-06-30 14:32:31 +0000] [2349] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 14:32:31 +0000] [2360] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 14:32:31 +0000] [2360] [INFO] Listening at: http://127.0.0.1:8000 (2360)
+[2018-06-30 14:32:31 +0000] [2360] [INFO] Using worker: sync
+[2018-06-30 14:32:31 +0000] [2364] [INFO] Booting worker with pid: 2364
+[2018-06-30 14:32:32 +0000] [2349] [INFO] Shutting down: Master
+2360 2364
+[2018-06-30 14:42:31 +0000] [2360] [INFO] Handling signal: term
+[2018-06-30 14:42:31 +0000] [2364] [INFO] Worker exiting (pid: 2364)
+(Move.from_uci('d7d6'), Move.from_uci('g7g6'), Move.from_uci('f8g7'))
+[2018-06-30 14:42:31 +0000] [2386] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 14:42:31 +0000] [2386] [INFO] Listening at: http://127.0.0.1:8000 (2386)
+[2018-06-30 14:42:31 +0000] [2386] [INFO] Using worker: sync
+[2018-06-30 14:42:31 +0000] [2390] [INFO] Booting worker with pid: 2390
+[2018-06-30 14:42:32 +0000] [2360] [INFO] Shutting down: Master
+2386 2390
+[2018-06-30 14:52:31 +0000] [2390] [INFO] Worker exiting (pid: 2390)
+[2018-06-30 14:52:31 +0000] [2386] [INFO] Handling signal: term
+(Move.from_uci('d7d6'), Move.from_uci('g7g6'), Move.from_uci('f8g7'))
+[2018-06-30 14:52:31 +0000] [2397] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 14:52:31 +0000] [2397] [INFO] Listening at: http://127.0.0.1:8000 (2397)
+[2018-06-30 14:52:31 +0000] [2397] [INFO] Using worker: sync
+[2018-06-30 14:52:31 +0000] [2401] [INFO] Booting worker with pid: 2401
+[2018-06-30 14:52:32 +0000] [2386] [INFO] Shutting down: Master
+2397 2401
+[2018-06-30 15:02:31 +0000] [2397] [INFO] Handling signal: term
+[2018-06-30 15:02:31 +0000] [2401] [INFO] Worker exiting (pid: 2401)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 15:02:31 +0000] [2420] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 15:02:31 +0000] [2420] [INFO] Listening at: http://127.0.0.1:8000 (2420)
+[2018-06-30 15:02:31 +0000] [2420] [INFO] Using worker: sync
+[2018-06-30 15:02:31 +0000] [2424] [INFO] Booting worker with pid: 2424
+[2018-06-30 15:02:32 +0000] [2397] [INFO] Shutting down: Master
+2420 2424
+[2018-06-30 15:12:31 +0000] [2420] [INFO] Handling signal: term
+[2018-06-30 15:12:31 +0000] [2424] [INFO] Worker exiting (pid: 2424)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 15:12:32 +0000] [2431] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 15:12:32 +0000] [2431] [INFO] Listening at: http://127.0.0.1:8000 (2431)
+[2018-06-30 15:12:32 +0000] [2431] [INFO] Using worker: sync
+[2018-06-30 15:12:32 +0000] [2435] [INFO] Booting worker with pid: 2435
+[2018-06-30 15:12:32 +0000] [2420] [INFO] Shutting down: Master
+2431 2435
+[2018-06-30 15:22:31 +0000] [2431] [INFO] Handling signal: term
+[2018-06-30 15:22:31 +0000] [2435] [INFO] Worker exiting (pid: 2435)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 15:22:32 +0000] [2445] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 15:22:32 +0000] [2445] [INFO] Listening at: http://127.0.0.1:8000 (2445)
+[2018-06-30 15:22:32 +0000] [2445] [INFO] Using worker: sync
+[2018-06-30 15:22:32 +0000] [2449] [INFO] Booting worker with pid: 2449
+[2018-06-30 15:22:32 +0000] [2431] [INFO] Shutting down: Master
+2445 2449
+[2018-06-30 15:32:31 +0000] [2445] [INFO] Handling signal: term
+[2018-06-30 15:32:31 +0000] [2449] [INFO] Worker exiting (pid: 2449)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 15:32:32 +0000] [2469] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 15:32:32 +0000] [2469] [INFO] Listening at: http://127.0.0.1:8000 (2469)
+[2018-06-30 15:32:32 +0000] [2469] [INFO] Using worker: sync
+[2018-06-30 15:32:32 +0000] [2473] [INFO] Booting worker with pid: 2473
+[2018-06-30 15:32:32 +0000] [2445] [INFO] Shutting down: Master
+2469 2473
+[2018-06-30 15:42:31 +0000] [2469] [INFO] Handling signal: term
+[2018-06-30 15:42:31 +0000] [2473] [INFO] Worker exiting (pid: 2473)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 15:42:32 +0000] [2480] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 15:42:32 +0000] [2480] [INFO] Listening at: http://127.0.0.1:8000 (2480)
+[2018-06-30 15:42:32 +0000] [2480] [INFO] Using worker: sync
+[2018-06-30 15:42:32 +0000] [2484] [INFO] Booting worker with pid: 2484
+[2018-06-30 15:42:32 +0000] [2469] [INFO] Shutting down: Master
+2480 2484
+[2018-06-30 15:52:31 +0000] [2484] [INFO] Worker exiting (pid: 2484)
+[2018-06-30 15:52:31 +0000] [2480] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 15:52:32 +0000] [2491] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 15:52:32 +0000] [2491] [INFO] Listening at: http://127.0.0.1:8000 (2491)
+[2018-06-30 15:52:32 +0000] [2491] [INFO] Using worker: sync
+[2018-06-30 15:52:32 +0000] [2495] [INFO] Booting worker with pid: 2495
+[2018-06-30 15:52:32 +0000] [2480] [INFO] Shutting down: Master
+2491 2495
+[2018-06-30 16:02:31 +0000] [2495] [INFO] Worker exiting (pid: 2495)
+[2018-06-30 16:02:31 +0000] [2491] [INFO] Handling signal: term
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 16:02:32 +0000] [2514] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 16:02:32 +0000] [2514] [INFO] Listening at: http://127.0.0.1:8000 (2514)
+[2018-06-30 16:02:32 +0000] [2514] [INFO] Using worker: sync
+[2018-06-30 16:02:32 +0000] [2518] [INFO] Booting worker with pid: 2518
+[2018-06-30 16:02:32 +0000] [2491] [INFO] Shutting down: Master
+2514 2518
+[2018-06-30 16:12:31 +0000] [2514] [INFO] Handling signal: term
+[2018-06-30 16:12:31 +0000] [2518] [INFO] Worker exiting (pid: 2518)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 16:12:32 +0000] [2525] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 16:12:32 +0000] [2525] [INFO] Listening at: http://127.0.0.1:8000 (2525)
+[2018-06-30 16:12:32 +0000] [2525] [INFO] Using worker: sync
+[2018-06-30 16:12:32 +0000] [2529] [INFO] Booting worker with pid: 2529
+[2018-06-30 16:12:32 +0000] [2514] [INFO] Shutting down: Master
+2525 2529
+[2018-06-30 16:22:32 +0000] [2525] [INFO] Handling signal: term
+[2018-06-30 16:22:32 +0000] [2529] [INFO] Worker exiting (pid: 2529)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 16:22:32 +0000] [2539] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 16:22:32 +0000] [2539] [INFO] Listening at: http://127.0.0.1:8000 (2539)
+[2018-06-30 16:22:32 +0000] [2539] [INFO] Using worker: sync
+[2018-06-30 16:22:32 +0000] [2543] [INFO] Booting worker with pid: 2543
+[2018-06-30 16:22:32 +0000] [2525] [INFO] Shutting down: Master
+2539 2543
+[2018-06-30 16:32:32 +0000] [2539] [INFO] Handling signal: term
+[2018-06-30 16:32:32 +0000] [2543] [INFO] Worker exiting (pid: 2543)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 16:32:32 +0000] [2620] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 16:32:32 +0000] [2620] [INFO] Listening at: http://127.0.0.1:8000 (2620)
+[2018-06-30 16:32:32 +0000] [2620] [INFO] Using worker: sync
+[2018-06-30 16:32:32 +0000] [2624] [INFO] Booting worker with pid: 2624
+[2018-06-30 16:32:32 +0000] [2539] [INFO] Shutting down: Master
+2620 2624
+[2018-06-30 16:42:32 +0000] [2620] [INFO] Handling signal: term
+[2018-06-30 16:42:32 +0000] [2624] [INFO] Worker exiting (pid: 2624)
+(Move.from_uci('d7d6'), Move.from_uci('g7g6'), Move.from_uci('f8g7'))
+[2018-06-30 16:42:32 +0000] [2631] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 16:42:32 +0000] [2631] [INFO] Listening at: http://127.0.0.1:8000 (2631)
+[2018-06-30 16:42:32 +0000] [2631] [INFO] Using worker: sync
+[2018-06-30 16:42:32 +0000] [2635] [INFO] Booting worker with pid: 2635
+[2018-06-30 16:42:32 +0000] [2620] [INFO] Shutting down: Master
+2631 2635
+[2018-06-30 16:52:32 +0000] [2631] [INFO] Handling signal: term
+[2018-06-30 16:52:32 +0000] [2635] [INFO] Worker exiting (pid: 2635)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 16:52:32 +0000] [2642] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 16:52:32 +0000] [2642] [INFO] Listening at: http://127.0.0.1:8000 (2642)
+[2018-06-30 16:52:32 +0000] [2642] [INFO] Using worker: sync
+[2018-06-30 16:52:32 +0000] [2646] [INFO] Booting worker with pid: 2646
+[2018-06-30 16:52:32 +0000] [2631] [INFO] Shutting down: Master
+2642 2646
+[2018-06-30 17:02:32 +0000] [2642] [INFO] Handling signal: term
+[2018-06-30 17:02:32 +0000] [2646] [INFO] Worker exiting (pid: 2646)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 17:02:32 +0000] [2667] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 17:02:32 +0000] [2667] [INFO] Listening at: http://127.0.0.1:8000 (2667)
+[2018-06-30 17:02:32 +0000] [2667] [INFO] Using worker: sync
+[2018-06-30 17:02:32 +0000] [2671] [INFO] Booting worker with pid: 2671
+[2018-06-30 17:02:32 +0000] [2642] [INFO] Shutting down: Master
+2667 2671
+[2018-06-30 17:12:32 +0000] [2667] [INFO] Handling signal: term
+[2018-06-30 17:12:32 +0000] [2671] [INFO] Worker exiting (pid: 2671)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 17:12:32 +0000] [2678] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 17:12:32 +0000] [2678] [INFO] Listening at: http://127.0.0.1:8000 (2678)
+[2018-06-30 17:12:32 +0000] [2678] [INFO] Using worker: sync
+[2018-06-30 17:12:32 +0000] [2682] [INFO] Booting worker with pid: 2682
+[2018-06-30 17:12:32 +0000] [2667] [INFO] Shutting down: Master
+2678 2682
+[2018-06-30 17:22:32 +0000] [2678] [INFO] Handling signal: term
+[2018-06-30 17:22:32 +0000] [2682] [INFO] Worker exiting (pid: 2682)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 17:22:32 +0000] [2744] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 17:22:32 +0000] [2744] [INFO] Listening at: http://127.0.0.1:8000 (2744)
+[2018-06-30 17:22:32 +0000] [2744] [INFO] Using worker: sync
+[2018-06-30 17:22:32 +0000] [2748] [INFO] Booting worker with pid: 2748
+[2018-06-30 17:22:32 +0000] [2678] [INFO] Shutting down: Master
+2744 2748
+[2018-06-30 17:32:32 +0000] [2744] [INFO] Handling signal: term
+[2018-06-30 17:32:32 +0000] [2748] [INFO] Worker exiting (pid: 2748)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 17:32:32 +0000] [3054] [INFO] Starting gunicorn 19.8.1
+[2018-06-30 17:32:32 +0000] [3054] [INFO] Listening at: http://127.0.0.1:8000 (3054)
+[2018-06-30 17:32:32 +0000] [3054] [INFO] Using worker: sync
+[2018-06-30 17:32:32 +0000] [3058] [INFO] Booting worker with pid: 3058
+[2018-06-30 17:32:32 +0000] [2744] [INFO] Shutting down: Master
+[2018-06-30 17:38:08 +0000] [3054] [INFO] Handling signal: term
+[2018-06-30 17:38:08 +0000] [3058] [INFO] Worker exiting (pid: 3058)
+(Move.from_uci('g7g6'), Move.from_uci('f8g7'), Move.from_uci('d7d6'))
+[2018-06-30 17:38:09 +0000] [3054] [INFO] Shutting down: Master

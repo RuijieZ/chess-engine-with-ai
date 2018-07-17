@@ -356,7 +356,7 @@ int compareMoveMin(const void * a, const void * b) {
 
 
 
-#define python_wrapper
+// #define python_wrapper
 
 #ifdef python_wrapper
 #include <Python.h>

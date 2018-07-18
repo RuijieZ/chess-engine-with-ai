@@ -38,7 +38,10 @@ function queryNextMove(async) {
         success: function(result) {
             var serverMove = {                      // reformat the move so that the frontend code can understand
                 'from': result.substring(0,2),
-                'to': result.substring(2,result.length)
+                'to': result.substring(2,4)
+            }
+            if (result.length == 5) {
+                serverMove['promotion'] = result.substring(4,5);    // promotion
             }
             window.game.chess.move(serverMove);     // make the move
             console.log('the move returned from server is: ' + result);
@@ -81,7 +84,7 @@ function AISelfPaly() {
         possibleMoves.length === 0) return;
     else {
         queryNextMove(false);
-        window.setTimeout(AISelfPaly, 2000);
+        window.setTimeout(AISelfPaly, 500);
     }
 
 }

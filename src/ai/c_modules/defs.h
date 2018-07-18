@@ -279,6 +279,8 @@ extern int GetPvLine(const int depth, S_BOARD *pos);
 extern void ClearPvTable(S_PVTABLE *table);
 
 extern int Mirror64[64];
+extern int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth);
+extern int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth);
 #define MIRROR64(sq) (Mirror64[(sq)])
 
 #endif

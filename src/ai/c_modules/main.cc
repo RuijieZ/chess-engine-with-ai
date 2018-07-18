@@ -431,7 +431,7 @@ int main(int argc, char const *argv[])
 	AllInit();
 
 	S_BOARD board[1];
-	const char* fen = argv[1];
+	char* fen = (char*)argv[1];
 	const int side = atoi(argv[2]); // white == 0, black == 1
 	ParseFen(fen, board);
 	InitPvTable(board->PvTable);

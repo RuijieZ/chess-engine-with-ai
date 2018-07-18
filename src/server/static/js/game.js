@@ -25,7 +25,7 @@ class Game {
 /*
 Helper functions
 */
-function queryNextMove(async) {
+function queryNextMove() {
     var chess = window.game.chess;
     var data = {
         'fen': chess.fen(),
@@ -57,7 +57,7 @@ function queryNextMove(async) {
             setTimeout(data, retryAfter * 1000);
           }
         },
-        async: async
+        async: true
     });
 }
 
@@ -83,7 +83,7 @@ function AISelfPaly() {
         this.game.chess.in_draw() === true ||
         possibleMoves.length === 0) return;
     else {
-        queryNextMove(false);
+        queryNextMove();
         window.setTimeout(AISelfPaly, 1500);
     }
 
@@ -147,9 +147,48 @@ var updateStatus = function() {
 // for castling, en passant, pawn promotion
 var onSnapEnd = function() {
     window.game.board.position(window.game.chess.fen());
+    var chess = window.game.chess;
     if ((chess.turn() === BLACK && window.game.players['b'] == AI) || (chess.turn() === WHITE && window.game.players['w'] == AI))
-        queryNextMove(true);
+        queryNextMove();
 };
+
+function AIvsHuman() {
+    var cfg = {
+        draggable: true,
+        orientation: 'black',
+        position: 'start',
+        dropOffBoard: 'snapback', // this is the default
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd
+    };
+    var chess = new Chess();
+    var board = ChessBoard('board', cfg);
+    window.game = new Game(board, chess);
+    window.game.players = {
+        'w': AI,
+        'b': HUMAN,
+    }
+    queryNextMove();
+}
+
+function HumanVsAI() {
+    var cfg = {
+        position: 'start',
+        draggable: true,
+        dropOffBoard: 'snapback', // this is the default
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd
+    };
+    var chess = new Chess();
+    var board = ChessBoard('board', cfg);
+    window.game = new Game(board, chess);
+    window.game.players = {
+        'w': HUMAN,
+        'b': AI,
+    }
+}
 
 var init = function() {
     var cfg = {
@@ -168,5 +207,12 @@ var init = function() {
         AISelfPaly();
     });
 
+    $("#AIvsHUMAN").click(function() {
+        AIvsHuman();
+    });
+
+    $("#HumanVsAI").click(function() {
+        HumanVsAI();
+    });
 };
 $(document).ready(init);

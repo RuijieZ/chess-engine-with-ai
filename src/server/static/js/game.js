@@ -25,7 +25,7 @@ class Game {
 /*
 Helper functions
 */
-function queryNextMove() {
+function queryNextMove(async) {
     var chess = window.game.chess;
     var data = {
         'fen': chess.fen(),
@@ -57,7 +57,7 @@ function queryNextMove() {
             setTimeout(data, retryAfter * 1000);
           }
         },
-        async: true
+        async: async
     });
 }
 
@@ -84,8 +84,8 @@ function AISelfPaly() {
         this.game.chess.in_draw() === true ||
         possibleMoves.length === 0) return;
     else {
-        queryNextMove();
-        window.setTimeout(AISelfPaly, 3000);
+        queryNextMove(false);
+        window.setTimeout(AISelfPaly, 1000);
     }
 
 }
@@ -150,7 +150,7 @@ var onSnapEnd = function() {
     window.game.board.position(window.game.chess.fen());
     var chess = window.game.chess;
     if ((chess.turn() === BLACK && window.game.players['b'] == AI) || (chess.turn() === WHITE && window.game.players['w'] == AI))
-        queryNextMove();
+        queryNextMove(true);
 };
 
 function AIvsHuman() {
@@ -170,7 +170,7 @@ function AIvsHuman() {
         'w': AI,
         'b': HUMAN,
     }
-    queryNextMove();
+    queryNextMove(true);
 }
 
 function HumanVsAI() {

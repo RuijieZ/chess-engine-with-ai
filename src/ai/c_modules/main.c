@@ -293,7 +293,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 	if (legalMovesCount == 0) {
 		if (InCheck == TRUE) {						// checkmate
-			bestScore = -colour * (LOSS_SCORE + pos->ply);					// LOSS THE GAME
+			bestScore = LOSS_SCORE;					// LOSS THE GAME
 		} else {									// stalemate, draw
 			bestScore = DRAW_SCORE;
 		}

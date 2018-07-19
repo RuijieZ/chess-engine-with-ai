@@ -192,12 +192,12 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		return 0;
 	}
 
-	S_PVENTRY* entry = ProbePvTable(pos);
-	info->node_count ++;
-	if (entry != NULL && entry->depth >= depth) {
-		info->stored += 1;
-		return entry->score;
-	}
+	// S_PVENTRY* entry = ProbePvTable(pos);
+	// info->node_count ++;
+	// if (entry != NULL && entry->depth >= depth) {
+	// 	info->stored += 1;
+	// 	return entry->score;
+	// }
 
 	// base case
 	if (depth <= 0) {
@@ -231,9 +231,10 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	GenerateAllMoves(pos, moves);
 
 	// use pv move to help
-	if(entry != NULL) {
+	int Pvmove = ProbePvTable(pos);
+	if(Pvmove != NOMOVE) {
 		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
-			if( moves->moves[MoveNum].move == entry->move) {
+			if( moves->moves[MoveNum].move == Pvmove) {
 				moves->moves[MoveNum].score = 2000000;
 				// printf("Pv move found \n");		
 				break;
@@ -279,7 +280,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 					pos->searchKillers[1][pos->ply] = pos->searchKillers[0][pos->ply];
 					pos->searchKillers[0][pos->ply] = move;
 				}
-				StorePvMove(pos, bestMove, depth, beta, 0);
+				// StorePvMove(pos, bestMove, depth, beta, 0);
 				return beta;
 			}
 			if(!(move & MFLAGCAP)) {
@@ -312,7 +313,8 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
  if (alpha > OldAlpha)
  {
  	/* code */
-	StorePvMove(pos, bestMove, depth, bestScore, 0);
+	// StorePvMove(pos, bestMove, depth, bestScore, 0);
+	StorePvMove(pos, bestMove);
 
  }
 
@@ -407,7 +409,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			printf("End Game\n");
 			BRANCH_REDUCE_FACTOR = 1;
 			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 10;
+			SEARCH_DEPTH = 8;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;
@@ -429,7 +431,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			// info.node_count = 0;
 			// info.stored = 0;
 		}
-		printf("%s\n", PrMove(ProbePvTable(board)->move));
+		printf("%s\n", PrMove(ProbePvTable(board)));
 		// ASSERT(CheckBoard(board));
 		return 0;
 	}

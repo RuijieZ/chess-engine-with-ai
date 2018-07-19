@@ -276,8 +276,8 @@ extern int evaluation(const S_BOARD* pos);
 
 // pvtable.c
 extern void InitPvTable(S_PVTABLE *table);
-extern void StorePvMove(const S_BOARD *pos, const int move, int depth, int bestScore, int flag);
-extern S_PVENTRY* ProbePvTable(const S_BOARD *pos);
+extern void StorePvMove(const S_BOARD *pos, const int move);
+extern int ProbePvTable(const S_BOARD *pos);
 extern int GetPvLine(const int depth, S_BOARD *pos);
 extern void ClearPvTable(S_PVTABLE *table);
 

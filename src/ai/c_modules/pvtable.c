@@ -7,7 +7,7 @@ int GetPvLine(const int depth, S_BOARD *pos) {
 
 	ASSERT(depth < MAXDEPTH);
 
-	int move = ProbePvTable(pos)->move;
+	int move = ProbePvTable(pos);
 	int count = 0;
 	
 	while(move != NOMOVE && count < depth) {
@@ -20,7 +20,7 @@ int GetPvLine(const int depth, S_BOARD *pos) {
 		} else {
 			break;
 		}		
-		move = ProbePvTable(pos)->move;	
+		move = ProbePvTable(pos);	
 	}
 	
 	while(pos->ply > 0) {
@@ -31,7 +31,7 @@ int GetPvLine(const int depth, S_BOARD *pos) {
 	
 }
 
-const int PvSize = 0x100000 * 200;
+const int PvSize = 0x100000 * 2;
 
 void ClearPvTable(S_PVTABLE *table) {
 
@@ -43,39 +43,36 @@ void ClearPvTable(S_PVTABLE *table) {
   }
 }
 
-void InitPvTable(S_PVTABLE *table) { 
+void InitPvTable(S_PVTABLE *table) {  
   
     table->numEntries = PvSize / sizeof(S_PVENTRY);
     table->numEntries -= 2;
-    // if(table->pTable != NULL) free(table->pTable);
+    if(table->pTable != NULL) free(table->pTable);
     table->pTable = (S_PVENTRY *) malloc(table->numEntries * sizeof(S_PVENTRY));
     ClearPvTable(table);
-    printf("table init complete with %d entries\n",table->numEntries);
+    printf("PvTable init complete with %d entries\n",table->numEntries);
 	
 }
 
-void StorePvMove(const S_BOARD *pos, const int move, int depth, int score, int flag) {
+void StorePvMove(const S_BOARD *pos, const int move) {
 
 	int index = pos->posKey % pos->PvTable->numEntries;
 	ASSERT(index >= 0 && index <= pos->PvTable->numEntries - 1);
 	
 	pos->PvTable->pTable[index].move = move;
-	pos->PvTable->pTable[index].depth = depth;
-	pos->PvTable->pTable[index].score = score;
-	pos->PvTable->pTable[index].flag = flag;
     pos->PvTable->pTable[index].posKey = pos->posKey;
 }
 
-S_PVENTRY* ProbePvTable(const S_BOARD *pos) {
+int ProbePvTable(const S_BOARD *pos) {
 
 	int index = pos->posKey % pos->PvTable->numEntries;
 	ASSERT(index >= 0 && index <= pos->PvTable->numEntries - 1);
 	
 	if( pos->PvTable->pTable[index].posKey == pos->posKey ) {
-		return &pos->PvTable->pTable[index];
+		return pos->PvTable->pTable[index].move;
 	}
 	
-	return NULL;
+	return NOMOVE;
 }
 
 

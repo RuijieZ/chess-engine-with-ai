@@ -344,9 +344,9 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			SEARCH_DEPTH = 16;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
-			BRANCH_REDUCE_FACTOR = 1;
-			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 10;
+			BRANCH_REDUCE_FACTOR = 2;
+			REDUCE_DEPTH = 4;
+			SEARCH_DEPTH = 12;
 		}
 
 		rootPoskey = board->posKey;

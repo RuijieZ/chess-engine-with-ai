@@ -1,47 +1,49 @@
 #include <stdio.h>
 #include <stdlib.h>     /* qsort */
 #include "defs.h"
-#include "uthash.h"		// dictionary implementation
+// using namespace std;
 
 int BRANCH_REDUCE_FACTOR = 3;
 int REDUCE_DEPTH = 4;
 int SEARCH_DEPTH = 10;
+int node_count = 0;
+int stored = 0;
+U64 rootPoskey;
 
-struct board_result {
-    U64 id;            			/* we'll use this field as the key */
-    int depth;					/* depth of the last search */
-    int s_score;
-    UT_hash_handle hh; 			/* makes this structure hashable */
-};
+#define UPPER_BOUND_FLAG 0
+#define LOWER_BOUND_FLAG 1
+#define EXACT_FLAG 2
+#define NOTFOUND -1000000000
+#define MAXDEPTH 64
 
-struct board_result *d= NULL;	// default value
+static void ClearForSearch(S_BOARD *pos) {
 
-void add_score(struct board_result *s) {
-    HASH_ADD_INT(d, id, s);
-}
+	int index = 0;
+	int index2 = 0;
 
-struct board_result *find_score(int user_id) {
-    struct board_result *s;
+	for(index = 0; index < 13; ++index) {
+		for(index2 = 0; index2 < BRD_SQ_NUM; ++index2) {
+			pos->searchHistory[index][index2] = 0;
+		}
+	}
 
-    HASH_FIND_INT( d, &user_id, s);
-    return s;
+	for(index = 0; index < 2; ++index) {
+		for(index2 = 0; index2 < MAXDEPTH; ++index2) {
+			pos->searchKillers[index][index2] = 0;
+		}
+	}
 }
 
 static int IsRepetition(const S_BOARD *pos) {
 	int index = 0;
-	for(index = pos->hisPly - pos->fiftyMove; index < pos->hisPly-1; ++index) {	
+	for(index = pos->hisPly - pos->fiftyMove; index < pos->hisPly-1; ++index) {
 		ASSERT(index >= 0 && index < MAXGAMEMOVES);
 		if(pos->posKey == pos->history[index].posKey) {
 			return TRUE;
 		}
-	}	
+	}
 	return FALSE;
 }
-
-int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth);
-int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth);
-// char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_MOVELIST* moves);
-
 
 static void PickNextMove(int moveNum, S_MOVELIST *list) {
 	S_MOVE temp;
@@ -65,124 +67,131 @@ static void PickNextMove(int moveNum, S_MOVELIST *list) {
 	list->moves[bestNum] = temp;
 }
 
-// char *AlphaBetaRoot(S_BOARD *pos, int alpha, int beta, int depth, int isMax, S_MOVELIST* moves) {
-// 	int legalMovesCount = 0;
-// 	int move;
-// 	int bestScore = isMax ? BLACK_WIN_SCORE-1 : WHITE_WIN_SCORE+1;	// make sure that this will be updated
-// 	int bestMove = 0;
-// 	int curScore;
+int min(int a, int b) {
+	return a <= b ? a : b;
+}
 
-// 	// base case
-// 	if (depth == 0)
-// 		return NULL;
-
-// 	for (int i = 0; i < moves->count; ++i) {
-// 		PickNextMove(i, moves);
-// 		move = moves->moves[i].move;
-// 		if (!MakeMove(pos, move)) {
-// 			// moves->moves[i].score = NOMOVE;
-// 			continue;
-// 		}
-
-// 		if (isMax == TRUE) {	// calling max function
-// 			curScore = AlphaBetaMin(pos, alpha, beta, depth-1);
-// 			TakeMove(pos);
-// 			if (curScore > bestScore) {
-// 				bestScore = curScore;
-// 				bestMove = move;
-// 			}
-
-// 			if(bestScore > alpha) {
-// 				alpha = bestScore;
-// 			}
-
-// 			if (alpha >= beta) {
-// 				break;
-// 			}
-// 		} else {				// calling min function
-// 			curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
-// 			TakeMove(pos);
-// 			if (curScore < bestScore) {
-// 				bestScore = curScore;
-// 				bestMove = move;
-// 			}
-
-// 			if(bestScore < beta) {
-// 				beta = bestScore;
-// 			}
-
-// 			if (alpha >= beta) {
-// 				break;
-// 			}
-// 		}
-// 		// moves->moves[i].score = bestScore;
-// 		legalMovesCount += 1;
-
-// 	}
-
-// 	if (legalMovesCount == 0) {
-// 		return NULL;	// no moves to make
-// 	} else {
-// 		return PrMove(bestMove);
-// 	}
-// }
-
-int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
+int max(int a, int b) {
+	return a >= b ? a : b;
+}
 
 
-	if(IsRepetition(pos)) {
+int Quiescence(S_BOARD *pos, int alpha, int beta, int colour) {
+	int MoveNum = 0;
+	int Legal = 0;
+	int Score;
+	S_MOVELIST list[1];
+
+	ASSERT(CheckBoard(pos));
+	ASSERT(beta > alpha);
+
+	node_count++;
+
+	if(IsRepetition(pos))
 		return 0;
+
+	if(pos->ply > MAXDEPTH - 1)
+		return evaluation(pos) * colour;
+
+	Score = evaluation(pos) * colour;
+
+	if(Score >= beta)
+		return beta;
+
+	if(Score > alpha)
+		alpha = Score;
+
+	GenerateAllCaps(pos, list);
+
+	Score = LOSS_SCORE - 1;
+
+	for(MoveNum = 0; MoveNum < list->count; ++MoveNum) {
+		PickNextMove(MoveNum, list);
+
+		if (!MakeMove(pos, list->moves[MoveNum].move))
+			continue;
+
+		Legal++;
+		Score = -Quiescence(pos, -beta, -alpha, -colour);
+		TakeMove(pos);
+
+		if(Score > alpha) {
+			if(Score >= beta) {
+				return beta;
+			}
+			alpha = Score;
+		}
 	}
 
-	// base case
-	if (depth <= 0)
-		return evaluation(pos);
+	return alpha;
+}
 
-	// struct board_result *br= find_score(pos->posKey);	// default value
-	// if (br != NULL) {
-	// 	if (br->depth >= depth) {
-	// 		return br->s_score;
-	// 	}
+
+int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
+	S_PVENTRY* entry = ProbePvTable(pos);
+	if (entry != NULL && entry->depth >= depth) {
+		stored += 1;
+		return entry->score;
+	}
+	node_count += 1;
+
+	// base case
+	if (depth <= 0) {
+		int score = Quiescence(pos, alpha, beta, colour);;
+		// StorePvMove(pos, NOMOVE, depth, score, 0);
+
+		return score;
+		// if (score > beta)
+		// 	return beta;
+		// return score;
+		// return Quiescence(pos, alpha, beta, colour);
+	}
+
+	// if(IsRepetition(pos)) {
+	// 	return 0;
 	// }
+
 	S_MOVELIST moves[1];
 	int legalMovesCount = 0;
+	int OldAlpha = alpha;
 	int move;
-	int bestScore = BLACK_WIN_SCORE - 1;		// make sure that this will be updated
+	int bestScore = LOSS_SCORE - 1;		// make sure that this will be updated
 	int bestMove = 0;
 	int curScore;
 	GenerateAllMoves(pos, moves);
 
 	// use pv move to help
-	int PvMove = ProbePvTable(pos);
-	if( PvMove != NOMOVE) {
+	if(entry != NULL) {
 		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
-			if( moves->moves[MoveNum].move == PvMove) {
+			if( moves->moves[MoveNum].move == entry->move) {
 				moves->moves[MoveNum].score = 2000000;
-				//printf("Pv move found \n");
+				// printf("Pv move found \n");		
 				break;
 			}
 		}
 	}
 
-
-
-	int OldAlpha = alpha;
 	for (int i = 0; i < moves->count; ++i) {
-		// move = moves->moves[i].move;
 		PickNextMove(i, moves);
 		move = moves->moves[i].move;
+		// if (pos->posKey == rootPoskey && i==0 && depth == 2) {
+		// 	// printf("%s\n", PrMove(move));
+		// 	printf("%s\n", "start");
+
+		// 	for (int i=0; i < moves->count; i++) {
+		// 		printf("%s\n", PrMove(moves->moves[i].move));
+		// 	}
+		// }
 
 		if (!MakeMove(pos, move)) {
 			continue;
 		}
 
-
-		// calling min function
+		// recrusion to check for the result
 		if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR){
-			curScore = AlphaBetaMin(pos, alpha, beta, depth-1);	// only search the first two moves to full depth
-		}
-		else {
-			curScore = AlphaBetaMin(pos, alpha, beta, depth-REDUCE_DEPTH);
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour);	// only search the first two moves to full depth
+		} else {
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour);
 		}
 		legalMovesCount += 1;
 
@@ -190,283 +199,165 @@ int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth) {
 		if (curScore > bestScore) {
 			bestScore = curScore;
 			bestMove = move;
-
 		}
-		if(bestScore > alpha)
+		if(bestScore > alpha) {
 			alpha = bestScore;
-		if (alpha >= beta)	 { // beta is lower than alpha, meaning that min player will choose another path for sure
-			bestScore = beta;
-			break;
-		}
-
-	}
-
-	if (legalMovesCount == 0) {
-		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
-		if (InCheck == TRUE) {	// checkmate
-			bestScore = BLACK_WIN_SCORE;
-		} else {				// stalemate, draw
-			bestScore = DRAW_SCORE;
-		}
-	}
-
-	// // store the result we computed
-	// // free(br);	// get rid of the old one, if it is NULL, no action occurs
-	// if (br == NULL) {
-	// 	br = malloc(sizeof(struct board_result));
-	// 	br->s_score = bestScore;
-	// 	br->id = pos->posKey;
-	// 	br->depth = depth;
-	// } else {
-	// 	br->s_score =bestScore;
-	// 	br->depth = depth;
-	// }
-	// add_score(br);
-	if(alpha != OldAlpha) {
-		StorePvMove(pos, bestMove);
-	}
-
-	return bestScore;
-
-}
-
-
-int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth) {
-
-
-	if(IsRepetition(pos)) {
-		return 0;
-	}
-	// base case
-	if (depth <= 0)
-		return evaluation(pos);
-	// struct board_result *br= find_score(pos->posKey);	// default value
-	// if (br != NULL) {
-	// 	if (br->depth >= depth) {
-	// 		return br->s_score;
-	// 	}
-	// }
-
-	S_MOVELIST moves[1];
-
-	int legalMovesCount = 0;
-	int move;
-	int bestScore = WHITE_WIN_SCORE + 1;		// make sure that this will be updated
-	int bestMove = 0;
-	int curScore;
-	GenerateAllMoves(pos, moves);
-
-	int PvMove = ProbePvTable(pos);
-	if( PvMove != NOMOVE) {
-		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
-			if( moves->moves[MoveNum].move == PvMove) {
-				moves->moves[MoveNum].score = 2000000;
-				//printf("Pv move found \n");
-				break;
+			if (alpha >= beta) {
+				// cutoff
+				if(!(move & MFLAGCAP)) {
+					pos->searchKillers[1][pos->ply] = pos->searchKillers[0][pos->ply];
+					pos->searchKillers[0][pos->ply] = move;
+				}
+				StorePvMove(pos, bestMove, depth, beta, 0);
+				return beta;
+			}
+			if(!(move & MFLAGCAP)) {
+				pos->searchHistory[pos->pieces[FROMSQ(bestMove)]][TOSQ(bestMove)] += depth;
 			}
 		}
-	}
-
-
-
-	int OldBeta = beta;
-	for (int i = 0; i < moves->count; ++i) {
-		// move = moves->moves[i].move;
-		PickNextMove(i, moves);
-		move = moves->moves[i].move;
-		if (!MakeMove(pos, move)) {
-			continue;
-		}
-
-		// calling min function
-		if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR) {
-			curScore = AlphaBetaMax(pos, alpha, beta, depth-1);
-		}
-		else {
-			curScore = AlphaBetaMax(pos, alpha, beta, depth-REDUCE_DEPTH);
-		}
-		legalMovesCount += 1;
-		TakeMove(pos);
-		if (curScore < bestScore) {
-			bestScore = curScore;
-			bestMove = move;
-		}
-		if(bestScore < beta)
-			beta = bestScore;
-		if (alpha >= beta){// beta is lower than alpha, meaning that max player will choose another path for sure
-			bestScore = alpha;
-			break;
-		}
 
 	}
+
 
 	if (legalMovesCount == 0) {
 		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
-		if (InCheck == TRUE) {	// checkmate
-			bestScore = WHITE_WIN_SCORE;
-		} else {				// stalemate, draw
+		if (InCheck == TRUE) {						// checkmate
+			bestScore = -colour * (LOSS_SCORE + pos->ply);					// LOSS THE GAME
+		} else {									// stalemate, draw
 			bestScore = DRAW_SCORE;
 		}
 	}
 
-	// free(br);	// get rid of the old one, if it is NULL, no action occurs
-	// if (br == NULL) {
-	// 	br = malloc(sizeof(struct board_result));
-	// 	br->s_score = bestScore;
-	// 	br->id = pos->posKey;
-	// 	br->depth = depth;
+	// b.score = bestScore;
+	// if (bestScore <= OldAlpha) {
+ //        b.flag = UPPER_BOUND_FLAG;
+	// } else if (bestScore >= beta) {
+ //        b.flag = LOWER_BOUND_FLAG;
 	// } else {
-	// 	br->s_score =bestScore;
-	// 	br->depth = depth;
+ //        b.flag = EXACT_FLAG;
 	// }
-	// add_score(br);
+	// b.depth = depth;
+	// result_dict[pos->posKey] = b;
+	// StoreSearchResult(pos, depth, bestScore);
+ if (alpha > OldAlpha)
+ {
+ 	/* code */
+	StorePvMove(pos, bestMove, depth, bestScore, 0);
 
-	if(beta != OldBeta) {
-		StorePvMove(pos, bestMove);
-	}
+ }
 
 	return bestScore;
 }
-
-
-int compareMoveMax (const void * a, const void * b) {
-  return ((S_MOVE*)a)->score  - ((S_MOVE*)b)->score;
-}
-
-int compareMoveMin(const void * a, const void * b) {
-  return ((S_MOVE*)b)->score  - ((S_MOVE*)a)->score;
-}
-
-// char* IterativeDeepning(S_BOARD *pos, int alpha, int beta, int depth, int isMax) {
-// 	S_MOVELIST moves[1];
-// 	GenerateAllMoves(pos, moves);
-// 	char *bestMove;
-// 	if (isMax) {
-// 		for (int d = 1; d <= depth; ++d) {
-// 			bestMove = AlphaBetaRoot(pos, alpha, beta, d, isMax, moves);
-// 			qsort(moves->moves, moves->count, sizeof(S_MOVE), compareMoveMax);
-// 		}
-// 	} else {
-// 		for (int d = 1; d <= depth; ++d) {
-// 			bestMove = AlphaBetaRoot(pos, alpha, beta, d, isMax, moves);
-// 			qsort(moves->moves, moves->count, sizeof(S_MOVE), compareMoveMin);
-// 		}
-// 	}
-
-// 	return bestMove;
-// }
-
 
 
 // #define python_wrapper
 
 #ifdef python_wrapper
-#include <Python.h>
+	#include <Python.h>
 
-PyObject * next_move(PyObject *self, PyObject *args) {
-	char *game_fen, *next_move;
-	int depth;
+	PyObject * next_move(PyObject *self, PyObject *args) {
+		char *game_fen, *next_move;
+		int depth;
 
-	if(!PyArg_ParseTuple(args, "si", &game_fen, &depth))
-		return NULL;
+		if(!PyArg_ParseTuple(args, "si", &game_fen, &depth))
+			return NULL;
 
-	AllInit();
-	S_BOARD board[1];
-	InitPvTable(board->PvTable);
-	ParseFen(game_fen, board);
+		AllInit();
+		S_BOARD board[1];
+		InitPvTable(board->PvTable);
+		ParseFen(game_fen, board);
+		for (int i=1; i <= depth; i++) {
+			printf("%d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1));
+		}
+		next_move = PrMove(ProbePvTable(board));
+		return Py_BuildValue("s", next_move);
 
-	// next_move = IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE);
-	for (int i=1; i <= depth; i++) {
-		printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
 	}
-	next_move = PrMove(ProbePvTable(board));
-	return Py_BuildValue("s", next_move);
 
-}
-
-//Method definition object for this extension, these argumens mean:
-//ml_name: The name of the method
-//ml_meth: Function pointer to the method implementation
-//ml_flags: Flags indicating special features of this method, such as
-//          accepting arguments, accepting keyword arguments, being a
-//          class method, or being a static method of a class.
-//ml_doc:  Contents of this method's docstring
-static PyMethodDef chess_methods[] = {
-    {
-        "next_move",
-        next_move,
-        METH_VARARGS,
-        "evaluate a chess board position from fen string"
-    },
-    {NULL, NULL, 0, NULL}
-};
+	//Method definition object for this extension, these argumens mean:
+	//ml_name: The name of the method
+	//ml_meth: Function pointer to the method implementation
+	//ml_flags: Flags indicating special features of this method, such as
+	//          accepting arguments, accepting keyword arguments, being a
+	//          class method, or being a static method of a class.
+	//ml_doc:  Contents of this method's docstring
+	static PyMethodDef chess_methods[] = {
+	    {
+	        "next_move",
+	        next_move,
+	        METH_VARARGS,
+	        "evaluate a chess board position from fen string"
+	    },
+	    {NULL, NULL, 0, NULL}
+	};
 
 
-//Module definition
-//The arguments of this structure tell Python what to call your extension,
-//what it's methods are and where to look for it's method definitions
-static struct PyModuleDef chess_definition = {
-    PyModuleDef_HEAD_INIT,
-    "evaluation",
-    "A Python module that provides next move string given a fen",
-    -1,
-    chess_methods
-};
+	//Module definition
+	//The arguments of this structure tell Python what to call your extension,
+	//what it's methods are and where to look for it's method definitions
+	static struct PyModuleDef chess_definition = {
+	    PyModuleDef_HEAD_INIT,
+	    "evaluation",
+	    "A Python module that provides next move string given a fen",
+	    -1,
+	    chess_methods
+	};
 
-//Module initialization
-//Python calls this function when importing your extension. It is important
-//that this function is named PyInit_[[your_module_name]] exactly, and matches
-//the name keyword argument in setup.py's setup() call.
-PyMODINIT_FUNC PyInit_chess_in_c(void)
-{
-    Py_Initialize();
-    return PyModule_Create(&chess_definition);
-}
+	//Module initialization
+	//Python calls this function when importing your extension. It is important
+	//that this function is named PyInit_[[your_module_name]] exactly, and matches
+	//the name keyword argument in setup.py's setup() call.
+	PyMODINIT_FUNC PyInit_chess_in_c(void)
+	{
+	    Py_Initialize();
+	    return PyModule_Create(&chess_definition);
+	}
 
 #else
+	int main(int argc, char const *argv[])
+	{
+		/* code */
+		AllInit();
 
-int main(int argc, char const *argv[])
-{
-	/* code */
-	AllInit();
+		// unordered_map<U64, struct board_result> result_dict;
+		// result_dict.reserve(130000);
+		S_BOARD board[1];
+		char* fen = (char*)argv[1];
+		const int side = atoi(argv[2]); // white == 0, black == 1
+		ParseFen(fen, board);
 
-	S_BOARD board[1];
-	const char* fen = argv[1];
-	const int side = atoi(argv[2]); // white == 0, black == 1
-	ParseFen(fen, board);
-	InitPvTable(board->PvTable);
+		// create some hashing tables
+		InitPvTable(board->PvTable);
 
-	// set some search parameters
-	if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
-		printf("End Game\n");
-		BRANCH_REDUCE_FACTOR = 4;
-		REDUCE_DEPTH = 4;
-		SEARCH_DEPTH = 12;
-	} else {
-		printf("NOT End Game\n");			// NOT ENDING
-		BRANCH_REDUCE_FACTOR = 4;
-		REDUCE_DEPTH = 4;
-		SEARCH_DEPTH = 10;
+		// set some search parameters
+		if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
+			printf("End Game\n");
+			BRANCH_REDUCE_FACTOR = 6;
+			REDUCE_DEPTH = 8;
+			SEARCH_DEPTH = 16;
+		} else {
+			printf("NOT End Game\n");			// NOT ENDING
+			BRANCH_REDUCE_FACTOR = 6;
+			REDUCE_DEPTH = 6;
+			SEARCH_DEPTH = 14;
+		}
+
+		rootPoskey = board->posKey;
+		ClearForSearch(board);
+
+		// check the game status to determine what parameter we should set
+		for (int i=1; i <=SEARCH_DEPTH; i++) {
+			node_count = 0;
+			stored = 0;
+			if (side == BLACK) {
+				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1), node_count, stored);
+			}
+			else {
+				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1), node_count, stored);
+			}
+		}
+		printf("%s\n", PrMove(ProbePvTable(board)->move));
+		// ASSERT(CheckBoard(board));
+		return 0;
 	}
-
-
-
-	// check the game status to determine what parameter we should set
-	for (int i=1; i <=SEARCH_DEPTH; i++) {
-		if (side == BLACK)
-			printf("%d\n", AlphaBetaMin(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
-		else
-			printf("%d\n", AlphaBetaMax(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, i));
-	}
-	// printf("%s", IterativeDeepning(board, BLACK_WIN_SCORE-1, WHITE_WIN_SCORE+1, 6, FALSE));
-	printf("%s\n", PrMove(ProbePvTable(board)));
-
-	// ASSERT(CheckBoard(board));
-
-
-	return 0;
-}
-
-
-
 #endif

@@ -73,6 +73,7 @@ var onDragStart = function(source, piece, position, orientation) {
 };
 
 function AISelfPaly() {
+    if (window.AI_VS_AI_STOP) return;
     this.game.players = {
         'w': AI,
         'b': AI
@@ -202,16 +203,20 @@ var init = function() {
     var chess = new Chess();
     var board = ChessBoard('board', cfg);
     window.game = new Game(board, chess);
+    window.AI_VS_AI_STOP = true;
 
     $("#selfPlay").click(function() {
+        window.AI_VS_AI_STOP = false;
         AISelfPaly();
     });
 
     $("#AIvsHUMAN").click(function() {
+        window.AI_VS_AI_STOP = true;
         AIvsHuman();
     });
 
     $("#HumanVsAI").click(function() {
+        window.AI_VS_AI_STOP = true;
         HumanVsAI();
     });
 };

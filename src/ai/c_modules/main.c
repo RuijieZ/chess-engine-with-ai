@@ -341,12 +341,12 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			printf("End Game\n");
 			BRANCH_REDUCE_FACTOR = 1;
 			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 12;
+			SEARCH_DEPTH = 10;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;
 			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 10;
+			SEARCH_DEPTH = 8;
 		}
 
 		rootPoskey = board->posKey;

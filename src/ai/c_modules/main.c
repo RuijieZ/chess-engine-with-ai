@@ -344,7 +344,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			SEARCH_DEPTH = 16;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
-			BRANCH_REDUCE_FACTOR = 2;
+			BRANCH_REDUCE_FACTOR = 4;
 			REDUCE_DEPTH = 4;
 			SEARCH_DEPTH = 12;
 		}

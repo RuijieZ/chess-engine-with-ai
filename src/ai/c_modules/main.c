@@ -91,8 +91,9 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info)
 
 	info->node_count++;
 
-	if(IsRepetition(pos))
+	if(IsRepetition(pos) || pos->fiftyMove >= 100) {
 		return 0;
+	}
 
 	if(pos->ply > MAXDEPTH - 1)
 		return evaluation(pos) * colour;
@@ -132,10 +133,6 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info)
 
 
 int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info) {
-
-	if(IsRepetition(pos)) {
-		return 0;
-	}
 	S_PVENTRY* entry = ProbePvTable(pos);
 	info->node_count ++;
 	if (entry != NULL && entry->depth >= depth) {
@@ -153,6 +150,10 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		// 	return beta;
 		// return score;
 		// return Quiescence(pos, alpha, beta, colour);
+	}
+
+	if((IsRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) {
+		return 0;
 	}
 
 	S_MOVELIST moves[1];

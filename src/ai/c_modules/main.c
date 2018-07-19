@@ -6,8 +6,6 @@
 int BRANCH_REDUCE_FACTOR = 3;
 int REDUCE_DEPTH = 4;
 int SEARCH_DEPTH = 10;
-int node_count = 0;
-int stored = 0;
 U64 rootPoskey;
 
 #define UPPER_BOUND_FLAG 0
@@ -15,6 +13,12 @@ U64 rootPoskey;
 #define EXACT_FLAG 2
 #define NOTFOUND -1000000000
 #define MAXDEPTH 64
+
+struct INFO
+{
+	int node_count;
+	int stored;
+};
 
 static void ClearForSearch(S_BOARD *pos) {
 
@@ -76,7 +80,7 @@ int max(int a, int b) {
 }
 
 
-int Quiescence(S_BOARD *pos, int alpha, int beta, int colour) {
+int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info) {
 	int MoveNum = 0;
 	int Legal = 0;
 	int Score;
@@ -85,7 +89,7 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour) {
 	ASSERT(CheckBoard(pos));
 	ASSERT(beta > alpha);
 
-	node_count++;
+	info->node_count++;
 
 	if(IsRepetition(pos))
 		return 0;
@@ -112,7 +116,7 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour) {
 			continue;
 
 		Legal++;
-		Score = -Quiescence(pos, -beta, -alpha, -colour);
+		Score = -Quiescence(pos, -beta, -alpha, -colour, info);
 		TakeMove(pos);
 
 		if(Score > alpha) {
@@ -127,17 +131,17 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour) {
 }
 
 
-int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
+int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info) {
 	S_PVENTRY* entry = ProbePvTable(pos);
+	info->node_count ++;
 	if (entry != NULL && entry->depth >= depth) {
-		stored += 1;
+		info->stored += 1;
 		return entry->score;
 	}
-	node_count += 1;
 
 	// base case
 	if (depth <= 0) {
-		int score = Quiescence(pos, alpha, beta, colour);;
+		int score = Quiescence(pos, alpha, beta, colour, info);;
 		// StorePvMove(pos, NOMOVE, depth, score, 0);
 
 		return score;
@@ -189,9 +193,9 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 
 		// recrusion to check for the result
 		if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR){
-			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour);	// only search the first two moves to full depth
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info);	// only search the first two moves to full depth
 		} else {
-			curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour);
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info);
 		}
 		legalMovesCount += 1;
 
@@ -328,16 +332,19 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 
 		// create some hashing tables
 		InitPvTable(board->PvTable);
+		struct INFO info;
+		info.node_count = 0;
+		info.stored = 0;
 
 		// set some search parameters
 		if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
 			printf("End Game\n");
-			BRANCH_REDUCE_FACTOR = 6;
+			BRANCH_REDUCE_FACTOR = 3;
 			REDUCE_DEPTH = 8;
 			SEARCH_DEPTH = 16;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
-			BRANCH_REDUCE_FACTOR = 6;
+			BRANCH_REDUCE_FACTOR = 3;
 			REDUCE_DEPTH = 4;
 			SEARCH_DEPTH = 12;
 		}
@@ -347,13 +354,13 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 
 		// check the game status to determine what parameter we should set
 		for (int i=1; i <=SEARCH_DEPTH; i++) {
-			node_count = 0;
-			stored = 0;
+			info.node_count = 0;
+			info.stored = 0;
 			if (side == BLACK) {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1), node_count, stored);
+				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1, &info), info.node_count, info.stored);
 			}
 			else {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1), node_count, stored);
+				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info), info.node_count, info.stored);
 			}
 		}
 		printf("%s\n", PrMove(ProbePvTable(board)->move));

@@ -344,9 +344,9 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			SEARCH_DEPTH = 16;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
-			BRANCH_REDUCE_FACTOR = 4;
-			REDUCE_DEPTH = 4;
-			SEARCH_DEPTH = 12;
+			BRANCH_REDUCE_FACTOR = 1;
+			REDUCE_DEPTH = 0;
+			SEARCH_DEPTH = 10;
 		}
 
 		rootPoskey = board->posKey;
@@ -354,14 +354,14 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 		// check the game status to determine what parameter we should set
 		for (int i=1; i <=SEARCH_DEPTH; i++) {
-			info.node_count = 0;
-			info.stored = 0;
 			if (side == BLACK) {
 				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1, &info), info.node_count, info.stored);
 			}
 			else {
 				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info), info.node_count, info.stored);
 			}
+			info.node_count = 0;
+			info.stored = 0;
 		}
 		printf("%s\n", PrMove(ProbePvTable(board)->move));
 		// ASSERT(CheckBoard(board));

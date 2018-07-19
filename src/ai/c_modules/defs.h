@@ -105,9 +105,6 @@ typedef struct {
 typedef struct {
 	U64 posKey;
 	int move;
-	int score;
-	int depth;
-	int flag;
 } S_PVENTRY;
 
 typedef struct {

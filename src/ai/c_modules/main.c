@@ -13,6 +13,13 @@ U64 rootPoskey;
 #define EXACT_FLAG 2
 #define NOTFOUND -1000000000
 #define MAXDEPTH 64
+#define ISMATE 10000-64
+
+#define HASH_PCE(pce,sq) (pos->posKey ^= (PieceKeys[(pce)][(sq)]))
+#define HASH_CA (pos->posKey ^= (CastleKeys[(pos->castlePerm)]))
+#define HASH_SIDE (pos->posKey ^= (SideKey))
+#define HASH_EP (pos->posKey ^= (PieceKeys[EMPTY][(pos->enPas)]))
+
 
 struct INFO
 {
@@ -79,6 +86,53 @@ int max(int a, int b) {
 	return a >= b ? a : b;
 }
 
+void MakeNullMove(S_BOARD *pos) {
+
+    ASSERT(CheckBoard(pos));
+    ASSERT(!SqAttacked(pos->KingSq[pos->side],pos->side^1,pos));
+
+    pos->ply++;
+    pos->history[pos->hisPly].posKey = pos->posKey;
+
+    if(pos->enPas != NO_SQ) HASH_EP;
+
+    pos->history[pos->hisPly].move = NOMOVE;
+    pos->history[pos->hisPly].fiftyMove = pos->fiftyMove;
+    pos->history[pos->hisPly].enPas = pos->enPas;
+    pos->history[pos->hisPly].castlePerm = pos->castlePerm;
+    pos->enPas = NO_SQ;
+
+    pos->side ^= 1;
+    pos->hisPly++;
+    HASH_SIDE;
+   
+    ASSERT(CheckBoard(pos));
+	ASSERT(pos->hisPly >= 0 && pos->hisPly < MAXGAMEMOVES);
+	ASSERT(pos->ply >= 0 && pos->ply < MAXDEPTH);
+
+    return;
+} // MakeNullMove
+
+void TakeNullMove(S_BOARD *pos) {
+    ASSERT(CheckBoard(pos));
+
+    pos->hisPly--;
+    pos->ply--;
+
+    if(pos->enPas != NO_SQ) HASH_EP;
+
+    pos->castlePerm = pos->history[pos->hisPly].castlePerm;
+    pos->fiftyMove = pos->history[pos->hisPly].fiftyMove;
+    pos->enPas = pos->history[pos->hisPly].enPas;
+
+    if(pos->enPas != NO_SQ) HASH_EP;
+    pos->side ^= 1;
+    HASH_SIDE;
+  
+    ASSERT(CheckBoard(pos));
+	ASSERT(pos->hisPly >= 0 && pos->hisPly < MAXGAMEMOVES);
+	ASSERT(pos->ply >= 0 && pos->ply < MAXDEPTH);
+}
 
 int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info) {
 	int MoveNum = 0;
@@ -132,7 +186,12 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info)
 }
 
 
-int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info) {
+int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info, int DoNull) {
+
+	if((IsRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) {
+		return 0;
+	}
+
 	S_PVENTRY* entry = ProbePvTable(pos);
 	info->node_count ++;
 	if (entry != NULL && entry->depth >= depth) {
@@ -143,17 +202,23 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	// base case
 	if (depth <= 0) {
 		int score = Quiescence(pos, alpha, beta, colour, info);;
-		// StorePvMove(pos, NOMOVE, depth, score, 0);
-
 		return score;
-		// if (score > beta)
-		// 	return beta;
-		// return score;
-		// return Quiescence(pos, alpha, beta, colour);
 	}
 
-	if((IsRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) {
-		return 0;
+	int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
+
+	if (InCheck) {
+		depth ++;
+	}
+
+	if( DoNull && !InCheck && pos->ply && (pos->bigPce[pos->side] > 0) && depth >= 4) {
+		MakeNullMove(pos);
+		int Score = -AlphaBeta(pos, -beta, -beta + 1, depth-4, -colour, info, FALSE);
+		TakeNullMove(pos);
+
+		if (Score >= beta && abs(Score) < ISMATE) {
+			return beta;
+		}
 	}
 
 	S_MOVELIST moves[1];
@@ -198,7 +263,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		// } else {
 		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info);
 		// }
-		curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info);
+		curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
 		legalMovesCount += 1;
 
 		TakeMove(pos);
@@ -226,7 +291,6 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 
 	if (legalMovesCount == 0) {
-		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 		if (InCheck == TRUE) {						// checkmate
 			bestScore = -colour * (LOSS_SCORE + pos->ply);					// LOSS THE GAME
 		} else {									// stalemate, draw
@@ -357,10 +421,10 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		// check the game status to determine what parameter we should set
 		for (int i=1; i <=SEARCH_DEPTH; i++) {
 			if (side == BLACK) {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1, &info), info.node_count, info.stored);
+				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1, &info, TRUE), info.node_count, info.stored);
 			}
 			else {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info), info.node_count, info.stored);
+				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info, TRUE), info.node_count, info.stored);
 			}
 			// info.node_count = 0;
 			// info.stored = 0;

@@ -216,7 +216,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		int Score = -AlphaBeta(pos, -beta, -beta + 1, depth-4, -colour, info, FALSE);
 		TakeNullMove(pos);
 
-		if (Score >= beta && abs(Score) < ISMATE) {
+		if (Score >= beta) {
 			return beta;
 		}
 	}

@@ -360,8 +360,8 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			else {
 				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info), info.node_count, info.stored);
 			}
-			info.node_count = 0;
-			info.stored = 0;
+			// info.node_count = 0;
+			// info.stored = 0;
 		}
 		printf("%s\n", PrMove(ProbePvTable(board)->move));
 		// ASSERT(CheckBoard(board));

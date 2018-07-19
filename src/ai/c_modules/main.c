@@ -1,0 +1,327 @@
+#include <stdio.h>
+#include <stdlib.h>     /* qsort */
+#include "defs.h"
+// using namespace std;
+
+int BRANCH_REDUCE_FACTOR = 3;
+int REDUCE_DEPTH = 4;
+int SEARCH_DEPTH = 10;
+int node_count = 0;
+int stored = 0;
+
+#define UPPER_BOUND_FLAG 0
+#define LOWER_BOUND_FLAG 1
+#define EXACT_FLAG 2
+#define NOTFOUND -1000000000
+#define MAXDEPTH 64
+
+
+static int IsRepetition(const S_BOARD *pos) {
+	int index = 0;
+	for(index = pos->hisPly - pos->fiftyMove; index < pos->hisPly-1; ++index) {
+		ASSERT(index >= 0 && index < MAXGAMEMOVES);
+		if(pos->posKey == pos->history[index].posKey) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+static void PickNextMove(int moveNum, S_MOVELIST *list) {
+	S_MOVE temp;
+	int index = 0;
+	int bestScore = 0;
+	int bestNum = moveNum;
+
+	for (index = moveNum; index < list->count; ++index) {
+		if (list->moves[index].score > bestScore) {
+			bestScore = list->moves[index].score;
+			bestNum = index;
+		}
+	}
+
+	ASSERT(moveNum>=0 && moveNum<list->count);
+	ASSERT(bestNum>=0 && bestNum<list->count);
+	ASSERT(bestNum>=moveNum);
+
+	temp = list->moves[moveNum];
+	list->moves[moveNum] = list->moves[bestNum];
+	list->moves[bestNum] = temp;
+}
+
+int min(int a, int b) {
+	return a <= b ? a : b;
+}
+
+int max(int a, int b) {
+	return a >= b ? a : b;
+}
+
+
+int Quiescence(S_BOARD *pos, int alpha, int beta, int colour) {
+	int MoveNum = 0;
+	int Legal = 0;
+	int Score;
+	S_MOVELIST list[1];
+
+	ASSERT(CheckBoard(pos));
+	ASSERT(beta > alpha);
+
+	node_count++;
+
+	if(IsRepetition(pos))
+		return 0;
+
+	if(pos->ply > MAXDEPTH - 1)
+		return evaluation(pos);
+
+	Score = evaluation(pos) * colour;
+
+	if(Score >= beta)
+		return beta;
+
+	if(Score > alpha)
+		alpha = Score;
+
+	GenerateAllCaps(pos, list);
+
+	Score = LOSS_SCORE - 1;
+
+	for(MoveNum = 0; MoveNum < list->count; ++MoveNum) {
+		PickNextMove(MoveNum, list);
+
+		if (!MakeMove(pos, list->moves[MoveNum].move))
+			continue;
+
+		Legal++;
+		Score = -Quiescence(pos, -beta, -alpha, -colour);
+		TakeMove(pos);
+
+		if(Score > alpha) {
+			if(Score >= beta) {
+				return beta;
+			}
+			alpha = Score;
+		}
+	}
+
+	return alpha;
+}
+
+
+int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
+	S_PVENTRY* entry = ProbePvTable(pos);
+	if (entry != NULL) {
+		if (entry->depth >= depth) {
+			stored += 1;
+			return entry->score;
+		}
+	}
+	node_count += 1;
+
+	// base case
+	if (depth <= 0) {
+		// int score = colour * evaluation(pos);
+		// if (score > beta)
+		// 	return beta;
+		// return score;
+		return Quiescence(pos, alpha, beta, colour);
+	}
+
+	if(IsRepetition(pos)) {
+		return 0;
+	}
+
+	S_MOVELIST moves[1];
+	int legalMovesCount = 0;
+	int OldAlpha = alpha;
+	int move;
+	int bestScore = LOSS_SCORE - 1;		// make sure that this will be updated
+	int bestMove = 0;
+	int curScore;
+	GenerateAllMoves(pos, moves);
+
+	// use pv move to help
+	if(entry != NULL) {
+		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
+			if( moves->moves[MoveNum].move == entry->move) {
+				moves->moves[MoveNum].score = 2000000;
+				//printf("Pv move found \n");
+				break;
+			}
+		}
+	}
+
+	for (int i = 0; i < moves->count; ++i) {
+		PickNextMove(i, moves);
+		move = moves->moves[i].move;
+
+		if (!MakeMove(pos, move)) {
+			continue;
+		}
+
+		// recrusion to check for the result
+		if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR){
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour);	// only search the first two moves to full depth
+		} else {
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour);
+		}
+		legalMovesCount += 1;
+
+		TakeMove(pos);
+		if (curScore > bestScore) {
+			bestScore = curScore;
+			bestMove = move;
+		}
+		if(bestScore > alpha) {
+			alpha = bestScore;
+			if (alpha >= beta) {
+				// cutoff
+				if(!(move & MFLAGCAP)) {
+					pos->searchKillers[1][pos->ply] = pos->searchKillers[0][pos->ply];
+					pos->searchKillers[0][pos->ply] = move;
+				}
+				// StorePvMove(pos, bestMove, depth, beta, 0);
+				return beta;
+			}
+			if(!(move & MFLAGCAP)) {
+				pos->searchHistory[pos->pieces[FROMSQ(bestMove)]][TOSQ(bestMove)] += depth;
+			}
+		}
+
+	}
+
+
+	if (legalMovesCount == 0) {
+		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
+		if (InCheck == TRUE) {						// checkmate
+			bestScore = LOSS_SCORE;					// LOSS THE GAME
+		} else {									// stalemate, draw
+			bestScore = DRAW_SCORE;
+		}
+	}
+
+	// b.score = bestScore;
+	// if (bestScore <= OldAlpha) {
+ //        b.flag = UPPER_BOUND_FLAG;
+	// } else if (bestScore >= beta) {
+ //        b.flag = LOWER_BOUND_FLAG;
+	// } else {
+ //        b.flag = EXACT_FLAG;
+	// }
+	// b.depth = depth;
+	// result_dict[pos->posKey] = b;
+	// StoreSearchResult(pos, depth, bestScore);
+	if (alpha > OldAlpha) {
+		StorePvMove(pos, bestMove, depth, bestScore, 0);
+	}
+	return bestScore;
+}
+
+
+// #define python_wrapper
+
+#ifdef python_wrapper
+	#include <Python.h>
+
+	PyObject * next_move(PyObject *self, PyObject *args) {
+		char *game_fen, *next_move;
+		int depth;
+
+		if(!PyArg_ParseTuple(args, "si", &game_fen, &depth))
+			return NULL;
+
+		AllInit();
+		S_BOARD board[1];
+		InitPvTable(board->PvTable);
+		ParseFen(game_fen, board);
+		for (int i=1; i <= depth; i++) {
+			printf("%d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1));
+		}
+		next_move = PrMove(ProbePvTable(board));
+		return Py_BuildValue("s", next_move);
+
+	}
+
+	//Method definition object for this extension, these argumens mean:
+	//ml_name: The name of the method
+	//ml_meth: Function pointer to the method implementation
+	//ml_flags: Flags indicating special features of this method, such as
+	//          accepting arguments, accepting keyword arguments, being a
+	//          class method, or being a static method of a class.
+	//ml_doc:  Contents of this method's docstring
+	static PyMethodDef chess_methods[] = {
+	    {
+	        "next_move",
+	        next_move,
+	        METH_VARARGS,
+	        "evaluate a chess board position from fen string"
+	    },
+	    {NULL, NULL, 0, NULL}
+	};
+
+
+	//Module definition
+	//The arguments of this structure tell Python what to call your extension,
+	//what it's methods are and where to look for it's method definitions
+	static struct PyModuleDef chess_definition = {
+	    PyModuleDef_HEAD_INIT,
+	    "evaluation",
+	    "A Python module that provides next move string given a fen",
+	    -1,
+	    chess_methods
+	};
+
+	//Module initialization
+	//Python calls this function when importing your extension. It is important
+	//that this function is named PyInit_[[your_module_name]] exactly, and matches
+	//the name keyword argument in setup.py's setup() call.
+	PyMODINIT_FUNC PyInit_chess_in_c(void)
+	{
+	    Py_Initialize();
+	    return PyModule_Create(&chess_definition);
+	}
+
+#else
+	int main(int argc, char const *argv[])
+	{
+		/* code */
+		AllInit();
+
+		// unordered_map<U64, struct board_result> result_dict;
+		// result_dict.reserve(130000);
+		S_BOARD board[1];
+		char* fen = (char*)argv[1];
+		const int side = atoi(argv[2]); // white == 0, black == 1
+		ParseFen(fen, board);
+
+		// create some hashing tables
+		InitPvTable(board->PvTable);
+
+		// set some search parameters
+		if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
+			printf("End Game\n");
+			BRANCH_REDUCE_FACTOR = 4;
+			REDUCE_DEPTH = 4;
+			SEARCH_DEPTH = 12;
+		} else {
+			printf("NOT End Game\n");			// NOT ENDING
+			BRANCH_REDUCE_FACTOR = 1;
+			REDUCE_DEPTH = 0;
+			SEARCH_DEPTH = 8;
+		}
+
+		// check the game status to determine what parameter we should set
+		for (int i=1; i <=SEARCH_DEPTH; i++) {
+			node_count = 0;
+			stored = 0;
+			if (side == BLACK)
+				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1), node_count, stored);
+			else
+				printf("%d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1));
+		}
+		printf("%s\n", PrMove(ProbePvTable(board)->move));
+		// ASSERT(CheckBoard(board));
+		return 0;
+	}
+#endif

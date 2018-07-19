@@ -105,6 +105,9 @@ typedef struct {
 typedef struct {
 	U64 posKey;
 	int move;
+	int score;
+	int depth;
+	int flag;
 } S_PVENTRY;
 
 typedef struct {
@@ -265,22 +268,20 @@ extern void PerftTest(int depth, S_BOARD *pos);
 extern int evaluation(const S_BOARD* pos);
 
 // main.c
-#define BLACK_WIN_SCORE -10000
-#define WHITE_WIN_SCORE 10000
+#define WIN_SCORE 10000
+#define LOSS_SCORE -10000
 #define DRAW_SCORE 0
 
 // PyObject* moveScoreList(PyObject *, PyObject *);
 
 // pvtable.c
 extern void InitPvTable(S_PVTABLE *table);
-extern void StorePvMove(const S_BOARD *pos, const int move);
-extern int ProbePvTable(const S_BOARD *pos);
+extern void StorePvMove(const S_BOARD *pos, const int move, int depth, int bestScore, int flag);
+extern S_PVENTRY* ProbePvTable(const S_BOARD *pos);
 extern int GetPvLine(const int depth, S_BOARD *pos);
 extern void ClearPvTable(S_PVTABLE *table);
 
 extern int Mirror64[64];
-extern int AlphaBetaMin(S_BOARD *pos, int alpha, int beta, int depth);
-extern int AlphaBetaMax(S_BOARD *pos, int alpha, int beta, int depth);
 #define MIRROR64(sq) (Mirror64[(sq)])
 
 #endif

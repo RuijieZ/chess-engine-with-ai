@@ -138,7 +138,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 	// base case
 	if (depth <= 0) {
 		int score = Quiescence(pos, alpha, beta, colour);;
-		StorePvMove(pos, NOMOVE, depth, score, 0);
+		// StorePvMove(pos, NOMOVE, depth, score, 0);
 
 		return score;
 		// if (score > beta)
@@ -174,14 +174,14 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 	for (int i = 0; i < moves->count; ++i) {
 		PickNextMove(i, moves);
 		move = moves->moves[i].move;
-		if (pos->posKey == rootPoskey && i==0 && depth == 2) {
-			// printf("%s\n", PrMove(move));
-			printf("%s\n", "start");
+		// if (pos->posKey == rootPoskey && i==0 && depth == 2) {
+		// 	// printf("%s\n", PrMove(move));
+		// 	printf("%s\n", "start");
 
-			for (int i=0; i < moves->count; i++) {
-				printf("%s\n", PrMove(moves->moves[i].move));
-			}
-		}
+		// 	for (int i=0; i < moves->count; i++) {
+		// 		printf("%s\n", PrMove(moves->moves[i].move));
+		// 	}
+		// }
 
 		if (!MakeMove(pos, move)) {
 			continue;
@@ -243,7 +243,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
  {
  	/* code */
 	StorePvMove(pos, bestMove, depth, bestScore, 0);
- 	
+
  }
 
 	return bestScore;
@@ -337,9 +337,9 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 			SEARCH_DEPTH = 12;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
-			BRANCH_REDUCE_FACTOR = 1;
-			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 8;
+			BRANCH_REDUCE_FACTOR = 6;
+			REDUCE_DEPTH = 6;
+			SEARCH_DEPTH = 14;
 		}
 
 		rootPoskey = board->posKey;

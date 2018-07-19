@@ -85,7 +85,7 @@ function AISelfPaly() {
         possibleMoves.length === 0) return;
     else {
         queryNextMove();
-        window.setTimeout(AISelfPaly, 1500);
+        window.setTimeout(AISelfPaly, 3000);
     }
 
 }

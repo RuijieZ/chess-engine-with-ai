@@ -192,11 +192,12 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		}
 
 		// recrusion to check for the result
-		if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR){
-			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info);	// only search the first two moves to full depth
-		} else {
-			curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info);
-		}
+		// if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR){
+		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info);	// only search the first two moves to full depth
+		// } else {
+		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info);
+		// }
+		curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info);
 		legalMovesCount += 1;
 
 		TakeMove(pos);

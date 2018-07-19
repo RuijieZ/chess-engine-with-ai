@@ -8,6 +8,7 @@ int REDUCE_DEPTH = 4;
 int SEARCH_DEPTH = 10;
 int node_count = 0;
 int stored = 0;
+U64 rootPoskey;
 
 #define UPPER_BOUND_FLAG 0
 #define LOWER_BOUND_FLAG 1
@@ -15,6 +16,23 @@ int stored = 0;
 #define NOTFOUND -1000000000
 #define MAXDEPTH 64
 
+static void ClearForSearch(S_BOARD *pos) {
+
+	int index = 0;
+	int index2 = 0;
+
+	for(index = 0; index < 13; ++index) {
+		for(index2 = 0; index2 < BRD_SQ_NUM; ++index2) {
+			pos->searchHistory[index][index2] = 0;
+		}
+	}
+
+	for(index = 0; index < 2; ++index) {
+		for(index2 = 0; index2 < MAXDEPTH; ++index2) {
+			pos->searchKillers[index][index2] = 0;
+		}
+	}
+}
 
 static int IsRepetition(const S_BOARD *pos) {
 	int index = 0;
@@ -73,7 +91,7 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour) {
 		return 0;
 
 	if(pos->ply > MAXDEPTH - 1)
-		return evaluation(pos);
+		return evaluation(pos) * colour;
 
 	Score = evaluation(pos) * colour;
 
@@ -111,26 +129,27 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour) {
 
 int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 	S_PVENTRY* entry = ProbePvTable(pos);
-	if (entry != NULL) {
-		if (entry->depth >= depth) {
-			stored += 1;
-			return entry->score;
-		}
+	if (entry != NULL && entry->depth >= depth) {
+		stored += 1;
+		return entry->score;
 	}
 	node_count += 1;
 
 	// base case
 	if (depth <= 0) {
-		// int score = colour * evaluation(pos);
+		int score = Quiescence(pos, alpha, beta, colour);;
+		StorePvMove(pos, NOMOVE, depth, score, 0);
+
+		return score;
 		// if (score > beta)
 		// 	return beta;
 		// return score;
-		return Quiescence(pos, alpha, beta, colour);
+		// return Quiescence(pos, alpha, beta, colour);
 	}
 
-	if(IsRepetition(pos)) {
-		return 0;
-	}
+	// if(IsRepetition(pos)) {
+	// 	return 0;
+	// }
 
 	S_MOVELIST moves[1];
 	int legalMovesCount = 0;
@@ -146,7 +165,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
 			if( moves->moves[MoveNum].move == entry->move) {
 				moves->moves[MoveNum].score = 2000000;
-				//printf("Pv move found \n");
+				// printf("Pv move found \n");		
 				break;
 			}
 		}
@@ -155,6 +174,14 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 	for (int i = 0; i < moves->count; ++i) {
 		PickNextMove(i, moves);
 		move = moves->moves[i].move;
+		if (pos->posKey == rootPoskey && i==0 && depth == 2) {
+			// printf("%s\n", PrMove(move));
+			printf("%s\n", "start");
+
+			for (int i=0; i < moves->count; i++) {
+				printf("%s\n", PrMove(moves->moves[i].move));
+			}
+		}
 
 		if (!MakeMove(pos, move)) {
 			continue;
@@ -181,7 +208,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 					pos->searchKillers[1][pos->ply] = pos->searchKillers[0][pos->ply];
 					pos->searchKillers[0][pos->ply] = move;
 				}
-				// StorePvMove(pos, bestMove, depth, beta, 0);
+				StorePvMove(pos, bestMove, depth, beta, 0);
 				return beta;
 			}
 			if(!(move & MFLAGCAP)) {
@@ -195,7 +222,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 	if (legalMovesCount == 0) {
 		int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 		if (InCheck == TRUE) {						// checkmate
-			bestScore = LOSS_SCORE;					// LOSS THE GAME
+			bestScore = -colour * (LOSS_SCORE + pos->ply);					// LOSS THE GAME
 		} else {									// stalemate, draw
 			bestScore = DRAW_SCORE;
 		}
@@ -212,9 +239,13 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 	// b.depth = depth;
 	// result_dict[pos->posKey] = b;
 	// StoreSearchResult(pos, depth, bestScore);
-	if (alpha > OldAlpha) {
-		StorePvMove(pos, bestMove, depth, bestScore, 0);
-	}
+ if (alpha > OldAlpha)
+ {
+ 	/* code */
+	StorePvMove(pos, bestMove, depth, bestScore, 0);
+ 	
+ }
+
 	return bestScore;
 }
 
@@ -311,14 +342,19 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour) {
 			SEARCH_DEPTH = 8;
 		}
 
+		rootPoskey = board->posKey;
+		ClearForSearch(board);
+
 		// check the game status to determine what parameter we should set
 		for (int i=1; i <=SEARCH_DEPTH; i++) {
 			node_count = 0;
 			stored = 0;
-			if (side == BLACK)
+			if (side == BLACK) {
 				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1), node_count, stored);
-			else
-				printf("%d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1));
+			}
+			else {
+				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1), node_count, stored);
+			}
 		}
 		printf("%s\n", PrMove(ProbePvTable(board)->move));
 		// ASSERT(CheckBoard(board));

@@ -25,7 +25,7 @@ def is_endgame(board):
 
 
 if __name__ == '__main__':
-	query_end_game_status('5k2/8/p7/6R1/8/1r3pK1/7P/8 w - - 1 69')
-	query_end_game_status('6k1/p4p1p/3Qp3/4P1P1/4PK2/6P1/4q2P/7r b - - 11 41')
+	query_end_game_move('5k2/8/p7/6R1/8/1r3pK1/7P/8 w - - 1 69')
+	query_end_game_move('6k1/p4p1p/3Qp3/4P1P1/4PK2/6P1/4q2P/7r b - - 11 41')
 	print(is_endgame(Board()))
 	print(is_endgame(Board("5k2/8/p7/6R1/8/1r3pK1/7P/8 w - - 1 69")))

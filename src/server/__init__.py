@@ -30,7 +30,7 @@ def next_move(count):
 	# use the c version one
 	b = Board(fen)
 	if is_endgame(b):
-		move = query_end_game_move(b)
+		move = query_end_game_move(b.fen())
 		if move != None:
 			return move
 

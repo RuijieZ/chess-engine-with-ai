@@ -5,6 +5,7 @@ import subprocess as s
 
 # from ai.alpha_beta import min_f, max_f, min_f_root, max_f_root	# using the c version for performance
 from ai.opening import opening_book_next_move
+from ai.endgame import is_endgame, query_end_game_move
 
 WHITE_TURN = True
 BLACK_TURN = False
@@ -28,6 +29,11 @@ def next_move(count):
 
 	# use the c version one
 	b = Board(fen)
+	if is_endgame(b):
+		move = query_end_game_move(b)
+		if move != None:
+			return move
+
 	if b.turn:
 		side = '0'	# white
 	else:

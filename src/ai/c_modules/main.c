@@ -11,7 +11,6 @@ U64 rootPoskey;
 #define UPPER_BOUND_FLAG 0
 #define LOWER_BOUND_FLAG 1
 #define EXACT_FLAG 2
-#define NOTFOUND -1000000000
 #define MAXDEPTH 64
 #define ISMATE 10000-64
 
@@ -20,12 +19,6 @@ U64 rootPoskey;
 #define HASH_SIDE (pos->posKey ^= (SideKey))
 #define HASH_EP (pos->posKey ^= (PieceKeys[EMPTY][(pos->enPas)]))
 
-
-struct INFO
-{
-	int node_count;
-	int stored;
-};
 
 static void ClearForSearch(S_BOARD *pos) {
 
@@ -150,9 +143,9 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info)
 	}
 
 	if(pos->ply > MAXDEPTH - 1)
-		return evaluation(pos) * colour;
+		return evaluation(pos, info) * colour;
 
-	Score = evaluation(pos) * colour;
+	Score = evaluation(pos, info) * colour;
 
 	if(Score >= beta)
 		return beta;
@@ -192,13 +185,6 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		return 0;
 	}
 
-	// S_PVENTRY* entry = ProbePvTable(pos);
-	// info->node_count ++;
-	// if (entry != NULL && entry->depth >= depth) {
-	// 	info->stored += 1;
-	// 	return entry->score;
-	// }
-
 	// base case
 	if (depth <= 0) {
 		int score = Quiescence(pos, alpha, beta, colour, info);;
@@ -236,7 +222,6 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
 			if( moves->moves[MoveNum].move == Pvmove) {
 				moves->moves[MoveNum].score = 2000000;
-				// printf("Pv move found \n");		
 				break;
 			}
 		}
@@ -245,14 +230,6 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	for (int i = 0; i < moves->count; ++i) {
 		PickNextMove(i, moves);
 		move = moves->moves[i].move;
-		// if (pos->posKey == rootPoskey && i==0 && depth == 2) {
-		// 	// printf("%s\n", PrMove(move));
-		// 	printf("%s\n", "start");
-
-		// 	for (int i=0; i < moves->count; i++) {
-		// 		printf("%s\n", PrMove(moves->moves[i].move));
-		// 	}
-		// }
 
 		if (!MakeMove(pos, move)) {
 			continue;
@@ -299,17 +276,6 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		}
 	}
 
-	// b.score = bestScore;
-	// if (bestScore <= OldAlpha) {
- //        b.flag = UPPER_BOUND_FLAG;
-	// } else if (bestScore >= beta) {
- //        b.flag = LOWER_BOUND_FLAG;
-	// } else {
- //        b.flag = EXACT_FLAG;
-	// }
-	// b.depth = depth;
-	// result_dict[pos->posKey] = b;
-	// StoreSearchResult(pos, depth, bestScore);
  if (alpha > OldAlpha)
  {
  	/* code */
@@ -391,8 +357,6 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		/* code */
 		AllInit();
 
-		// unordered_map<U64, struct board_result> result_dict;
-		// result_dict.reserve(130000);
 		S_BOARD board[1];
 		char* fen = (char*)argv[1];
 		const int side = atoi(argv[2]); // white == 0, black == 1
@@ -400,9 +364,11 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 		// create some hashing tables
 		InitPvTable(board->PvTable);
+		InitPvTable(board->ScoreTable);
 		struct INFO info;
 		info.node_count = 0;
 		info.stored = 0;
+		info.hash = 0;
 
 		// set some search parameters
 		if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
@@ -423,13 +389,11 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		// check the game status to determine what parameter we should set
 		for (int i=1; i <=SEARCH_DEPTH; i++) {
 			if (side == BLACK) {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1, &info, TRUE), info.node_count, info.stored);
+				printf("score: %d, node_count: %d, stored: %d, hash: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1, &info, TRUE), info.node_count, info.stored, info.hash);
 			}
 			else {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info, TRUE), info.node_count, info.stored);
+				printf("score: %d, node_count: %d, stored: %d, hash: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info, TRUE), info.node_count, info.stored, info.hash);
 			}
-			// info.node_count = 0;
-			// info.stored = 0;
 		}
 		printf("%s\n", PrMove(ProbePvTable(board)));
 		// ASSERT(CheckBoard(board));

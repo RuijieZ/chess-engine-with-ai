@@ -104,18 +104,25 @@ int MaterialDraw(const S_BOARD *pos) {
 
 #define ENDGAME_MAT (1 * PieceVal[wR] + 2 * PieceVal[wN] + 2 * PieceVal[wP] + PieceVal[wK])
 
-int evaluation(const S_BOARD *pos) {
+int evaluation(const S_BOARD *pos, struct INFO* info) {
 
 	ASSERT(CheckBoard(pos));
+
+	int previous_score = ProbeScoreTable(pos);
+	if (previous_score != NOTFOUND) {
+		info->hash ++;
+		// printf("hash\n");
+		return previous_score;
+	}
 
 	int pce;
 	int pceNum;
 	int sq;
 	int score = pos->material[WHITE] - pos->material[BLACK];
 	
-	if(!pos->pceNum[wP] && !pos->pceNum[bP] && MaterialDraw(pos) == TRUE) {
-		return 0;
-	}
+	// if(!pos->pceNum[wP] && !pos->pceNum[bP] && MaterialDraw(pos) == TRUE) {
+	// 	return 0;
+	// }
 	
 	pce = wP;	
 	for(pceNum = 0; pceNum < pos->pceNum[pce]; ++pceNum) {
@@ -267,6 +274,9 @@ int evaluation(const S_BOARD *pos) {
 	if(pos->pceNum[wB] >= 2) score += BishopPair;
 	if(pos->pceNum[bB] >= 2) score -= BishopPair;
 	
+
+
+	StorePosScore(pos, score);
 	return score;
 }
 

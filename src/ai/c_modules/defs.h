@@ -25,6 +25,8 @@ typedef unsigned long long U64;
 #define MAXGAMEMOVES 2048
 #define MAXPOSITIONMOVES 256
 #define MAXDEPTH 64
+#define NOTFOUND -1000000000
+
 
 
 /* GAME MOVE */
@@ -81,6 +83,14 @@ enum {
 };
 
 enum { FALSE, TRUE };
+
+struct INFO
+{
+	int node_count;
+	int stored;
+	int hash;
+};
+
 
 typedef struct {
 	int move;
@@ -169,9 +179,8 @@ typedef struct {
 	int searchKillers[2][MAXDEPTH];
 
 	S_PVTABLE PvTable[1];
+	S_PVTABLE ScoreTable[1];
 	int PvArray[MAXDEPTH];
-
-
 
 } S_BOARD;
 
@@ -227,6 +236,7 @@ extern int PopBit(U64 *bb);
 extern int CountBits(U64 b);
 extern void InitBitMasks(void);
 extern U64 GeneratePosKey(const S_BOARD *pos);
+extern U64 GeneratePieceKey(const S_BOARD *pos);
 extern void ResetBoard(S_BOARD *pos);
 extern int ParseFen(char *fen, S_BOARD *pos);
 extern void PrintBoard(const S_BOARD *pos);
@@ -262,7 +272,7 @@ extern void PerftTest(int depth, S_BOARD *pos);
 
 //evaluate.c
 #define ENDGAME_MAT (1 * PieceVal[wR] + 2 * PieceVal[wN] + 2 * PieceVal[wP] + PieceVal[wK])
-extern int evaluation(const S_BOARD* pos);
+extern int evaluation(const S_BOARD* pos, struct INFO* info);
 
 // main.c
 #define WIN_SCORE 10000
@@ -274,7 +284,9 @@ extern int evaluation(const S_BOARD* pos);
 // pvtable.c
 extern void InitPvTable(S_PVTABLE *table);
 extern void StorePvMove(const S_BOARD *pos, const int move);
+extern void StorePosScore(const S_BOARD *pos, const int score);
 extern int ProbePvTable(const S_BOARD *pos);
+extern int ProbeScoreTable(const S_BOARD *pos);
 extern int GetPvLine(const int depth, S_BOARD *pos);
 extern void ClearPvTable(S_PVTABLE *table);
 

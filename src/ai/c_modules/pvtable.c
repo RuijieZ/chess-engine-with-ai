@@ -75,18 +75,26 @@ int ProbePvTable(const S_BOARD *pos) {
 	return NOMOVE;
 }
 
+void StorePosScore(const S_BOARD *pos, int score) {
+	U64 key = GeneratePieceKey(pos);
+	int index = key % pos->ScoreTable->numEntries;
+
+	pos->ScoreTable->pTable[index].move = score;
+	pos->ScoreTable->pTable[index].posKey = key;
+}
 
 
+int ProbeScoreTable(const S_BOARD *pos) {
+	U64 key = GeneratePieceKey(pos);
+	int index = key % pos->ScoreTable->numEntries;
+	// ASSERT(index >= 0 && index <= pos->PvTable->numEntries - 1);
+	
+	if( pos->ScoreTable->pTable[index].posKey == key) {
+		// printf("%d\n", index );
+		// printf("score: %d\n", pos->ScoreTable->pTable[index].move);
 
-
-
-
-
-
-
-
-
-
-
-
-
+		return pos->ScoreTable->pTable[index].move;
+	}
+	
+	return NOTFOUND;
+}

@@ -1,0 +1,20 @@
+[Event "Import"]
+[Site "https://lichess.org/0Xf5EgSv"]
+[Date "2018.07.18"]
+[Round "-"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[UTCDate "2018.07.18"]
+[UTCTime "00:33:19"]
+[WhiteElo "?"]
+[BlackElo "?"]
+[Variant "Standard"]
+[TimeControl "-"]
+[ECO "B22"]
+[Opening "Sicilian Defense: Alapin Variation, Barmen Defense"]
+[Termination "Unterminated"]
+
+1. e4 c5 2. c3 d5 3. exd5 Qxd5 4. d4 e5 5. dxe5 Qxe5+ 6. Be3 Bd7 7. Nf3 Qc7 8. Bc4 Qb6 9. Bxf7+ Kxf7 10. Ne5+ Ke8 11. Nxd7 Nxd7 12. Qe2 Be7 13. Na3 Rd8 14. Nc4 Qg6 15. Rg1 Nb6 16. Bxc5 Nxc4 17. Bxe7 Nxe7 18. Qxc4 Qd3 19. Qxd3 Rxd3 20. Rd1 Rxd1+ 21. Kxd1 Kd7 22. Kc1 Re8 23. f4 Nd5 24. Rf1 Kc6 25. c4 Nb4 26. a3 Nd3+ 27. Kc2 Ne1+ 28. Kc1 Nxg2 29. Rf2 Ne3 30. b3 Nf5 31. Kd2 Re3 32. b4 Rxa3 33. Ke1 Rc3 34. c5 Rc1+ 35. Kd2 Rc4 36. Rf3 Rxb4 37. Ra3 a6 38. Rh3 h6 39. Rf3 Kxc5 40. Kc3 Nd4 41. Rf2 Rb3+ 42. Kd2 Kd5 43. Kc1 Rf3 44. Rg2 Ne6 45. Rd2+ Nd4 46. Rg2 Ne6 47. Rd2+ Nd4 48. Rg2 *
+
+

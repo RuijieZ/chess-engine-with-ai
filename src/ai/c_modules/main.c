@@ -275,7 +275,11 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		}
 
 		if (curScore > alpha) {
-			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+			if (legalMovesCount == 1){
+				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+			} else {
+				curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE);
+			}
 		}
 
 		TakeMove(pos);

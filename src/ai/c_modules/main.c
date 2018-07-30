@@ -426,7 +426,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ClearForSearch(board);
 		int alpha = LOSS_SCORE-1;
 		int beta = WIN_SCORE+1;
-		int window = 10;
+		int window = 30;
 		int colour = side == WHITE ? 1 : -1;
 		int lastScore = 0;
 		// check the game status to determine what parameter we should set

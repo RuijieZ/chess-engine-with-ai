@@ -408,7 +408,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ParseFen(fen, board);
 
 		// create some hashing tables
-		InitHashTable(board->HashTable, 100);
+		InitHashTable(board->HashTable, 500);
 		// InitPvTable(board->PvTable);
 		struct INFO info;
 		info.node_count = 0;
@@ -431,7 +431,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ClearForSearch(board);
 		int alpha = LOSS_SCORE-1;
 		int beta = WIN_SCORE+1;
-		int window = 15;
+		int window = 25;
 		int colour = side == WHITE ? 1 : -1;
 		int lastScore = 0;
 		// check the game status to determine what parameter we should set

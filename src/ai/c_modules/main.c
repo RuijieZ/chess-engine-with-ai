@@ -431,6 +431,9 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		int lastScore = 0;
 		// check the game status to determine what parameter we should set
 		for (int i=1; i <=SEARCH_DEPTH; i++) {
+			if (lastScore == WIN_SCORE || lastScore == LOSS_SCORE){
+				break;
+			}
 			if (lastScore <= alpha || lastScore >= beta) {
 				alpha = LOSS_SCORE-1;
 				beta = WIN_SCORE+1;

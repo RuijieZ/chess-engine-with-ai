@@ -439,7 +439,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 				beta = lastScore + window;
 			}
 			lastScore = AlphaBeta(board, alpha, beta, i, colour, &info, TRUE);
-			printf("score: %d, node_count: %d, stored: %d\n", lastScore, info.node_count, info.stored);
+			printf("depth: %d, score: %d, node_count: %d, alpha: %d, beta: %d\n", i, lastScore, info.node_count, alpha, beta);
 		}
 		printf("%s\n", PrMove(ProbePvTable(board)));
 		// ASSERT(CheckBoard(board));

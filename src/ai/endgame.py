@@ -20,7 +20,8 @@ def query_end_game_move(fen):
 
 
 def is_endgame(board):
-	return len(board.piece_map()) <= 7
+	# return len(board.piece_map()) <= 7
+	return False
 
 
 

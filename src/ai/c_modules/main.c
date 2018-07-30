@@ -268,8 +268,8 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 
 		//
-		if (legalMovesCount >= 4 && depth >= 5 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
-			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth / REDUCE_DEPTH, -colour, info, TRUE);
+		if (legalMovesCount >= 4 && depth >= 3 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
+			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE);
 		} else  {
 			curScore = alpha + 1;
 		}

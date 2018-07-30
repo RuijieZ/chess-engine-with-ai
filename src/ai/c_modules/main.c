@@ -412,7 +412,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ParseFen(fen, board);
 
 		// create some hashing tables
-		InitHashTable(board->HashTable, 500);
+		InitHashTable(board->HashTable, 1024);
 		// InitPvTable(board->PvTable);
 		struct INFO info;
 		info.node_count = 0;

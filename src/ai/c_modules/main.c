@@ -264,8 +264,15 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		// } else {
 		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info);
 		// }
-		curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
 		legalMovesCount += 1;
+		if (legalMovesCount >= 4 && depth >= 4 && InCheck == FALSE && CAPTURED(move) == EMPTY) { // reduction
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info, TRUE);
+			if (curScore > alpha) {
+				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+			}
+		} else {
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+		}
 
 		TakeMove(pos);
 		if (curScore > bestScore) {
@@ -413,8 +420,8 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;
-			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 8;
+			REDUCE_DEPTH = 4;
+			SEARCH_DEPTH = 14;
 		}
 
 		rootPoskey = board->posKey;

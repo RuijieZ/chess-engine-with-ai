@@ -13,7 +13,6 @@ U64 rootPoskey;
 #define EXACT_FLAG 2
 #define NOTFOUND -1000000000
 #define MAXDEPTH 64
-#define ISMATE 10000-64
 
 #define HASH_PCE(pce,sq) (pos->posKey ^= (PieceKeys[(pce)][(sq)]))
 #define HASH_CA (pos->posKey ^= (CastleKeys[(pos->castlePerm)]))
@@ -231,7 +230,14 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	GenerateAllMoves(pos, moves);
 
 	// use pv move to help
-	int Pvmove = ProbePvTable(pos);
+	// int Pvmove = ProbePvTable(pos);
+	int Score = -WIN_SCORE;
+	int Pvmove = NOMOVE;
+
+	if( ProbeHashEntry(pos, &Pvmove, &Score, alpha, beta, depth) == TRUE ) {
+		pos->HashTable->cut++;
+		return Score;
+	}
 	if(Pvmove != NOMOVE) {
 		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
 			if( moves->moves[MoveNum].move == Pvmove) {
@@ -285,7 +291,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 					pos->searchKillers[1][pos->ply] = pos->searchKillers[0][pos->ply];
 					pos->searchKillers[0][pos->ply] = move;
 				}
-				// StorePvMove(pos, bestMove, depth, beta, 0);
+				StoreHashEntry(pos, bestMove, beta, HFBETA, depth);
 				return beta;
 			}
 			if(!(move & MFLAGCAP)) {
@@ -315,13 +321,11 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	// b.depth = depth;
 	// result_dict[pos->posKey] = b;
 	// StoreSearchResult(pos, depth, bestScore);
- if (alpha > OldAlpha)
- {
- 	/* code */
-	// StorePvMove(pos, bestMove, depth, bestScore, 0);
-	StorePvMove(pos, bestMove);
-
- }
+	if(alpha != OldAlpha) {
+		StoreHashEntry(pos, bestMove, bestScore, HFEXACT, depth);
+	} else {
+		StoreHashEntry(pos, bestMove, alpha, HFALPHA, depth);
+	}
 
 	return bestScore;
 }
@@ -404,7 +408,8 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ParseFen(fen, board);
 
 		// create some hashing tables
-		InitPvTable(board->PvTable);
+		InitHashTable(board->HashTable, 1024);
+		// InitPvTable(board->PvTable);
 		struct INFO info;
 		info.node_count = 0;
 		info.stored = 0;
@@ -444,7 +449,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			lastScore = AlphaBeta(board, alpha, beta, i, colour, &info, TRUE);
 			printf("depth: %d, score: %d, node_count: %d, alpha: %d, beta: %d\n", i, lastScore, info.node_count, alpha, beta);
 		}
-		printf("%s\n", PrMove(ProbePvTable(board)));
+		printf("%s\n", PrMove(ProbePvMove(board)));
 		// ASSERT(CheckBoard(board));
 		return 0;
 	}

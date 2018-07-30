@@ -26,6 +26,9 @@ typedef unsigned long long U64;
 #define MAXPOSITIONMOVES 256
 #define MAXDEPTH 64
 
+#define ISMATE 10000
+
+
 
 /* GAME MOVE */
 
@@ -131,6 +134,23 @@ typedef struct {
 } S_SEARCHINFO;
 
 typedef struct {
+	U64 posKey;
+	int move;
+	int score;
+	int depth;
+	int flags;
+} S_HASHENTRY;
+
+typedef struct {
+	S_HASHENTRY *pTable;
+	int numEntries;
+	int newWrite;
+	int overWrite;
+	int hit;
+	int cut;
+} S_HASHTABLE;
+
+typedef struct {
 
 	int pieces[BRD_SQ_NUM];
 	U64 pawns[3]; // index 0 for the white pawns, index 1 for the black pawns, index 2 for both
@@ -168,7 +188,7 @@ typedef struct {
 	int searchHistory[13][BRD_SQ_NUM];
 	int searchKillers[2][MAXDEPTH];
 
-	S_PVTABLE PvTable[1];
+	S_HASHTABLE HashTable[1];
 	int PvArray[MAXDEPTH];
 
 
@@ -272,11 +292,14 @@ extern int evaluation(const S_BOARD* pos);
 // PyObject* moveScoreList(PyObject *, PyObject *);
 
 // pvtable.c
-extern void InitPvTable(S_PVTABLE *table);
-extern void StorePvMove(const S_BOARD *pos, const int move);
-extern int ProbePvTable(const S_BOARD *pos);
+extern void InitHashTable(S_HASHTABLE *table, const int MB);
+extern void StoreHashEntry(S_BOARD *pos, const int move, int score, const int flags, const int depth);
+extern int ProbeHashEntry(S_BOARD *pos, int *move, int *score, int alpha, int beta, int depth);
+extern int ProbePvMove(const S_BOARD *pos);
 extern int GetPvLine(const int depth, S_BOARD *pos);
-extern void ClearPvTable(S_PVTABLE *table);
+extern void ClearHashTable(S_HASHTABLE *table);
+enum {  HFNONE, HFALPHA, HFBETA, HFEXACT};
+
 
 extern int Mirror64[64];
 #define MIRROR64(sq) (Mirror64[(sq)])

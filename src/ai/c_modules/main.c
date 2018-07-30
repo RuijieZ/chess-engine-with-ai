@@ -258,19 +258,17 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			continue;
 		}
 
-		// recrusion to check for the result
-		// if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR){
-		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info);	// only search the first two moves to full depth
-		// } else {
-		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info);
-		// }
 		legalMovesCount += 1;
+
+
+		//
 		if (legalMovesCount >= 4 && depth >= 3 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
-			curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info, TRUE);
-			if (curScore > alpha) {
-				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
-			}
-		} else {
+			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-REDUCE_DEPTH, -colour, info, TRUE);
+		} else  {
+			curScore = alpha + 1;
+		}
+
+		if (curScore > alpha) {
 			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
 		}
 
@@ -421,22 +419,27 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;
 			REDUCE_DEPTH = 2;
-			SEARCH_DEPTH = 12;
+			SEARCH_DEPTH = 16;
 		}
 
 		rootPoskey = board->posKey;
 		ClearForSearch(board);
-
+		int alpha = LOSS_SCORE-1;
+		int beta = WIN_SCORE+1;
+		int window = 10;
+		int colour = side == WHITE ? 1 : -1;
+		int lastScore = 0;
 		// check the game status to determine what parameter we should set
 		for (int i=1; i <=SEARCH_DEPTH; i++) {
-			if (side == BLACK) {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1, &info, TRUE), info.node_count, info.stored);
+			if (lastScore <= alpha || lastScore >= beta) {
+				alpha = LOSS_SCORE-1;
+				beta = WIN_SCORE+1;
+			} else {
+				alpha = lastScore - window;
+				beta = lastScore + window;
 			}
-			else {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info, TRUE), info.node_count, info.stored);
-			}
-			// info.node_count = 0;
-			// info.stored = 0;
+			lastScore = AlphaBeta(board, alpha, beta, i, colour, &info, TRUE);
+			printf("score: %d, node_count: %d, stored: %d\n", lastScore, info.node_count, info.stored);
 		}
 		printf("%s\n", PrMove(ProbePvTable(board)));
 		// ASSERT(CheckBoard(board));

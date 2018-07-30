@@ -452,6 +452,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			if (lastScore <= alpha || lastScore >= beta) {
 				alpha = LOSS_SCORE-1;
 				beta = WIN_SCORE+1;
+				i -= 1;
 			} else {
 				alpha = lastScore - window;
 				beta = lastScore + window;

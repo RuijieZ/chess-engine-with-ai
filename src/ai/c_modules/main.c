@@ -269,7 +269,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 		//
 		if (legalMovesCount >= 4 && depth >= 3 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
-			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-REDUCE_DEPTH, -colour, info, TRUE);
+			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth / REDUCE_DEPTH, -colour, info, TRUE);
 		} else  {
 			curScore = alpha + 1;
 		}
@@ -408,7 +408,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ParseFen(fen, board);
 
 		// create some hashing tables
-		InitHashTable(board->HashTable, 1024);
+		InitHashTable(board->HashTable, 100);
 		// InitPvTable(board->PvTable);
 		struct INFO info;
 		info.node_count = 0;
@@ -424,7 +424,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;
 			REDUCE_DEPTH = 2;
-			SEARCH_DEPTH = 16;
+			SEARCH_DEPTH = 18;
 		}
 
 		rootPoskey = board->posKey;

@@ -265,7 +265,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info);
 		// }
 		legalMovesCount += 1;
-		if (legalMovesCount >= 4 && depth >= 4 && InCheck == FALSE && CAPTURED(move) == EMPTY) { // reduction
+		if (legalMovesCount >= 2 && depth >= 3 && InCheck == FALSE && CAPTURED(move) == EMPTY) { // reduction
 			curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info, TRUE);
 			if (curScore > alpha) {
 				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
@@ -420,8 +420,8 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;
-			REDUCE_DEPTH = 4;
-			SEARCH_DEPTH = 14;
+			REDUCE_DEPTH = 2;
+			SEARCH_DEPTH = 12;
 		}
 
 		rootPoskey = board->posKey;

@@ -31,7 +31,7 @@ int GetPvLine(const int depth, S_BOARD *pos) {
 	
 }
 
-const int PvSize = 0x100000 * 2;
+const int PvSize = 0x100000 * 20;
 
 void ClearPvTable(S_PVTABLE *table) {
 

@@ -415,8 +415,8 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
 			printf("End Game\n");
 			BRANCH_REDUCE_FACTOR = 1;
-			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 8;
+			REDUCE_DEPTH = 2;
+			SEARCH_DEPTH = 12;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;

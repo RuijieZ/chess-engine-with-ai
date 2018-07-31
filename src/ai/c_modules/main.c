@@ -418,9 +418,9 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ParseFen(fen, board);
 
 		// create some hashing tables
-		InitHashTable(board->HashTable, 1008);
-		InitHashTable(board->HashTable2, 1008);
-		InitHashTable(board->HashTable3, 1008);
+		InitHashTable(board->HashTable, 1987);
+		InitHashTable(board->HashTable2, 1987);
+		InitHashTable(board->HashTable3, 1987);
 		// InitHashTable(board->HashTable3, 1024);
 		// InitHashTable(board->HashTable4, 1024);
 		// InitPvTable(board->PvTable);

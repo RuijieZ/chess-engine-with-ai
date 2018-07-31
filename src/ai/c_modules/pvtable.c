@@ -86,8 +86,8 @@ int ProbeHashEntry(S_BOARD *pos, int *move, int *score, int alpha, int beta, int
             ASSERT(pos->HashTable->pTable[index].flags>=HFALPHA&&pos->HashTable->pTable[index].flags<=HFEXACT);
 			
 			*score = pos->HashTable->pTable[index].score;
-			if(*score > ISMATE) *score -= pos->ply;
-            else if(*score < -ISMATE) *score += pos->ply;
+			// if(*score > ISMATE) *score -= pos->ply;
+   //          else if(*score < -ISMATE) *score += pos->ply;
 			
 			switch(pos->HashTable->pTable[index].flags) {
 				

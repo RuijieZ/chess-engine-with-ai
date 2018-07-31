@@ -278,7 +278,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		// }
 
 		// if (curScore > alpha) {
-		if (legalMovesCount == 1){
+		if (legalMovesCount == 1 || InCheck == TRUE || CAPTURED(move) != EMPTY || PROMOTED(move) != EMPTY){
 			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
 		} else {
 			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE);

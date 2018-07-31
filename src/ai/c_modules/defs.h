@@ -191,6 +191,8 @@ typedef struct {
 	S_HASHTABLE HashTable[1];
 	S_HASHTABLE HashTable2[1];
 	S_HASHTABLE HashTable3[1];
+	S_HASHTABLE HashTable4[1];
+	// S_HASHTABLE HashTable5[1];
 	int PvArray[MAXDEPTH];
 
 

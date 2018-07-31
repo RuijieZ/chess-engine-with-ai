@@ -175,6 +175,38 @@ int ProbeHashEntry(S_BOARD *pos, int *move, int *score, int alpha, int beta, int
                 default: ASSERT(FALSE); break;
             }
 		}
+	} else if (pos->HashTable4->pTable[index].posKey == pos->posKey) {
+		*move = pos->HashTable4->pTable[index].move;
+		if(pos->HashTable4->pTable[index].depth >= depth){
+			// pos->HashTable->hit++;
+			
+			ASSERT(pos->HashTable4->pTable[index].depth>=1&&pos->HashTable->pTable[index].depth<MAXDEPTH);
+            ASSERT(pos->HashTable4->pTable[index].flags>=HFALPHA&&pos->HashTable->pTable[index].flags<=HFEXACT);
+			
+			*score = pos->HashTable4->pTable[index].score;
+			if(*score > ISMATE) *score -= pos->ply;
+            else if(*score < -ISMATE) *score += pos->ply;
+			
+			switch(pos->HashTable4->pTable[index].flags) {
+				
+                ASSERT(*score>=-INFINITE&&*score<=INFINITE);
+
+                case HFALPHA: if(*score<=alpha) {
+                    *score=alpha;
+                    return TRUE;
+                    }
+                    break;
+                case HFBETA: if(*score>=beta) {
+                    *score=beta;
+                    return TRUE;
+                    }
+                    break;
+                case HFEXACT:
+                    return TRUE;
+                    break;
+                default: ASSERT(FALSE); break;
+            }
+		}
 	}
 	
 	return FALSE;
@@ -217,8 +249,16 @@ void StoreHashEntry(S_BOARD *pos, const int move, int score, const int flags, co
 		pos->HashTable3->pTable[index].flags = flags;
 		pos->HashTable3->pTable[index].score = score;
 		pos->HashTable3->pTable[index].depth = depth;
-    } else {
-    	int r = rand() % 3;
+    } else if (pos->HashTable4->pTable[index].posKey == 0) {
+    	pos->HashTable4->pTable[index].move = move;
+    	pos->HashTable4->pTable[index].posKey = pos->posKey;
+		pos->HashTable4->pTable[index].flags = flags;
+		pos->HashTable4->pTable[index].score = score;
+		pos->HashTable4->pTable[index].depth = depth;
+    }
+
+    else {
+    	int r = rand() % 4;
     	if (r == 0) {
     		pos->HashTable->pTable[index].move = move;
     		pos->HashTable->pTable[index].posKey = pos->posKey;
@@ -231,12 +271,18 @@ void StoreHashEntry(S_BOARD *pos, const int move, int score, const int flags, co
 			pos->HashTable2->pTable[index].flags = flags;
 			pos->HashTable2->pTable[index].score = score;
 			pos->HashTable2->pTable[index].depth = depth;
-    	} else {
+    	} else if (r == 2) {
     		pos->HashTable3->pTable[index].move = move;
     		pos->HashTable3->pTable[index].posKey = pos->posKey;
 			pos->HashTable3->pTable[index].flags = flags;
 			pos->HashTable3->pTable[index].score = score;
 			pos->HashTable3->pTable[index].depth = depth;
+    	} else {
+    		pos->HashTable4->pTable[index].move = move;
+    		pos->HashTable4->pTable[index].posKey = pos->posKey;
+			pos->HashTable4->pTable[index].flags = flags;
+			pos->HashTable4->pTable[index].score = score;
+			pos->HashTable4->pTable[index].depth = depth;
     	}
     }
 }
@@ -252,6 +298,8 @@ int ProbePvMove(const S_BOARD *pos) {
 		return pos->HashTable2->pTable[index].move;
 	} else if (pos->HashTable3->pTable[index].posKey == pos->posKey) {
 		return pos->HashTable3->pTable[index].move;
+	} else if (pos->HashTable4->pTable[index].posKey == pos->posKey) {
+		return pos->HashTable4->pTable[index].move;
 	}
 	return NOMOVE;
 }

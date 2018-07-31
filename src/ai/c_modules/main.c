@@ -268,25 +268,25 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 
 		//
-		if (legalMovesCount >= 4 && depth >= 3 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
-			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE);
+		// if (legalMovesCount >= 4 && depth >= 3 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
+		// 	curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE);
+		// 	if (curScore > alpha) {
+		// 		curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+		// 	}
+		// } else  {
+		// 	curScore = alpha + 1;
+		// }
+
+		// if (curScore > alpha) {
+		if (legalMovesCount == 1){
+			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+		} else {
+			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE);
 			if (curScore > alpha) {
 				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
 			}
-		} else  {
-			curScore = alpha + 1;
 		}
-
-		if (curScore > alpha) {
-			if (legalMovesCount == 1){
-				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
-			} else {
-				curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE);
-				if (curScore > alpha) {
-					curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
-				}
-			}
-		}
+		// }
 
 		TakeMove(pos);
 		if (curScore > bestScore) {
@@ -441,7 +441,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ClearForSearch(board);
 		int alpha = LOSS_SCORE-1;
 		int beta = WIN_SCORE+1;
-		int window = 20;
+		int window = 10;
 		int colour = side == WHITE ? 1 : -1;
 		int lastScore = 0;
 		// check the game status to determine what parameter we should set

@@ -2,6 +2,7 @@
 
 #include "stdio.h"
 #include "defs.h"
+#include <stdlib.h>
 
 int GetPvLine(const int depth, S_BOARD *pos) {
 
@@ -46,7 +47,8 @@ void ClearHashTable(S_HASHTABLE *table) {
 }
 
 void InitHashTable(S_HASHTABLE *table, const int MB) {  
-	
+	srand(0);
+
 	int HashSize = 0x100000 * MB;
     table->numEntries = HashSize / sizeof(S_HASHENTRY);
     table->numEntries -= 2;
@@ -80,7 +82,7 @@ int ProbeHashEntry(S_BOARD *pos, int *move, int *score, int alpha, int beta, int
 	if( pos->HashTable->pTable[index].posKey == pos->posKey ) {
 		*move = pos->HashTable->pTable[index].move;
 		if(pos->HashTable->pTable[index].depth >= depth){
-			pos->HashTable->hit++;
+			// pos->HashTable->hit++;
 			
 			ASSERT(pos->HashTable->pTable[index].depth>=1&&pos->HashTable->pTable[index].depth<MAXDEPTH);
             ASSERT(pos->HashTable->pTable[index].flags>=HFALPHA&&pos->HashTable->pTable[index].flags<=HFEXACT);
@@ -90,6 +92,70 @@ int ProbeHashEntry(S_BOARD *pos, int *move, int *score, int alpha, int beta, int
             else if(*score < -ISMATE) *score += pos->ply;
 			
 			switch(pos->HashTable->pTable[index].flags) {
+				
+                ASSERT(*score>=-INFINITE&&*score<=INFINITE);
+
+                case HFALPHA: if(*score<=alpha) {
+                    *score=alpha;
+                    return TRUE;
+                    }
+                    break;
+                case HFBETA: if(*score>=beta) {
+                    *score=beta;
+                    return TRUE;
+                    }
+                    break;
+                case HFEXACT:
+                    return TRUE;
+                    break;
+                default: ASSERT(FALSE); break;
+            }
+		}
+	} else if (pos->HashTable2->pTable[index].posKey == pos->posKey) {
+		*move = pos->HashTable2->pTable[index].move;
+		if(pos->HashTable2->pTable[index].depth >= depth){
+			// pos->HashTable->hit++;
+			
+			ASSERT(pos->HashTable2->pTable[index].depth>=1&&pos->HashTable->pTable[index].depth<MAXDEPTH);
+            ASSERT(pos->HashTable2->pTable[index].flags>=HFALPHA&&pos->HashTable->pTable[index].flags<=HFEXACT);
+			
+			*score = pos->HashTable2->pTable[index].score;
+			if(*score > ISMATE) *score -= pos->ply;
+            else if(*score < -ISMATE) *score += pos->ply;
+			
+			switch(pos->HashTable2->pTable[index].flags) {
+				
+                ASSERT(*score>=-INFINITE&&*score<=INFINITE);
+
+                case HFALPHA: if(*score<=alpha) {
+                    *score=alpha;
+                    return TRUE;
+                    }
+                    break;
+                case HFBETA: if(*score>=beta) {
+                    *score=beta;
+                    return TRUE;
+                    }
+                    break;
+                case HFEXACT:
+                    return TRUE;
+                    break;
+                default: ASSERT(FALSE); break;
+            }
+		}
+	} else if (pos->HashTable3->pTable[index].posKey == pos->posKey) {
+		*move = pos->HashTable3->pTable[index].move;
+		if(pos->HashTable3->pTable[index].depth >= depth){
+			// pos->HashTable->hit++;
+			
+			ASSERT(pos->HashTable3->pTable[index].depth>=1&&pos->HashTable->pTable[index].depth<MAXDEPTH);
+            ASSERT(pos->HashTable3->pTable[index].flags>=HFALPHA&&pos->HashTable->pTable[index].flags<=HFEXACT);
+			
+			*score = pos->HashTable3->pTable[index].score;
+			if(*score > ISMATE) *score -= pos->ply;
+            else if(*score < -ISMATE) *score += pos->ply;
+			
+			switch(pos->HashTable3->pTable[index].flags) {
 				
                 ASSERT(*score>=-INFINITE&&*score<=INFINITE);
 
@@ -124,20 +190,55 @@ void StoreHashEntry(S_BOARD *pos, const int move, int score, const int flags, co
     ASSERT(score>=-INFINITE&&score<=INFINITE);
     ASSERT(pos->ply>=0&&pos->ply<MAXDEPTH);
 	
-	if( pos->HashTable->pTable[index].posKey == 0) {
-		pos->HashTable->newWrite++;
-	} else {
-		pos->HashTable->overWrite++;
-	}
+	// if( pos->HashTable->pTable[index].posKey == 0) {
+	// 	pos->HashTable->newWrite++;
+	// } else {
+	// 	pos->HashTable->overWrite++;
+	// }
 	
 	if(score > ISMATE) score += pos->ply;
     else if(score < -ISMATE) score -= pos->ply;
-	
-	pos->HashTable->pTable[index].move = move;
-    pos->HashTable->pTable[index].posKey = pos->posKey;
-	pos->HashTable->pTable[index].flags = flags;
-	pos->HashTable->pTable[index].score = score;
-	pos->HashTable->pTable[index].depth = depth;
+
+    if (pos->HashTable->pTable[index].posKey == 0) {
+    	pos->HashTable->pTable[index].move = move;
+    	pos->HashTable->pTable[index].posKey = pos->posKey;
+		pos->HashTable->pTable[index].flags = flags;
+		pos->HashTable->pTable[index].score = score;
+		pos->HashTable->pTable[index].depth = depth;
+    } else if (pos->HashTable2->pTable[index].posKey == 0) {
+    	pos->HashTable2->pTable[index].move = move;
+    	pos->HashTable2->pTable[index].posKey = pos->posKey;
+		pos->HashTable2->pTable[index].flags = flags;
+		pos->HashTable2->pTable[index].score = score;
+		pos->HashTable2->pTable[index].depth = depth;
+    } else if (pos->HashTable3->pTable[index].posKey == 0) {
+    	pos->HashTable3->pTable[index].move = move;
+    	pos->HashTable3->pTable[index].posKey = pos->posKey;
+		pos->HashTable3->pTable[index].flags = flags;
+		pos->HashTable3->pTable[index].score = score;
+		pos->HashTable3->pTable[index].depth = depth;
+    } else {
+    	int r = rand() % 3;
+    	if (r == 0) {
+    		pos->HashTable->pTable[index].move = move;
+    		pos->HashTable->pTable[index].posKey = pos->posKey;
+			pos->HashTable->pTable[index].flags = flags;
+			pos->HashTable->pTable[index].score = score;
+			pos->HashTable->pTable[index].depth = depth;
+    	} else if (r == 1) {
+    		pos->HashTable2->pTable[index].move = move;
+    		pos->HashTable2->pTable[index].posKey = pos->posKey;
+			pos->HashTable2->pTable[index].flags = flags;
+			pos->HashTable2->pTable[index].score = score;
+			pos->HashTable2->pTable[index].depth = depth;
+    	} else {
+    		pos->HashTable3->pTable[index].move = move;
+    		pos->HashTable3->pTable[index].posKey = pos->posKey;
+			pos->HashTable3->pTable[index].flags = flags;
+			pos->HashTable3->pTable[index].score = score;
+			pos->HashTable3->pTable[index].depth = depth;
+    	}
+    }
 }
 
 int ProbePvMove(const S_BOARD *pos) {
@@ -147,8 +248,11 @@ int ProbePvMove(const S_BOARD *pos) {
 	
 	if( pos->HashTable->pTable[index].posKey == pos->posKey ) {
 		return pos->HashTable->pTable[index].move;
+	} else if (pos->HashTable2->pTable[index].posKey == pos->posKey) {
+		return pos->HashTable2->pTable[index].move;
+	} else if (pos->HashTable3->pTable[index].posKey == pos->posKey) {
+		return pos->HashTable3->pTable[index].move;
 	}
-	
 	return NOMOVE;
 }
 

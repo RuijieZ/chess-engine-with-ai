@@ -189,6 +189,8 @@ typedef struct {
 	int searchKillers[2][MAXDEPTH];
 
 	S_HASHTABLE HashTable[1];
+	S_HASHTABLE HashTable2[1];
+	S_HASHTABLE HashTable3[1];
 	int PvArray[MAXDEPTH];
 
 

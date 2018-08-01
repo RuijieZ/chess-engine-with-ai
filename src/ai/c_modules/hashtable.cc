@@ -1,9 +1,9 @@
 #include "stdio.h"
 #include "defs.h"
 
-unordered_map<U64, S_HASHENTRY_V2> InitHashTable() {
+unordered_map<U64, struct S_HASHENTRY_V2> InitHashTable() {
 
-	unordered_map<U64, S_HASHENTRY_V2> m;
+	unordered_map<U64, struct S_HASHENTRY_V2> m;
 	// int size = 0x100000 * 2000;
 	// int entries = size / sizeof(S_HASHENTRY_V2);
 	m.reserve(80000000);
@@ -18,9 +18,9 @@ unordered_map<U64, S_HASHENTRY_V2> InitHashTable() {
 	return m;
 }
 
-int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth, unordered_map<U64, S_HASHENTRY_V2> &m) {
+int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth, unordered_map<U64, struct S_HASHENTRY_V2> &m) {
 	U64 curPosKey = pos->posKey;
-	unordered_map<U64,S_HASHENTRY_V2>::const_iterator it = m.find(curPosKey);
+	unordered_map<U64, struct S_HASHENTRY_V2>::const_iterator it = m.find(curPosKey);
 	if (it == m.end()) {
 		return FALSE;
 	} else {
@@ -55,37 +55,37 @@ int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta
 	return FALSE;
 }
 
-void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags, const int depth, unordered_map<U64, S_HASHENTRY_V2> &m) {
+void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags, const int depth, unordered_map<U64, struct S_HASHENTRY_V2> &m) {
 	U64 curPosKey = pos->posKey;
 
 
-	unordered_map<U64,S_HASHENTRY_V2>::const_iterator it = m.find(curPosKey);
+	// unordered_map<U64,S_HASHENTRY_V2>::const_iterator it = m.find(curPosKey);
 
 	// If the key does exist in the dictionary
-	if(it != m.end()){
+	// if(it != m.end()){
 		if (m[curPosKey].depth < depth) {
 			m[curPosKey].flags = flags;
 			m[curPosKey].score = score;
 			m[curPosKey].depth = depth;
 			m[curPosKey].move = move;
 			// pos->HashTable->overWrite++;
-		}
+		// }
 
-	}
+	// }
 
 	// If its a new key
-	else{
-		S_HASHENTRY_V2 s;
-		s.move = move;
-		s.flags = flags;
-		s.score = score;
-		s.depth = depth;
-	    m[curPosKey] = s;
+	// else{
+		// S_HASHENTRY_V2 s;
+		// s.move = move;
+		// s.flags = flags;
+		// s.score = score;
+		// s.depth = depth;
+	    // m[curPosKey] = s;
 		pos->HashTable->newWrite++;
 	}
 }
 
-int ProbePvMove_V2(const S_BOARD *pos, unordered_map<U64, S_HASHENTRY_V2> &m) {
+int ProbePvMove_V2(const S_BOARD *pos, unordered_map<U64, struct S_HASHENTRY_V2> &m) {
 
 	U64 curPosKey = pos->posKey;
 

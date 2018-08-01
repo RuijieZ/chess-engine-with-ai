@@ -144,12 +144,16 @@ typedef struct {
 	int flags;
 } S_HASHENTRY;
 
-typedef struct {
+struct S_HASHENTRY_V2 {
 	int move;
 	int score;
 	int depth;
 	int flags;
-} S_HASHENTRY_V2;
+
+	S_HASHENTRY_V2():depth(0)
+    {
+    }
+};
 
 typedef struct {
 	S_HASHENTRY *pTable;
@@ -311,10 +315,10 @@ extern void ClearHashTable(S_HASHTABLE *table);
 enum {  HFNONE, HFALPHA, HFBETA, HFEXACT};
 
 // hashtable.c
-extern unordered_map<U64, S_HASHENTRY_V2> InitHashTable();
-extern int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth, unordered_map<U64, S_HASHENTRY_V2> &m);
-extern int ProbePvMove_V2(const S_BOARD *pos, unordered_map<U64, S_HASHENTRY_V2> &m);
-extern void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags, const int depth, unordered_map<U64, S_HASHENTRY_V2> &m);
+extern unordered_map<U64, struct S_HASHENTRY_V2> InitHashTable();
+extern int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth, unordered_map<U64, struct S_HASHENTRY_V2> &m);
+extern int ProbePvMove_V2(const S_BOARD *pos, unordered_map<U64, struct S_HASHENTRY_V2> &m);
+extern void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags, const int depth, unordered_map<U64, struct S_HASHENTRY_V2> &m);
 
 
 extern int Mirror64[64];

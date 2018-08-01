@@ -186,7 +186,7 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info)
 }
 
 
-int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info, int DoNull, unordered_map<U64, S_HASHENTRY_V2> &m) {
+int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info, int DoNull, unordered_map<U64, struct S_HASHENTRY_V2> &m) {
 
 	if((IsRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) {
 		return 0;
@@ -423,7 +423,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 		// create some hashing tables
 		InitHashTable(board->HashTable, 1);
-		unordered_map<U64, S_HASHENTRY_V2> m = InitHashTable();
+		unordered_map<U64, struct S_HASHENTRY_V2> m = InitHashTable();
 		// InitPvTable(board->PvTable);
 		struct INFO info;
 		info.node_count = 0;

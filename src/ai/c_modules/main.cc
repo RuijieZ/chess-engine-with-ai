@@ -244,7 +244,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	if(Pvmove != NOMOVE) {
 		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
 			if( moves->moves[MoveNum].move == Pvmove) {
-				moves->moves[MoveNum].score = 2000000;
+				moves->moves[MoveNum].score = 5000000;
 				// printf("Pv move found \n");		
 				break;
 			}

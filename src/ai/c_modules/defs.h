@@ -268,12 +268,13 @@ extern int CheckBoard(const S_BOARD *pos);
 extern int SqAttacked(const int sq, const int side, const S_BOARD *pos);
 
 // movegen.c
-extern void GenerateAllMoves(const S_BOARD *pos, S_MOVELIST *list);
-extern void GenerateAllCaps(const S_BOARD *pos, S_MOVELIST *list);
+extern void GenerateAllMoves(S_BOARD *pos, S_MOVELIST *list);
+extern void GenerateAllCaps(S_BOARD *pos, S_MOVELIST *list);
 extern int MoveExists(S_BOARD *pos, const int move);
 extern void InitMvvLva(void);
 extern int MakeMove(S_BOARD *pos, int move);
 extern void TakeMove(S_BOARD *pos);
+extern int MoveIsIntoCheck(S_BOARD *pos, const int move);
 
 // validate.c
 extern int SqOnBoard(const int sq);

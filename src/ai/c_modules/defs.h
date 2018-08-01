@@ -142,6 +142,13 @@ typedef struct {
 } S_HASHENTRY;
 
 typedef struct {
+	int move;
+	int score;
+	int depth;
+	int flags;
+} S_HASHENTRY_V2;
+
+typedef struct {
 	S_HASHENTRY *pTable;
 	int numEntries;
 	int newWrite;

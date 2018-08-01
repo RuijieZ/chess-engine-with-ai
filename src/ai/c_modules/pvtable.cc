@@ -138,12 +138,15 @@ void StoreHashEntry(S_BOARD *pos, const int move, int score, const int flags, co
 	
 	// if(score > ISMATE) score += pos->ply;
  //    else if(score < -ISMATE) score -= pos->ply;
+	if (pos->HashTable->pTable[index].depth < depth || pos->HashTable->pTable[index].posKey != pos->posKey) {	// only overwrite if the depth is actually larger
+		pos->HashTable->pTable[index].move = move;
+    	pos->HashTable->pTable[index].posKey = pos->posKey;
+		pos->HashTable->pTable[index].flags = flags;
+		pos->HashTable->pTable[index].score = score;
+		pos->HashTable->pTable[index].depth = depth;
+	}
 	
-	pos->HashTable->pTable[index].move = move;
-    pos->HashTable->pTable[index].posKey = pos->posKey;
-	pos->HashTable->pTable[index].flags = flags;
-	pos->HashTable->pTable[index].score = score;
-	pos->HashTable->pTable[index].depth = depth;
+
 }
 
 int ProbePvMove(const S_BOARD *pos) {

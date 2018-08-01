@@ -236,7 +236,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	int Score = -WIN_SCORE;
 	int Pvmove = NOMOVE;
 
-	if( ProbeHashEntry(pos, &Pvmove, &Score, alpha, beta, depth) == TRUE ) {
+	if( ProbeHashEntry(pos, &Pvmove, &Score, &alpha, &beta, depth) == TRUE ) {
 		pos->HashTable->cut++;
 		return Score;
 	}
@@ -270,25 +270,25 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 
 		//
-		// if (legalMovesCount >= 4 && depth >= 3 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
-		// 	curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE);
-		// 	if (curScore > alpha) {
-		// 		curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
-		// 	}
-		// } else  {
-		// 	curScore = alpha + 1;
-		// }
+		if (legalMovesCount >= 15 && depth > 8 && oppInCheck == FALSE && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
+			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE);
+			// if (curScore > alpha) {
+			// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+			// }
+		} else  {
+			curScore = alpha + 1;
+		}
 
-		// if (curScore > alpha) {
-		if (legalMovesCount == 1 || oppInCheck == TRUE || InCheck == TRUE || CAPTURED(move) != EMPTY || PROMOTED(move) != EMPTY){
-			curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
-		} else {
-			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE);
-			if (curScore > alpha) {
+		if (curScore > alpha) {
+			if (legalMovesCount == 1 || oppInCheck == TRUE || InCheck == TRUE || CAPTURED(move) != EMPTY || PROMOTED(move) != EMPTY){
 				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+			} else {
+				curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE);
+				if (curScore > alpha && curScore < beta) {
+					curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+				}
 			}
 		}
-		// }
 
 		TakeMove(pos);
 		if (curScore > bestScore) {
@@ -456,15 +456,19 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 				beta = WIN_SCORE+1;
 				info.node_count = 0;
 				info.stored = 0;
+				board->HashTable->hit = 0;
 				i -= 1;
 			} else {
 				alpha = lastScore - window;
 				beta = lastScore + window;
 			}
 			lastScore = AlphaBeta(board, alpha, beta, i, colour, &info, TRUE);
-			printf("depth: %d, score: %d, node_count: %d, alpha: %d, beta: %d\n", i, lastScore, info.node_count, alpha, beta);
+			printf("depth: %d, score: %d, node_count: %d, alpha: %d, beta: %d, hit: %d, new: %d, overwrite: %d\n", i, lastScore, info.node_count, alpha, beta, board->HashTable->hit, board->HashTable->newWrite, board->HashTable->overWrite);
 			info.node_count = 0;
 			info.stored = 0;
+			board->HashTable->hit = 0;
+			// board->HashTable->overWrite = 0;
+			// board->HashTable->newWrite = 0;
 
 		}
 		printf("%s\n", PrMove(ProbePvMove(board)));

@@ -1,9 +1,5 @@
-#include <unordered_map>
 #include "stdio.h"
 #include "defs.h"
-
-using namespace std;
-
 
 unordered_map<U64, S_HASHENTRY_V2> InitHashTable() {
 
@@ -22,12 +18,13 @@ unordered_map<U64, S_HASHENTRY_V2> InitHashTable() {
 	return m;
 }
 
-int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth, unordered_map<U64, S_HASHENTRY_V2> m) {
+int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth, unordered_map<U64, S_HASHENTRY_V2> &m) {
 	U64 curPosKey = pos->posKey;
 	unordered_map<U64,S_HASHENTRY_V2>::const_iterator it = m.find(curPosKey);
 	if (it == m.end()) {
 		return FALSE;
 	} else {
+		*move = it->second.move;
 		if (it->second.depth >= depth) {
 			pos->HashTable->hit++;
 			*score = it->second.score;
@@ -58,20 +55,20 @@ int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta
 	return FALSE;
 }
 
-void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags, const int depth, unordered_map<U64, S_HASHENTRY_V2> m) {
+void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags, const int depth, unordered_map<U64, S_HASHENTRY_V2> &m) {
 	U64 curPosKey = pos->posKey;
 
 
-
+	unordered_map<U64,S_HASHENTRY_V2>::const_iterator it = m.find(curPosKey);
 
 	// If the key does exist in the dictionary
-	if(m.count(curPosKey) == 1){
+	if(it != m.end()){
 		if (m[curPosKey].depth < depth) {
 			m[curPosKey].flags = flags;
 			m[curPosKey].score = score;
 			m[curPosKey].depth = depth;
 			m[curPosKey].move = move;
-			pos->HashTable->overWrite++;
+			// pos->HashTable->overWrite++;
 		}
 
 	}
@@ -88,13 +85,14 @@ void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags,
 	}
 }
 
-int ProbePvMove(const S_BOARD *pos, unordered_map<U64, S_HASHENTRY_V2> m) {
+int ProbePvMove_V2(const S_BOARD *pos, unordered_map<U64, S_HASHENTRY_V2> &m) {
 
 	U64 curPosKey = pos->posKey;
 
 	ASSERT(index >= 0 && index <= pos->HashTable->numEntries - 1);
+	return m[curPosKey].move;
 
-	return NOMOVE;
+	// return NOMOVE;
 }
 
 

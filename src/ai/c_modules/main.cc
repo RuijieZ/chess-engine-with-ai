@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>     /* qsort */
 #include "defs.h"
+
 // using namespace std;
 
 int BRANCH_REDUCE_FACTOR = 3;
@@ -185,7 +186,7 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info)
 }
 
 
-int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info, int DoNull) {
+int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info, int DoNull, unordered_map<U64, S_HASHENTRY_V2> &m) {
 
 	if((IsRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) {
 		return 0;
@@ -214,7 +215,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 	if( DoNull && !InCheck && pos->ply && (pos->bigPce[pos->side] > 0) && depth >= 4) {
 		MakeNullMove(pos);
-		int Score = -AlphaBeta(pos, -beta, -beta + 1, depth-4, -colour, info, FALSE);
+		int Score = -AlphaBeta(pos, -beta, -beta + 1, depth-4, -colour, info, FALSE, m);
 		TakeNullMove(pos);
 
 		if (Score >= beta) {
@@ -236,7 +237,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	int Score = -WIN_SCORE;
 	int Pvmove = NOMOVE;
 
-	if( ProbeHashEntry(pos, &Pvmove, &Score, &alpha, &beta, depth) == TRUE ) {
+	if( ProbeHashEntry_V2(pos, &Pvmove, &Score, &alpha, &beta, depth, m) == TRUE ) {
 		pos->HashTable->cut++;
 		return Score;
 	}
@@ -271,7 +272,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 		//
 		if (legalMovesCount >= 4 && depth > 2 && oppInCheck == FALSE && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
-			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE);
+			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE, m);
 			// if (curScore > alpha) {
 			// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
 			// }
@@ -281,11 +282,11 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 		if (curScore > alpha) {
 			if (legalMovesCount == 1 || oppInCheck == TRUE || InCheck == TRUE || CAPTURED(move) != EMPTY || PROMOTED(move) != EMPTY){
-				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE, m);
 			} else {
-				curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE);
+				curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE, m);
 				if (curScore > alpha && curScore < beta) {
-					curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+					curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE, m);
 				}
 			}
 		}
@@ -303,7 +304,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 					pos->searchKillers[1][pos->ply] = pos->searchKillers[0][pos->ply];
 					pos->searchKillers[0][pos->ply] = move;
 				}
-				StoreHashEntry(pos, bestMove, beta, HFBETA, depth);
+				StoreHashEntry_V2(pos, bestMove, beta, HFBETA, depth, m);
 				return beta;
 			}
 			if(!(move & MFLAGCAP)) {
@@ -334,9 +335,10 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	// result_dict[pos->posKey] = b;
 	// StoreSearchResult(pos, depth, bestScore);
 	if(alpha != OldAlpha) {
-		StoreHashEntry(pos, bestMove, bestScore, HFEXACT, depth);
+		StoreHashEntry_V2(pos, bestMove, bestScore, HFEXACT, depth, m);
 	} else {
-		StoreHashEntry(pos, bestMove, alpha, HFALPHA, depth);
+		// StoreHashEntry(pos, bestMove, alpha, HFALPHA, depth);
+		StoreHashEntry_V2(pos, bestMove, alpha, HFALPHA, depth, m);
 	}
 
 	return bestScore;
@@ -420,7 +422,8 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ParseFen(fen, board);
 
 		// create some hashing tables
-		InitHashTable(board->HashTable, 2004);
+		InitHashTable(board->HashTable, 1);
+		unordered_map<U64, S_HASHENTRY_V2> m = InitHashTable();
 		// InitPvTable(board->PvTable);
 		struct INFO info;
 		info.node_count = 0;
@@ -431,7 +434,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			printf("End Game\n");
 			BRANCH_REDUCE_FACTOR = 1;
 			REDUCE_DEPTH = 2;
-			SEARCH_DEPTH = 14;
+			SEARCH_DEPTH = 20;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;
@@ -462,7 +465,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 				alpha = lastScore - window;
 				beta = lastScore + window;
 			}
-			lastScore = AlphaBeta(board, alpha, beta, i, colour, &info, TRUE);
+			lastScore = AlphaBeta(board, alpha, beta, i, colour, &info, TRUE, m);
 			printf("depth: %d, score: %d, node_count: %d, alpha: %d, beta: %d, hit: %d, new: %d, overwrite: %d\n", i, lastScore, info.node_count, alpha, beta, board->HashTable->hit, board->HashTable->newWrite, board->HashTable->overWrite);
 			info.node_count = 0;
 			info.stored = 0;
@@ -471,7 +474,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			// board->HashTable->newWrite = 0;
 
 		}
-		printf("%s\n", PrMove(ProbePvMove(board)));
+		printf("%s\n", PrMove(ProbePvMove_V2(board, m)));
 		// ASSERT(CheckBoard(board));
 		return 0;
 	}

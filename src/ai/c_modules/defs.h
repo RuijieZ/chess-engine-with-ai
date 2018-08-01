@@ -2,6 +2,9 @@
 #define DEFS_H
 
 #include "stdlib.h"
+#include <unordered_map>
+using namespace std;
+
 
 // #define DEBUG
 
@@ -306,6 +309,12 @@ extern int ProbePvMove(const S_BOARD *pos);
 extern int GetPvLine(const int depth, S_BOARD *pos);
 extern void ClearHashTable(S_HASHTABLE *table);
 enum {  HFNONE, HFALPHA, HFBETA, HFEXACT};
+
+// hashtable.c
+extern unordered_map<U64, S_HASHENTRY_V2> InitHashTable();
+extern int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth, unordered_map<U64, S_HASHENTRY_V2> &m);
+extern int ProbePvMove_V2(const S_BOARD *pos, unordered_map<U64, S_HASHENTRY_V2> &m);
+extern void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags, const int depth, unordered_map<U64, S_HASHENTRY_V2> &m);
 
 
 extern int Mirror64[64];

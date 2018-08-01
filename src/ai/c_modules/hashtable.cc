@@ -6,7 +6,7 @@ unordered_map<U64, struct S_HASHENTRY_V2> InitHashTable() {
 	unordered_map<U64, struct S_HASHENTRY_V2> m;
 	// int size = 0x100000 * 2000;
 	// int entries = size / sizeof(S_HASHENTRY_V2);
-	m.reserve(80000000);
+	m.reserve(30000000);
 	// for (auto it: m) {
 	// 	// it.first = 0ULL;
 	// 	// it.second.posKey = 0ULL;

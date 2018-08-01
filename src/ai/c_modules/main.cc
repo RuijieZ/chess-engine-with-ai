@@ -206,8 +206,6 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	}
 
 	int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
-	int oppSide = pos->side == WHITE ? BLACK : WHITE;
-	int oppInCheck = SqAttacked(pos->KingSq[oppSide], oppSide ^ 1, pos);
 
 	if (InCheck == TRUE) {
 		depth ++;
@@ -271,7 +269,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 
 		//
-		if (legalMovesCount >= 4 && depth > 2 && oppInCheck == FALSE && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
+		if (legalMovesCount >= 4 && depth > 2 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
 			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE, m);
 			// if (curScore > alpha) {
 			// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
@@ -281,7 +279,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		}
 
 		if (curScore > alpha) {
-			if (legalMovesCount == 1 || oppInCheck == TRUE || InCheck == TRUE || CAPTURED(move) != EMPTY || PROMOTED(move) != EMPTY){
+			if (legalMovesCount == 1 || InCheck == TRUE || CAPTURED(move) != EMPTY || PROMOTED(move) != EMPTY){
 				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE, m);
 			} else {
 				curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE, m);

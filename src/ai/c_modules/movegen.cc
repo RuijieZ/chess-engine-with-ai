@@ -104,7 +104,7 @@ static void AddQuietMove(S_BOARD *pos, int move, S_MOVELIST *list ) {
 	}
 
 	if (MoveIsIntoCheck(pos, move) == TRUE) {
-		list->moves[list->count].score += 1200000;
+		list->moves[list->count].score += 1000000;
 	}
 
 	list->count++;
@@ -120,7 +120,7 @@ static void AddCaptureMove(S_BOARD *pos, int move, S_MOVELIST *list ) {
 	list->moves[list->count].score = MvvLvaScores[CAPTURED(move)][pos->pieces[FROMSQ(move)]] + 1000000;
 
 	if (MoveIsIntoCheck(pos, move) == TRUE) {
-		list->moves[list->count].score += 1200000;
+		list->moves[list->count].score += 1000000;
 	}
 	list->count++;
 }
@@ -134,7 +134,7 @@ static void AddEnPassantMove(S_BOARD *pos, int move, S_MOVELIST *list ) {
 	list->moves[list->count].score = 105 + 1000000;
 
 	if (MoveIsIntoCheck(pos, move) == TRUE) {
-		list->moves[list->count].score += 1200000;
+		list->moves[list->count].score += 1000000;
 	}
 
 	list->count++;

@@ -22,7 +22,7 @@ def index():
 def next_move(count):
 	count = int(count) // 2
 	fen = request.form['fen']
-	if count <= 9:
+	if count <= 5:
 		move = opening_book_next_move(fen, 'performance.bin')
 		if move is not None:
 			return move

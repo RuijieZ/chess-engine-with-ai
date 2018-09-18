@@ -76,12 +76,24 @@ int MoveExists(S_BOARD *pos, const int move) {
 	return FALSE;
 }
 
-static void AddQuietMove( const S_BOARD *pos, int move, S_MOVELIST *list ) {
+int MoveIsIntoCheck(S_BOARD *pos, const int move) {
+	int oppSide = pos->side == WHITE ? BLACK : WHITE;
+
+	if (!MakeMove(pos, move))  {
+		return FALSE;
+    }
+	int oppInCheck = SqAttacked(pos->KingSq[oppSide], oppSide ^ 1, pos);
+	TakeMove(pos);
+	return oppInCheck;
+}
+
+static void AddQuietMove(S_BOARD *pos, int move, S_MOVELIST *list ) {
 
 	ASSERT(SqOnBoard(FROMSQ(move)));
 	ASSERT(SqOnBoard(TOSQ(move)));
 
 	list->moves[list->count].move = move;
+
 	
 	if(pos->searchKillers[0][pos->ply] == move) {	
 		list->moves[list->count].score = 900000;
@@ -90,10 +102,15 @@ static void AddQuietMove( const S_BOARD *pos, int move, S_MOVELIST *list ) {
 	} else {	
 		list->moves[list->count].score = pos->searchHistory[pos->pieces[FROMSQ(move)]][TOSQ(move)];
 	}
+
+	if (MoveIsIntoCheck(pos, move) == TRUE) {
+		list->moves[list->count].score += 1000000;
+	}
+
 	list->count++;
 }
 
-static void AddCaptureMove( const S_BOARD *pos, int move, S_MOVELIST *list ) {
+static void AddCaptureMove(S_BOARD *pos, int move, S_MOVELIST *list ) {
 
 	ASSERT(SqOnBoard(FROMSQ(move)));
 	ASSERT(SqOnBoard(TOSQ(move)));
@@ -101,20 +118,29 @@ static void AddCaptureMove( const S_BOARD *pos, int move, S_MOVELIST *list ) {
 	
 	list->moves[list->count].move = move;
 	list->moves[list->count].score = MvvLvaScores[CAPTURED(move)][pos->pieces[FROMSQ(move)]] + 1000000;
+
+	if (MoveIsIntoCheck(pos, move) == TRUE) {
+		list->moves[list->count].score += 1000000;
+	}
 	list->count++;
 }
 
-static void AddEnPassantMove( const S_BOARD *pos, int move, S_MOVELIST *list ) {
+static void AddEnPassantMove(S_BOARD *pos, int move, S_MOVELIST *list ) {
 
 	ASSERT(SqOnBoard(FROMSQ(move)));
 	ASSERT(SqOnBoard(TOSQ(move)));
 	
 	list->moves[list->count].move = move;
 	list->moves[list->count].score = 105 + 1000000;
+
+	if (MoveIsIntoCheck(pos, move) == TRUE) {
+		list->moves[list->count].score += 1000000;
+	}
+
 	list->count++;
 }
 
-static void AddWhitePawnCapMove( const S_BOARD *pos, const int from, const int to, const int cap, S_MOVELIST *list ) {	
+static void AddWhitePawnCapMove(S_BOARD *pos, const int from, const int to, const int cap, S_MOVELIST *list ) {	
 	
 	ASSERT(PieceValidEmpty(cap));
 	ASSERT(SqOnBoard(from));
@@ -130,7 +156,7 @@ static void AddWhitePawnCapMove( const S_BOARD *pos, const int from, const int t
 	}
 }
 
-static void AddWhitePawnMove( const S_BOARD *pos, const int from, const int to, S_MOVELIST *list ) {
+static void AddWhitePawnMove(S_BOARD *pos, const int from, const int to, S_MOVELIST *list ) {
 
 	ASSERT(SqOnBoard(from));
 	ASSERT(SqOnBoard(to));
@@ -145,7 +171,7 @@ static void AddWhitePawnMove( const S_BOARD *pos, const int from, const int to, 
 	}
 }
 
-static void AddBlackPawnCapMove( const S_BOARD *pos, const int from, const int to, const int cap, S_MOVELIST *list ) {
+static void AddBlackPawnCapMove(S_BOARD *pos, const int from, const int to, const int cap, S_MOVELIST *list ) {
 
 	ASSERT(PieceValidEmpty(cap));
 	ASSERT(SqOnBoard(from));
@@ -161,7 +187,7 @@ static void AddBlackPawnCapMove( const S_BOARD *pos, const int from, const int t
 	}
 }
 
-static void AddBlackPawnMove( const S_BOARD *pos, const int from, const int to, S_MOVELIST *list ) {
+static void AddBlackPawnMove(S_BOARD *pos, const int from, const int to, S_MOVELIST *list ) {
 
 	ASSERT(SqOnBoard(from));
 	ASSERT(SqOnBoard(to));
@@ -176,7 +202,7 @@ static void AddBlackPawnMove( const S_BOARD *pos, const int from, const int to, 
 	}
 }
 
-void GenerateAllMoves(const S_BOARD *pos, S_MOVELIST *list) {
+void GenerateAllMoves(S_BOARD *pos, S_MOVELIST *list) {
 	
 	ASSERT(CheckBoard(pos));
 	
@@ -350,7 +376,7 @@ void GenerateAllMoves(const S_BOARD *pos, S_MOVELIST *list) {
 }
 
 
-void GenerateAllCaps(const S_BOARD *pos, S_MOVELIST *list) {
+void GenerateAllCaps(S_BOARD *pos, S_MOVELIST *list) {
 	
 	ASSERT(CheckBoard(pos));
 	

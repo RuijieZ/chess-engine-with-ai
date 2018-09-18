@@ -2,6 +2,9 @@
 #define DEFS_H
 
 #include "stdlib.h"
+#include <unordered_map>
+using namespace std;
+
 
 // #define DEBUG
 
@@ -25,6 +28,9 @@ typedef unsigned long long U64;
 #define MAXGAMEMOVES 2048
 #define MAXPOSITIONMOVES 256
 #define MAXDEPTH 64
+
+#define ISMATE 10000
+
 
 
 /* GAME MOVE */
@@ -131,6 +137,34 @@ typedef struct {
 } S_SEARCHINFO;
 
 typedef struct {
+	U64 posKey;
+	int move;
+	int score;
+	int depth;
+	int flags;
+} S_HASHENTRY;
+
+struct S_HASHENTRY_V2 {
+	int move;
+	int score;
+	int depth;
+	int flags;
+
+	S_HASHENTRY_V2():depth(0)
+    {
+    }
+};
+
+typedef struct {
+	S_HASHENTRY *pTable;
+	int numEntries;
+	int newWrite;
+	int overWrite;
+	int hit;
+	int cut;
+} S_HASHTABLE;
+
+typedef struct {
 
 	int pieces[BRD_SQ_NUM];
 	U64 pawns[3]; // index 0 for the white pawns, index 1 for the black pawns, index 2 for both
@@ -168,7 +202,7 @@ typedef struct {
 	int searchHistory[13][BRD_SQ_NUM];
 	int searchKillers[2][MAXDEPTH];
 
-	S_PVTABLE PvTable[1];
+	S_HASHTABLE HashTable[1];
 	int PvArray[MAXDEPTH];
 
 
@@ -234,12 +268,13 @@ extern int CheckBoard(const S_BOARD *pos);
 extern int SqAttacked(const int sq, const int side, const S_BOARD *pos);
 
 // movegen.c
-extern void GenerateAllMoves(const S_BOARD *pos, S_MOVELIST *list);
-extern void GenerateAllCaps(const S_BOARD *pos, S_MOVELIST *list);
+extern void GenerateAllMoves(S_BOARD *pos, S_MOVELIST *list);
+extern void GenerateAllCaps(S_BOARD *pos, S_MOVELIST *list);
 extern int MoveExists(S_BOARD *pos, const int move);
 extern void InitMvvLva(void);
 extern int MakeMove(S_BOARD *pos, int move);
 extern void TakeMove(S_BOARD *pos);
+extern int MoveIsIntoCheck(S_BOARD *pos, const int move);
 
 // validate.c
 extern int SqOnBoard(const int sq);
@@ -272,11 +307,20 @@ extern int evaluation(const S_BOARD* pos);
 // PyObject* moveScoreList(PyObject *, PyObject *);
 
 // pvtable.c
-extern void InitPvTable(S_PVTABLE *table);
-extern void StorePvMove(const S_BOARD *pos, const int move);
-extern int ProbePvTable(const S_BOARD *pos);
+extern void InitHashTable(S_HASHTABLE *table, const int MB);
+extern void StoreHashEntry(S_BOARD *pos, const int move, int score, const int flags, const int depth);
+extern int ProbeHashEntry(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth);
+extern int ProbePvMove(const S_BOARD *pos);
 extern int GetPvLine(const int depth, S_BOARD *pos);
-extern void ClearPvTable(S_PVTABLE *table);
+extern void ClearHashTable(S_HASHTABLE *table);
+enum {  HFNONE, HFALPHA, HFBETA, HFEXACT};
+
+// hashtable.c
+extern unordered_map<U64, struct S_HASHENTRY_V2> InitHashTable();
+extern int ProbeHashEntry_V2(S_BOARD *pos, int *move, int *score, int *alpha, int *beta, int depth, unordered_map<U64, struct S_HASHENTRY_V2> &m);
+extern int ProbePvMove_V2(const S_BOARD *pos, unordered_map<U64, struct S_HASHENTRY_V2> &m);
+extern void StoreHashEntry_V2(S_BOARD *pos, const int move, int score, const int flags, const int depth, unordered_map<U64, struct S_HASHENTRY_V2> &m);
+
 
 extern int Mirror64[64];
 #define MIRROR64(sq) (Mirror64[(sq)])

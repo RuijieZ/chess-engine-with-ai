@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>     /* qsort */
 #include "defs.h"
+
 // using namespace std;
 
 int BRANCH_REDUCE_FACTOR = 3;
@@ -13,7 +14,6 @@ U64 rootPoskey;
 #define EXACT_FLAG 2
 #define NOTFOUND -1000000000
 #define MAXDEPTH 64
-#define ISMATE 10000-64
 
 #define HASH_PCE(pce,sq) (pos->posKey ^= (PieceKeys[(pce)][(sq)]))
 #define HASH_CA (pos->posKey ^= (CastleKeys[(pos->castlePerm)]))
@@ -186,7 +186,7 @@ int Quiescence(S_BOARD *pos, int alpha, int beta, int colour, struct INFO* info)
 }
 
 
-int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info, int DoNull) {
+int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct INFO* info, int DoNull, unordered_map<U64, struct S_HASHENTRY_V2> &m) {
 
 	if((IsRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) {
 		return 0;
@@ -207,13 +207,13 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 
 	int InCheck = SqAttacked(pos->KingSq[pos->side], pos->side ^ 1, pos);
 
-	if (InCheck) {
+	if (InCheck == TRUE) {
 		depth ++;
 	}
 
 	if( DoNull && !InCheck && pos->ply && (pos->bigPce[pos->side] > 0) && depth >= 4) {
 		MakeNullMove(pos);
-		int Score = -AlphaBeta(pos, -beta, -beta + 1, depth-4, -colour, info, FALSE);
+		int Score = -AlphaBeta(pos, -beta, -beta + 1, depth-4, -colour, info, FALSE, m);
 		TakeNullMove(pos);
 
 		if (Score >= beta) {
@@ -231,11 +231,18 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	GenerateAllMoves(pos, moves);
 
 	// use pv move to help
-	int Pvmove = ProbePvTable(pos);
+	// int Pvmove = ProbePvTable(pos);
+	int Score = -WIN_SCORE;
+	int Pvmove = NOMOVE;
+
+	if( ProbeHashEntry_V2(pos, &Pvmove, &Score, &alpha, &beta, depth, m) == TRUE ) {
+		pos->HashTable->cut++;
+		return Score;
+	}
 	if(Pvmove != NOMOVE) {
 		for(int MoveNum = 0; MoveNum < moves->count; ++MoveNum) {
 			if( moves->moves[MoveNum].move == Pvmove) {
-				moves->moves[MoveNum].score = 2000000;
+				moves->moves[MoveNum].score = 5000000;
 				// printf("Pv move found \n");		
 				break;
 			}
@@ -258,14 +265,29 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 			continue;
 		}
 
-		// recrusion to check for the result
-		// if (legalMovesCount <= moves->count / BRANCH_REDUCE_FACTOR){
-		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info);	// only search the first two moves to full depth
-		// } else {
-		// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-REDUCE_DEPTH, -colour, info);
-		// }
-		curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
 		legalMovesCount += 1;
+
+
+		
+		if (legalMovesCount >= 4 && depth > 2 && InCheck == FALSE && CAPTURED(move) == EMPTY && PROMOTED(move) == EMPTY) { // reduction
+			curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth - REDUCE_DEPTH, -colour, info, TRUE, m);
+			// if (curScore > alpha) {
+			// 	curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE);
+			// }
+		} else  {
+			curScore = alpha + 1;
+		}
+
+		if (curScore > alpha) {
+			if (legalMovesCount == 1 || InCheck == TRUE || CAPTURED(move) != EMPTY || PROMOTED(move) != EMPTY){
+				curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE, m);
+			} else {
+				curScore = -AlphaBeta(pos, -alpha-1, -alpha, depth-1, -colour, info, TRUE, m);
+				if (curScore > alpha && curScore < beta) {
+					curScore = -AlphaBeta(pos, -beta, -alpha, depth-1, -colour, info, TRUE, m);
+				}
+			}
+		}
 
 		TakeMove(pos);
 		if (curScore > bestScore) {
@@ -280,7 +302,7 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 					pos->searchKillers[1][pos->ply] = pos->searchKillers[0][pos->ply];
 					pos->searchKillers[0][pos->ply] = move;
 				}
-				// StorePvMove(pos, bestMove, depth, beta, 0);
+				StoreHashEntry_V2(pos, bestMove, beta, HFBETA, depth, m);
 				return beta;
 			}
 			if(!(move & MFLAGCAP)) {
@@ -310,13 +332,12 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 	// b.depth = depth;
 	// result_dict[pos->posKey] = b;
 	// StoreSearchResult(pos, depth, bestScore);
- if (alpha > OldAlpha)
- {
- 	/* code */
-	// StorePvMove(pos, bestMove, depth, bestScore, 0);
-	StorePvMove(pos, bestMove);
-
- }
+	if(alpha != OldAlpha) {
+		StoreHashEntry_V2(pos, bestMove, bestScore, HFEXACT, depth, m);
+	} else {
+		// StoreHashEntry(pos, bestMove, alpha, HFALPHA, depth);
+		StoreHashEntry_V2(pos, bestMove, alpha, HFALPHA, depth, m);
+	}
 
 	return bestScore;
 }
@@ -399,7 +420,9 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		ParseFen(fen, board);
 
 		// create some hashing tables
-		InitPvTable(board->PvTable);
+		InitHashTable(board->HashTable, 1);
+		unordered_map<U64, struct S_HASHENTRY_V2> m = InitHashTable();
+		// InitPvTable(board->PvTable);
 		struct INFO info;
 		info.node_count = 0;
 		info.stored = 0;
@@ -408,30 +431,48 @@ int AlphaBeta(S_BOARD *pos, int alpha, int beta, int depth, int colour, struct I
 		if (board->material[board->side] <= ENDGAME_MAT) {	// END GAME
 			printf("End Game\n");
 			BRANCH_REDUCE_FACTOR = 1;
-			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 8;
+			REDUCE_DEPTH = 2;
+			SEARCH_DEPTH = 12;
 		} else {
 			printf("NOT End Game\n");			// NOT ENDING
 			BRANCH_REDUCE_FACTOR = 1;
-			REDUCE_DEPTH = 0;
-			SEARCH_DEPTH = 8;
+			REDUCE_DEPTH = 2;
+			SEARCH_DEPTH = 10;
 		}
 
 		rootPoskey = board->posKey;
 		ClearForSearch(board);
-
+		int alpha = LOSS_SCORE-1;
+		int beta = WIN_SCORE+1;
+		int window = 10;
+		int colour = side == WHITE ? 1 : -1;
+		int lastScore = 0;
 		// check the game status to determine what parameter we should set
 		for (int i=1; i <=SEARCH_DEPTH; i++) {
-			if (side == BLACK) {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, -1, &info, TRUE), info.node_count, info.stored);
+			if (lastScore == WIN_SCORE || lastScore == LOSS_SCORE){
+				break;
 			}
-			else {
-				printf("score: %d, node_count: %d, stored: %d\n", AlphaBeta(board, LOSS_SCORE-1, WIN_SCORE+1, i, 1, &info, TRUE), info.node_count, info.stored);
+			if (lastScore <= alpha || lastScore >= beta) {
+				alpha = LOSS_SCORE-1;
+				beta = WIN_SCORE+1;
+				info.node_count = 0;
+				info.stored = 0;
+				board->HashTable->hit = 0;
+				i -= 1;
+			} else {
+				alpha = lastScore - window;
+				beta = lastScore + window;
 			}
-			// info.node_count = 0;
-			// info.stored = 0;
+			lastScore = AlphaBeta(board, alpha, beta, i, colour, &info, TRUE, m);
+			printf("depth: %d, score: %d, node_count: %d, alpha: %d, beta: %d, hit: %d, new: %d, overwrite: %d\n", i, lastScore, info.node_count, alpha, beta, board->HashTable->hit, board->HashTable->newWrite, board->HashTable->overWrite);
+			info.node_count = 0;
+			info.stored = 0;
+			board->HashTable->hit = 0;
+			// board->HashTable->overWrite = 0;
+			// board->HashTable->newWrite = 0;
+
 		}
-		printf("%s\n", PrMove(ProbePvTable(board)));
+		printf("%s\n", PrMove(ProbePvMove_V2(board, m)));
 		// ASSERT(CheckBoard(board));
 		return 0;
 	}
